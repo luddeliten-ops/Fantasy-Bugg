@@ -436,7 +436,7 @@
   }
 
   function render(parsed){
-
+window.__lastParsedRows = parsed.rows;
     var rows =
       highestStageRows(parsed.rows);
 var market = window.FANTASY_MARKET || [];
