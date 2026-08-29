@@ -1,606 +1,1439 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="Marker.js"></script>
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fantasy Bugg – CSV-import</title>
 
-<script>
-(function(){
-
-  var fileInput = document.getElementById("csv");
-  var readBtn = document.getElementById("readBtn");
-  var saveBtn = document.getElementById("saveBtn");
-  var status = document.getElementById("status");
-  var saveStatus = document.getElementById("saveStatus");
-
-  var market = window.FANTASY_MARKET || [];
-  var lastRows = [];
-  var lastParsed = null;
-
-  var supabaseClient = window.supabase.createClient(
-    "https://tkzjyasosqqshdzdvihr.supabase.co",
-    "sb_publishable_Ew_yx90GcTw51DXFowAtug_lXwevjzm",
-    {
-      auth:{
-        persistSession:true,
-        autoRefreshToken:true,
-        detectSessionInUrl:true
-      }
-    }
-  );
-
-  function escapeHtml(value){
-    return String(value || "")
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;");
-  }
-
-  function norm(s){
-    return String(s || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g,"")
-      .replace(/[^a-z0-9& ]/g," ")
-      .replace(/\s+/g," ")
-      .trim();
-  }
-
-  function parseCsvLine(line){
-
-    var result = [];
-    var current = "";
-    var quote = false;
-
-    for(var i=0;i<line.length;i++){
-
-      var c = line[i];
-
-      if(c === '"'){
-
-        if(quote && line[i+1] === '"'){
-          current += '"';
-          i++;
-        }else{
-          quote = !quote;
-        }
-
-      }else if(c === ";" && !quote){
-
-        result.push(current);
-        current = "";
-
-      }else{
-
-        current += c;
-
-      }
-
+  <style>
+    *{
+      box-sizing:border-box;
     }
 
-    result.push(current);
-
-    return result;
-  }
-
-  function readFile(file){
-
-    return new Promise(function(resolve,reject){
-
-      var reader = new FileReader();
-
-      reader.onload = function(){
-        resolve(reader.result);
-      };
-
-      reader.onerror = function(){
-        reject(new Error("Kunde inte läsa CSV-filen."));
-      };
-
-      reader.readAsText(file,"UTF-8");
-
-    });
-
-  }
-
-  function parseVote4Dance(text){
-
-    text = text.replace(/^\uFEFF/,"");
-
-    var lines = text.split(/\r?\n/);
-
-    var competitionName = "";
-    var competitionDate = "";
-
-    for(var i=0;i<8 && i<lines.length;i++){
-
-      var line = lines[i]
-        .replace(/^#\s*/,"")
-        .trim();
-
-      if(!line || line === "RESULTS"){
-        continue;
-      }
-
-      if(/^\d{4}-\d{2}-\d{2}$/.test(line)){
-        competitionDate = line;
-      }else if(!competitionName){
-        competitionName = line;
-      }
-
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#f4f1f5;
+      color:#26132b;
     }
 
-    var headerIndex = -1;
+    .top{
+      background:linear-gradient(135deg,#37003c,#690875);
+      color:white;
+      padding:28px 18px;
+    }
 
-    for(var j=0;j<lines.length;j++){
+    .wrap{
+      max-width:850px;
+      margin:auto;
+    }
 
-      if(lines[j].indexOf("Klassrubrik;") === 0){
-        headerIndex = j;
-        break;
+    h1{
+      margin:0 0 8px;
+      font-size:30px;
+    }
+
+    h2{
+      margin-top:0;
+    }
+
+    p{
+      line-height:1.45;
+    }
+
+    .card{
+      background:white;
+      margin:16px auto;
+      padding:18px;
+      border-radius:20px;
+      box-shadow:0 8px 30px rgba(55,0,60,.07);
+    }
+
+    label{
+      display:block;
+      font-weight:800;
+      margin:12px 0 6px;
+    }
+
+    input,
+    select,
+    button{
+      width:100%;
+      padding:14px;
+      border-radius:12px;
+      font-size:16px;
+    }
+
+    input,
+    select{
+      border:1px solid #d8d0da;
+      background:white;
+    }
+
+    button{
+      margin-top:14px;
+      border:0;
+      background:#00ff87;
+      color:#153522;
+      font-weight:900;
+      cursor:pointer;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    button:active{
+      transform:scale(.99);
+    }
+
+    #status,
+    #saveStatus{
+      margin-top:14px;
+      font-weight:800;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:15px;
+    }
+
+    .stat{
+      background:#f6f2f7;
+      padding:12px;
+      border-radius:14px;
+    }
+
+    .stat small{
+      display:block;
+      color:#77697a;
+    }
+
+    .stat b{
+      font-size:23px;
+    }
+
+    .row{
+      padding:12px 0;
+      border-top:1px solid #eee7ef;
+    }
+
+    .name{
+      font-weight:900;
+    }
+
+    .meta{
+      color:#77697a;
+      font-size:13px;
+      margin-top:3px;
+    }
+
+    .place{
+      color:#37003c;
+      font-weight:900;
+    }
+
+    .match{
+      margin-top:6px;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .matched{
+      color:#16864d;
+    }
+
+    .unmatched{
+      color:#b13a46;
+    }
+
+    .hidden{
+      display:none;
+    }
+
+    @media(max-width:600px){
+      .stats{
+        grid-template-columns:1fr 1fr;
       }
 
-    }
-
-    if(headerIndex === -1){
-      throw new Error("Hittar inte Vote4Dance-resultat i filen.");
-    }
-
-    var header = parseCsvLine(lines[headerIndex]);
-
-    function col(name){
-      return header.indexOf(name);
-    }
-
-    var startCol = col("Startnr");
-    var placeCol = col("Plac");
-    var name1Col = col("Namn 1");
-    var name2Col = col("Namn 2");
-    var clubCol = col("Klubb");
-
-    if(
-      startCol === -1 ||
-      placeCol === -1 ||
-      name1Col === -1 ||
-      name2Col === -1
-    ){
-      throw new Error("CSV-filen saknar nödvändiga kolumner.");
-    }
-
-    var currentClass = "";
-    var rows = [];
-
-    for(var k=headerIndex+1;k<lines.length;k++){
-
-      var raw = lines[k].trim();
-
-      if(!raw){
-        continue;
+      h1{
+        font-size:27px;
       }
+    }
+  </style>
+</head>
 
-      if(raw.indexOf(";") === -1){
+<body>
 
-        currentClass = raw;
-        continue;
+  <div class="top">
+    <div class="wrap">
+      <h1>Fantasy Bugg</h1>
+      <p>Importera resultat direkt från Vote4Dance CSV.</p>
+    </div>
+  </div>
 
-      }
+  <div class="wrap">
 
-      var classMatch =
-        currentClass.match(
-          /^Bugg (Junior|Vuxen|Senior) ([NABCD])$/
+    <div class="card">
+
+      <label for="csv">
+        Vote4Dance Result CSV
+      </label>
+
+      <input
+        id="csv"
+        type="file"
+        accept=".csv,text/csv,text/plain"
+      >
+
+      <label for="level">
+        Tävlingsnivå
+      </label>
+
+      <select id="level">
+        <option>ITT</option>
+        <option>Nationell</option>
+        <option selected>GP</option>
+        <option>DM</option>
+        <option>SM</option>
+      </select>
+
+      <button
+        id="readBtn"
+        type="button"
+      >
+        Läs resultat
+      </button>
+
+      <div id="status">
+        Välj CSV-filen från Vote4Dance.
+      </div>
+
+    </div>
+
+
+    <div
+      id="summary"
+      class="card hidden"
+    >
+
+      <h2 id="competitionName">
+        Tävling
+      </h2>
+
+      <div id="competitionDate"></div>
+
+      <div class="stats">
+
+        <div class="stat">
+          <small>Junior</small>
+          <b id="juniorCount">0</b>
+        </div>
+
+        <div class="stat">
+          <small>Vuxen</small>
+          <b id="adultCount">0</b>
+        </div>
+
+        <div class="stat">
+          <small>Senior</small>
+          <b id="seniorCount">0</b>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="resultsCard"
+      class="card hidden"
+    >
+
+      <h2>Förhandsgranskning</h2>
+
+      <div id="results"></div>
+
+      <button
+        id="saveBtn"
+        type="button"
+      >
+        Spara resultat
+      </button>
+
+      <div id="saveStatus"></div>
+
+    </div>
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="Marker.js"></script>
+
+  <script>
+    (function(){
+
+      var fileInput =
+        document.getElementById("csv");
+
+      var readBtn =
+        document.getElementById("readBtn");
+
+      var saveBtn =
+        document.getElementById("saveBtn");
+
+      var status =
+        document.getElementById("status");
+
+      var saveStatus =
+        document.getElementById("saveStatus");
+
+      var market =
+        window.FANTASY_MARKET || [];
+
+      var lastParsed = null;
+      var lastRows = [];
+
+
+      var supabaseClient =
+        window.supabase.createClient(
+          "https://tkzjyasosqqshdzdvihr.supabase.co",
+          "sb_publishable_Ew_yx90GcTw51DXFowAtug_lXwevjzm",
+          {
+            auth:{
+              persistSession:true,
+              autoRefreshToken:true,
+              detectSessionInUrl:true
+            }
+          }
         );
 
-      if(!classMatch){
-        continue;
+
+      function escapeHtml(value){
+
+        return String(value || "")
+          .replace(/&/g,"&amp;")
+          .replace(/</g,"&lt;")
+          .replace(/>/g,"&gt;");
+
       }
 
-      var cells = parseCsvLine(lines[k]);
 
-      var name1 = (cells[name1Col] || "").trim();
-      var name2 = (cells[name2Col] || "").trim();
+      function norm(value){
 
-      if(!name1 || !name2){
-        continue;
+        return String(value || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g,"")
+          .replace(/[^a-z0-9& ]/g," ")
+          .replace(/\s+/g," ")
+          .trim();
+
       }
 
-      rows.push({
-        age: classMatch[1],
-        stage: classMatch[2],
-        startNo: (cells[startCol] || "").trim(),
-        place: parseInt(cells[placeCol],10) || 0,
-        name: name1 + " & " + name2,
-        club: clubCol >= 0
-          ? (cells[clubCol] || "").trim()
-          : ""
-      });
-
-    }
 
-    return {
-      name: competitionName || "Vote4Dance-tävling",
-      date: competitionDate,
-      rows: rows
-    };
-
-  }
-
-  function highestStageRows(rows){
-
-    var value = {
-      N:1,
-      D:2,
-      C:3,
-      B:4,
-      A:5
-    };
+      function parseCsvLine(line){
 
-    var map = {};
+        var result = [];
+        var current = "";
+        var quote = false;
 
-    rows.forEach(function(row){
+        for(
+          var i = 0;
+          i < line.length;
+          i++
+        ){
 
-      var key =
-        row.age +
-        "|" +
-        norm(row.name);
+          var c = line[i];
 
-      if(
-        !map[key] ||
-        value[row.stage] > value[map[key].stage]
-      ){
-        map[key] = row;
-      }
+          if(c === '"'){
 
-    });
+            if(
+              quote &&
+              line[i + 1] === '"'
+            ){
 
-    return Object.keys(map).map(function(key){
-      return map[key];
-    });
+              current += '"';
+              i++;
 
-  }
+            }else{
 
-  function basePoints(place){
+              quote = !quote;
 
-    if(place === 1) return 100;
-    if(place === 2) return 85;
-    if(place === 3) return 75;
-    if(place === 4) return 65;
-    if(place === 5) return 60;
-    if(place <= 10) return 50;
-    if(place <= 20) return 35;
-    if(place <= 40) return 20;
+            }
 
-    return 10;
-  }
+          }else if(
+            c === ";" &&
+            !quote
+          ){
 
-  function getMultiplier(){
+            result.push(current);
+            current = "";
 
-    var level =
-      document.getElementById("level").value;
+          }else{
 
-    return {
-      ITT:1,
-      Nationell:1.2,
-      GP:1.5,
-      DM:1.75,
-      SM:2
-    }[level] || 1;
-  }
+            current += c;
 
-  function prepareRows(parsed){
+          }
 
-    var rows =
-      highestStageRows(parsed.rows);
-
-    var multiplier =
-      getMultiplier();
-
-    rows.forEach(function(row){
-
-      row.pairIndex =
-        market.findIndex(function(p){
-
-          return (
-            p[0] === row.age &&
-            norm(p[1]) === norm(row.name)
-          );
-
-        });
-
-      row.matched =
-        row.pairIndex >= 0;
-
-      var entrants =
-        rows.filter(function(r){
-          return r.age === row.age;
-        }).length;
-
-      var raw =
-        basePoints(row.place) +
-        Math.max(0, entrants - row.place) +
-        (row.place <= 10 ? 15 : 0) +
-        (row.place <= 3 ? 10 : 0) +
-        (row.place === 1 ? 15 : 0);
-
-      row.points =
-        Math.round(raw * multiplier);
-
-    });
-
-    return rows;
-  }
-
-  function render(parsed){
-
-    var rows =
-      prepareRows(parsed);
-
-    lastParsed = parsed;
-    lastRows = rows;
-
-    var junior =
-      rows.filter(function(r){
-        return r.age === "Junior";
-      });
-
-    var adult =
-      rows.filter(function(r){
-        return r.age === "Vuxen";
-      });
-
-    var senior =
-      rows.filter(function(r){
-        return r.age === "Senior";
-      });
-
-    document.getElementById(
-      "competitionName"
-    ).textContent = parsed.name;
-
-    document.getElementById(
-      "competitionDate"
-    ).textContent = parsed.date || "";
-
-    document.getElementById(
-      "juniorCount"
-    ).textContent = junior.length;
-
-    document.getElementById(
-      "adultCount"
-    ).textContent = adult.length;
-
-    document.getElementById(
-      "seniorCount"
-    ).textContent = senior.length;
-
-    document.getElementById(
-      "summary"
-    ).classList.remove("hidden");
-
-    document.getElementById(
-      "resultsCard"
-    ).classList.remove("hidden");
-
-    rows.sort(function(a,b){
-
-      var order = {
-        Junior:1,
-        Vuxen:2,
-        Senior:3
-      };
-
-      if(order[a.age] !== order[b.age]){
-        return order[a.age] - order[b.age];
-      }
-
-      return a.place - b.place;
-
-    });
-
-    var html = "";
-
-    rows.forEach(function(row){
-
-      html +=
-        '<div class="row">' +
-
-          '<div class="name">' +
-            escapeHtml(row.name) +
-          '</div>' +
-
-          '<div class="meta">' +
-
-            'Bugg ' +
-            escapeHtml(row.age) +
-
-            ' · klass ' +
-            escapeHtml(row.stage) +
-
-            ' · startnr ' +
-            escapeHtml(row.startNo) +
-
-            ' · <span class="place">placering ' +
-            escapeHtml(row.place) +
-            '</span>' +
-
-          '</div>' +
-
-          '<div style="margin-top:6px;font-size:13px;font-weight:800;color:' +
-            (row.matched ? '#16864d' : '#b13a46') +
-          '">' +
-
-            (row.matched
-              ? '✓ Matchad mot fantasy-marknaden'
-              : '⚠ Ej matchad') +
-
-            ' · ' +
-            row.points +
-            ' fantasy-poäng' +
-
-          '</div>' +
-
-        '</div>';
-
-    });
-
-    document.getElementById(
-      "results"
-    ).innerHTML = html;
-
-    status.textContent =
-      "✅ " +
-      rows.length +
-      " unika Bugg-par lästa.";
-
-    saveStatus.textContent = "";
-
-  }
-
-  readBtn.addEventListener(
-    "click",
-    async function(){
-
-      try{
-
-        var file =
-          fileInput.files &&
-          fileInput.files[0];
-
-        if(!file){
-
-          status.textContent =
-            "Välj CSV-filen först.";
-
-          return;
         }
 
-        status.textContent =
-          "Läser resultat…";
+        result.push(current);
 
-        var text =
-          await readFile(file);
-
-        var parsed =
-          parseVote4Dance(text);
-
-        render(parsed);
-
-      }catch(error){
-
-        console.error(error);
-
-        status.textContent =
-          "Fel: " +
-          (error.message || error);
+        return result;
 
       }
 
-    }
-  );
 
-  saveBtn.addEventListener(
-    "click",
-    async function(){
+      function readFile(file){
 
-      try{
+        return new Promise(
+          function(resolve,reject){
 
-        saveBtn.disabled = true;
-        saveStatus.textContent = "Sparar…";
+            var reader =
+              new FileReader();
 
-        if(!lastParsed || !lastRows.length){
-          throw new Error("Läs in CSV-filen först.");
-        }
+            reader.onload =
+              function(){
 
-        var sessionResult =
-          await supabaseClient.auth.getSession();
+                resolve(
+                  reader.result
+                );
 
-        var session =
-          sessionResult.data.session;
-
-        if(!session){
-          throw new Error(
-            "Du måste vara inloggad som admin."
-          );
-        }
-
-        var level =
-          document.getElementById("level").value;
-
-        var competitionId =
-          "csv-" + Date.now();
-
-        var compInsert =
-          await supabaseClient
-            .from("competitions")
-            .insert({
-              id: competitionId,
-              name: lastParsed.name,
-              date: lastParsed.date || null,
-              level: level,
-              created_by: session.user.id
-            });
-
-        if(compInsert.error){
-          throw compInsert.error;
-        }
-
-        var resultRows =
-          lastRows
-            .filter(function(row){
-
-              return (
-                row.matched &&
-                row.pairIndex >= 0
-              );
-
-            })
-            .map(function(row){
-
-              return {
-                competition_id: competitionId,
-                pair_index: row.pairIndex,
-                pair_name: row.name,
-                placement: row.place,
-                matched: true,
-                fantasy_points: row.points
               };
 
-            });
+            reader.onerror =
+              function(){
 
-        if(!resultRows.length){
-          throw new Error(
-            "Inga matchade resultat att spara."
-          );
-        }
+                reject(
+                  new Error(
+                    "Kunde inte läsa CSV-filen."
+                  )
+                );
 
-        var resultsInsert =
-          await supabaseClient
-            .from("competition_results")
-            .insert(resultRows);
+              };
 
-        if(resultsInsert.error){
-          throw resultsInsert.error;
-        }
+            reader.readAsText(
+              file,
+              "UTF-8"
+            );
 
-        saveStatus.textContent =
-          "✅ Sparat! " +
-          resultRows.length +
-          " resultat.";
-
-      }catch(error){
-
-        console.error(error);
-
-        saveStatus.textContent =
-          "Fel: " +
-          (error.message || error);
-
-      }finally{
-
-        saveBtn.disabled = false;
+          }
+        );
 
       }
 
-    }
-  );
 
-})();
-</script>
+      function parseVote4Dance(text){
+
+        text =
+          text.replace(
+            /^\uFEFF/,
+            ""
+          );
+
+        var lines =
+          text.split(
+            /\r?\n/
+          );
+
+        var competitionName = "";
+        var competitionDate = "";
+
+
+        for(
+          var i = 0;
+          i < 8 &&
+          i < lines.length;
+          i++
+        ){
+
+          var line =
+            lines[i]
+              .replace(
+                /^#\s*/,
+                ""
+              )
+              .trim();
+
+          if(
+            !line ||
+            line === "RESULTS"
+          ){
+            continue;
+          }
+
+          if(
+            /^\d{4}-\d{2}-\d{2}$/
+              .test(line)
+          ){
+
+            competitionDate =
+              line;
+
+          }else if(
+            !competitionName
+          ){
+
+            competitionName =
+              line;
+
+          }
+
+        }
+
+
+        var headerIndex = -1;
+
+
+        for(
+          var j = 0;
+          j < lines.length;
+          j++
+        ){
+
+          if(
+            lines[j]
+              .indexOf(
+                "Klassrubrik;"
+              ) === 0
+          ){
+
+            headerIndex = j;
+            break;
+
+          }
+
+        }
+
+
+        if(
+          headerIndex === -1
+        ){
+
+          throw new Error(
+            "Hittar inte Vote4Dance-resultat i filen."
+          );
+
+        }
+
+
+        var header =
+          parseCsvLine(
+            lines[
+              headerIndex
+            ]
+          );
+
+
+        function col(name){
+
+          return header
+            .indexOf(name);
+
+        }
+
+
+        var startCol =
+          col("Startnr");
+
+        var placeCol =
+          col("Plac");
+
+        var name1Col =
+          col("Namn 1");
+
+        var name2Col =
+          col("Namn 2");
+
+        var clubCol =
+          col("Klubb");
+
+
+        if(
+          startCol === -1 ||
+          placeCol === -1 ||
+          name1Col === -1 ||
+          name2Col === -1
+        ){
+
+          throw new Error(
+            "CSV-filen saknar nödvändiga kolumner."
+          );
+
+        }
+
+
+        var currentClass = "";
+        var rows = [];
+
+
+        for(
+          var k =
+            headerIndex + 1;
+          k < lines.length;
+          k++
+        ){
+
+          var raw =
+            lines[k].trim();
+
+
+          if(!raw){
+            continue;
+          }
+
+
+          if(
+            raw.indexOf(";")
+            === -1
+          ){
+
+            currentClass =
+              raw;
+
+            continue;
+
+          }
+
+
+          var classMatch =
+            currentClass.match(
+              /^Bugg (Junior|Vuxen|Senior) ([NABCD])$/
+            );
+
+
+          if(!classMatch){
+            continue;
+          }
+
+
+          var cells =
+            parseCsvLine(
+              lines[k]
+            );
+
+
+          var name1 =
+            (
+              cells[
+                name1Col
+              ] || ""
+            ).trim();
+
+
+          var name2 =
+            (
+              cells[
+                name2Col
+              ] || ""
+            ).trim();
+
+
+          if(
+            !name1 ||
+            !name2
+          ){
+            continue;
+          }
+
+
+          rows.push({
+
+            age:
+              classMatch[1],
+
+            stage:
+              classMatch[2],
+
+            startNo:
+              (
+                cells[
+                  startCol
+                ] || ""
+              ).trim(),
+
+            place:
+              parseInt(
+                cells[
+                  placeCol
+                ],
+                10
+              ) || 0,
+
+            name:
+              name1 +
+              " & " +
+              name2,
+
+            club:
+              clubCol >= 0
+                ? (
+                    cells[
+                      clubCol
+                    ] || ""
+                  ).trim()
+                : ""
+
+          });
+
+        }
+
+
+        return {
+
+          name:
+            competitionName ||
+            "Vote4Dance-tävling",
+
+          date:
+            competitionDate,
+
+          rows:
+            rows
+
+        };
+
+      }
+
+
+      function highestStageRows(rows){
+
+        var value = {
+          N:1,
+          D:2,
+          C:3,
+          B:4,
+          A:5
+        };
+
+        var map = {};
+
+
+        rows.forEach(
+          function(row){
+
+            var key =
+              row.age +
+              "|" +
+              norm(
+                row.name
+              );
+
+
+            if(
+              !map[key] ||
+              value[
+                row.stage
+              ] >
+              value[
+                map[key]
+                  .stage
+              ]
+            ){
+
+              map[key] =
+                row;
+
+            }
+
+          }
+        );
+
+
+        return Object
+          .keys(map)
+          .map(
+            function(key){
+
+              return map[key];
+
+            }
+          );
+
+      }
+
+
+      function basePoints(place){
+
+        if(place === 1){
+          return 100;
+        }
+
+        if(place === 2){
+          return 85;
+        }
+
+        if(place === 3){
+          return 75;
+        }
+
+        if(place === 4){
+          return 65;
+        }
+
+        if(place === 5){
+          return 60;
+        }
+
+        if(place <= 10){
+          return 50;
+        }
+
+        if(place <= 20){
+          return 35;
+        }
+
+        if(place <= 40){
+          return 20;
+        }
+
+        return 10;
+
+      }
+
+
+      function getMultiplier(){
+
+        var level =
+          document
+            .getElementById(
+              "level"
+            )
+            .value;
+
+
+        var multipliers = {
+
+          ITT:1,
+          Nationell:1.2,
+          GP:1.5,
+          DM:1.75,
+          SM:2
+
+        };
+
+
+        return (
+          multipliers[level] ||
+          1
+        );
+
+      }
+
+
+      function prepareRows(parsed){
+
+        var rows =
+          highestStageRows(
+            parsed.rows
+          );
+
+        var multiplier =
+          getMultiplier();
+
+
+        rows.forEach(
+          function(row){
+
+            row.pairIndex =
+              market.findIndex(
+                function(pair){
+
+                  return (
+                    pair[0] ===
+                      row.age
+                    &&
+                    norm(
+                      pair[1]
+                    ) ===
+                    norm(
+                      row.name
+                    )
+                  );
+
+                }
+              );
+
+
+            row.matched =
+              row.pairIndex >= 0;
+
+
+            var entrants =
+              rows.filter(
+                function(r){
+
+                  return (
+                    r.age ===
+                    row.age
+                  );
+
+                }
+              ).length;
+
+
+            var raw =
+              basePoints(
+                row.place
+              )
+              +
+              Math.max(
+                0,
+                entrants -
+                row.place
+              )
+              +
+              (
+                row.place <= 10
+                  ? 15
+                  : 0
+              )
+              +
+              (
+                row.place <= 3
+                  ? 10
+                  : 0
+              )
+              +
+              (
+                row.place === 1
+                  ? 15
+                  : 0
+              );
+
+
+            row.points =
+              Math.round(
+                raw *
+                multiplier
+              );
+
+          }
+        );
+
+
+        return rows;
+
+      }
+
+
+      function render(parsed){
+
+        var rows =
+          prepareRows(
+            parsed
+          );
+
+
+        lastParsed =
+          parsed;
+
+        lastRows =
+          rows;
+
+
+        var junior =
+          rows.filter(
+            function(row){
+
+              return (
+                row.age ===
+                "Junior"
+              );
+
+            }
+          );
+
+
+        var adult =
+          rows.filter(
+            function(row){
+
+              return (
+                row.age ===
+                "Vuxen"
+              );
+
+            }
+          );
+
+
+        var senior =
+          rows.filter(
+            function(row){
+
+              return (
+                row.age ===
+                "Senior"
+              );
+
+            }
+          );
+
+
+        document
+          .getElementById(
+            "competitionName"
+          )
+          .textContent =
+            parsed.name;
+
+
+        document
+          .getElementById(
+            "competitionDate"
+          )
+          .textContent =
+            parsed.date || "";
+
+
+        document
+          .getElementById(
+            "juniorCount"
+          )
+          .textContent =
+            junior.length;
+
+
+        document
+          .getElementById(
+            "adultCount"
+          )
+          .textContent =
+            adult.length;
+
+
+        document
+          .getElementById(
+            "seniorCount"
+          )
+          .textContent =
+            senior.length;
+
+
+        document
+          .getElementById(
+            "summary"
+          )
+          .classList
+          .remove(
+            "hidden"
+          );
+
+
+        document
+          .getElementById(
+            "resultsCard"
+          )
+          .classList
+          .remove(
+            "hidden"
+          );
+
+
+        rows.sort(
+          function(a,b){
+
+            var order = {
+              Junior:1,
+              Vuxen:2,
+              Senior:3
+            };
+
+
+            if(
+              order[a.age] !==
+              order[b.age]
+            ){
+
+              return (
+                order[a.age] -
+                order[b.age]
+              );
+
+            }
+
+
+            return (
+              a.place -
+              b.place
+            );
+
+          }
+        );
+
+
+        var html = "";
+
+
+        rows.forEach(
+          function(row){
+
+            html +=
+              '<div class="row">' +
+
+                '<div class="name">' +
+                  escapeHtml(
+                    row.name
+                  ) +
+                '</div>' +
+
+                '<div class="meta">' +
+
+                  'Bugg ' +
+                  escapeHtml(
+                    row.age
+                  ) +
+
+                  ' · klass ' +
+                  escapeHtml(
+                    row.stage
+                  ) +
+
+                  ' · startnr ' +
+                  escapeHtml(
+                    row.startNo
+                  ) +
+
+                  ' · <span class="place">placering ' +
+                  escapeHtml(
+                    row.place
+                  ) +
+                  '</span>' +
+
+                '</div>' +
+
+                '<div class="match ' +
+                  (
+                    row.matched
+                      ? 'matched'
+                      : 'unmatched'
+                  ) +
+                '">' +
+
+                  (
+                    row.matched
+                      ? '✓ Matchad mot fantasy-marknaden'
+                      : '⚠ Ej matchad'
+                  ) +
+
+                  ' · ' +
+
+                  row.points +
+
+                  ' fantasy-poäng' +
+
+                '</div>' +
+
+              '</div>';
+
+          }
+        );
+
+
+        document
+          .getElementById(
+            "results"
+          )
+          .innerHTML =
+            html;
+
+
+        status.textContent =
+          "✅ " +
+          rows.length +
+          " unika Bugg-par lästa.";
+
+
+        saveStatus.textContent =
+          "";
+
+      }
+
+
+      readBtn.addEventListener(
+        "click",
+        async function(){
+
+          try{
+
+            var file =
+              fileInput.files &&
+              fileInput.files[0];
+
+
+            if(!file){
+
+              status.textContent =
+                "Välj CSV-filen först.";
+
+              return;
+
+            }
+
+
+            status.textContent =
+              "Läser resultat…";
+
+
+            var text =
+              await readFile(
+                file
+              );
+
+
+            var parsed =
+              parseVote4Dance(
+                text
+              );
+
+
+            render(
+              parsed
+            );
+
+
+          }catch(error){
+
+            console.error(
+              error
+            );
+
+
+            status.textContent =
+              "Fel: " +
+              (
+                error.message ||
+                error
+              );
+
+          }
+
+        }
+      );
+
+
+      saveBtn.addEventListener(
+        "click",
+        async function(){
+
+          try{
+
+            saveBtn.disabled =
+              true;
+
+
+            saveStatus.textContent =
+              "Sparar…";
+
+
+            if(
+              !lastParsed ||
+              !lastRows.length
+            ){
+
+              throw new Error(
+                "Läs in CSV-filen först."
+              );
+
+            }
+
+
+            var sessionResult =
+              await supabaseClient
+                .auth
+                .getSession();
+
+
+            if(
+              sessionResult.error
+            ){
+
+              throw (
+                sessionResult.error
+              );
+
+            }
+
+
+            var session =
+              sessionResult
+                .data
+                .session;
+
+
+            if(!session){
+
+              throw new Error(
+                "Du måste vara inloggad som admin."
+              );
+
+            }
+
+
+            var level =
+              document
+                .getElementById(
+                  "level"
+                )
+                .value;
+
+
+            var competitionId =
+              "csv-" +
+              Date.now();
+
+
+            var compInsert =
+              await supabaseClient
+                .from(
+                  "competitions"
+                )
+                .insert({
+
+                  id:
+                    competitionId,
+
+                  name:
+                    lastParsed.name,
+
+                  date:
+                    lastParsed.date ||
+                    null,
+
+                  level:
+                    level,
+
+                  created_by:
+                    session.user.id
+
+                });
+
+
+            if(
+              compInsert.error
+            ){
+
+              throw (
+                compInsert.error
+              );
+
+            }
+
+
+            var resultRows =
+              lastRows
+                .filter(
+                  function(row){
+
+                    return (
+                      row.matched &&
+                      row.pairIndex >= 0
+                    );
+
+                  }
+                )
+                .map(
+                  function(row){
+
+                    return {
+
+                      competition_id:
+                        competitionId,
+
+                      pair_index:
+                        row.pairIndex,
+
+                      pair_name:
+                        row.name,
+
+                      placement:
+                        row.place,
+
+                      matched:
+                        true,
+
+                      fantasy_points:
+                        row.points
+
+                    };
+
+                  }
+                );
+
+
+            if(
+              !resultRows.length
+            ){
+
+              throw new Error(
+                "Inga matchade resultat att spara."
+              );
+
+            }
+
+
+            var resultsInsert =
+              await supabaseClient
+                .from(
+                  "competition_results"
+                )
+                .insert(
+                  resultRows
+                );
+
+
+            if(
+              resultsInsert.error
+            ){
+
+              throw (
+                resultsInsert.error
+              );
+
+            }
+
+
+            saveStatus.textContent =
+              "✅ Sparat! " +
+              resultRows.length +
+              " resultat.";
+
+
+          }catch(error){
+
+            console.error(
+              error
+            );
+
+
+            saveStatus.textContent =
+              "Fel: " +
+              (
+                error.message ||
+                error
+              );
+
+
+          }finally{
+
+            saveBtn.disabled =
+              false;
+
+          }
+
+        }
+      );
+
+    })();
+  </script>
 
 </body>
 </html>
