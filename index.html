@@ -1521,7 +1521,7 @@ main{
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.min.js"></script>
-
+<script src="Marker.js"></script>
 <script>
 
 const SUPABASE_URL =
@@ -1550,4 +1550,1304 @@ KListra DEL 2 DIREKT UNDER DENNA RAD.
 STÄNG INTE <script> HÄR.
 ==========================================================
 */
-  const pairs=[{"rank":1,"name":"Jacob Berggren & Nathalie Albrigtsen","club":"BDF","cls":"Vuxen"},{"rank":2,"name":"Benjamin Österlund & Angelica Källström","club":"UBSS","cls":"Vuxen"},{"rank":3,"name":"Viktor Edlund & Wilma Edlund","club":"UMDK","cls":"Vuxen"},{"rank":3,"name":"Conrad Lindström & Cajsa Weinemo","club":"BLÅ
+  const marketRaw = window.FANTASY_MARKET || [];
+
+const counts = {
+  Vuxen:127,
+  Senior:117,
+  Junior:24
+};
+
+const seen = {Vuxen:0,Senior:0,Junior:0};
+
+const pairs = marketRaw.map((r,i)=>{
+  seen[r[0]]++;
+  return {
+    index:i,
+    cls:r[0],
+    name:r[1],
+    club:'',
+    rank:seen[r[0]]
+  };
+});
+
+let session=null;
+let team=[];
+let captain=null;
+let filter='Alla';
+let competitions=[];
+let results={};
+let streams=JSON.parse(localStorage.getItem('fb_streams')||'[]');
+
+const multipliers={
+  ITT:1,
+  Nationell:1.2,
+  GP:1.5,
+  DM:1.75,
+  SM:2
+};
+
+function price(p){
+  const q=p.rank/counts[p.cls];
+
+  return q<=.08 ? 30 :
+         q<=.16 ? 24 :
+         q<=.28 ? 19 :
+         q<=.42 ? 15 :
+         q<=.58 ? 12 :
+         q<=.78 ? 9 : 6;
+}
+
+function spent(){
+  return team.reduce((s,i)=>{
+    const p=pairs[i];
+    return s+(p?price(p):0);
+  },0);
+}
+
+function left(){
+  return 100-spent();
+}
+
+function isAdmin(){
+  return !!session?.isAdmin;
+}
+
+function gotoPage(id){
+
+  if(id==='admin'&&!isAdmin()){
+    alert('Endast administratören har åtkomst till Admin.');
+    id='home';
+  }
+
+  document.querySelectorAll('.page').forEach(el=>{
+    el.classList.toggle('active',el.id===id);
+  });
+
+  document.querySelectorAll('nav button').forEach(btn=>{
+    btn.classList.toggle('active',btn.dataset.page===id);
+  });
+
+  window.scrollTo(0,0);
+}
+
+function syncAdminAccess(){
+
+  document.getElementById('adminNav').style.display=
+    isAdmin()?'':'none';
+
+  document.getElementById('adminBadge').style.display=
+    isAdmin()?'block':'none';
+}
+
+function requireAdmin(){
+
+  if(isAdmin())return true;
+
+  alert('Endast administratören har åtkomst till den här funktionen.');
+  return false;
+}
+
+let remoteSaveTimer=null;
+
+function saveTeam(){
+
+  if(!session?.userId)return;
+
+  clearTimeout(remoteSaveTimer);
+
+  remoteSaveTimer=setTimeout(async()=>{
+
+    const {error}=await sb
+      .from('fantasy_teams')
+      .upsert({
+        user_id:session.userId,
+        pair_indices:team,
+        captain_index:captain,
+        updated_at:new Date().toISOString()
+      },{
+        onConflict:'user_id'
+      });
+
+    if(error){
+      console.error('Kunde inte spara lag:',error.message);
+    }
+
+  },200);
+}
+
+function teamHtml(home=false){
+
+  if(!team.length){
+    return '<div class="empty">Ditt lag är tomt.<br>Välj danspar från marknaden.</div>';
+  }
+
+  return team.map(i=>{
+
+    const p=pairs[i];
+
+    if(!p)return '';
+
+    return `
+      <div class="teamCard">
+        <div class="teamTop">
+          <div>
+            <div class="name">
+              ${captain===i?'© ':''}${p.name}
+            </div>
+            <div class="meta">
+              ${p.cls} · ${price(p)} M
+            </div>
+          </div>
+
+          <b>${price(p)} M</b>
+        </div>
+
+        ${home?'':`
+          <div class="teamActions">
+
+            <button
+              class="btn purple"
+              data-cap="${i}">
+              ${captain===i?'Kapten':'Gör till kapten'}
+            </button>
+
+            <button
+              class="btn red"
+              data-remove="${i}">
+              Ta bort
+            </button>
+
+          </div>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+function bindTeam(){
+
+  document.querySelectorAll('[data-remove]').forEach(btn=>{
+
+    btn.onclick=()=>{
+
+      const i=Number(btn.dataset.remove);
+
+      team=team.filter(x=>x!==i);
+
+      if(captain===i){
+        captain=null;
+      }
+
+      saveTeam();
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-cap]').forEach(btn=>{
+
+    btn.onclick=()=>{
+
+      captain=Number(btn.dataset.cap);
+
+      saveTeam();
+      render();
+    };
+  });
+}
+
+function renderMarket(){
+
+  const search=
+    document.getElementById('search').value
+      .trim()
+      .toLowerCase();
+
+  let rows=pairs.filter(p=>
+    (filter==='Alla'||p.cls===filter) &&
+    (!search||p.name.toLowerCase().includes(search))
+  );
+
+  const sort=document.getElementById('sort').value;
+
+  if(sort==='priceDesc'){
+    rows.sort((a,b)=>price(b)-price(a));
+  }
+
+  if(sort==='priceAsc'){
+    rows.sort((a,b)=>price(a)-price(b));
+  }
+
+  if(sort==='name'){
+    rows.sort((a,b)=>a.name.localeCompare(b.name,'sv'));
+  }
+
+  document.getElementById('pairCount').textContent=
+    `${rows.length} av ${pairs.length} danspar`;
+
+  document.getElementById('market').innerHTML=
+    rows.map(p=>{
+
+      const selected=team.includes(p.index);
+
+      const can=
+        !selected &&
+        team.length<5 &&
+        left()>=price(p);
+
+      return `
+        <div class="pair">
+
+          <div class="pairHead">
+
+            <div>
+              <div class="name">${p.name}</div>
+              <div class="meta">${p.cls}</div>
+            </div>
+
+            <div class="price">
+              ${price(p)} M
+            </div>
+
+          </div>
+
+          <button
+            class="btn green add"
+            data-add="${p.index}"
+            ${can?'':'disabled'}>
+
+            ${
+              selected
+              ?'Vald'
+              :can
+              ?'Lägg till'
+              :'Ej tillgänglig'
+            }
+
+          </button>
+
+        </div>
+      `;
+    }).join('');
+
+  document.querySelectorAll('[data-add]').forEach(btn=>{
+
+    btn.onclick=()=>{
+
+      const i=Number(btn.dataset.add);
+
+      if(team.length>=5)return;
+
+      team.push(i);
+
+      if(captain===null){
+        captain=i;
+      }
+
+      saveTeam();
+      render();
+    };
+  });
+}
+
+function render(){
+
+  document.getElementById('wallet').textContent=
+    left()+' M kvar';
+
+  document.getElementById('homeCount').textContent=
+    team.length+'/5';
+
+  document.getElementById('homeBudget').textContent=
+    left()+' M';
+
+  document.getElementById('teamCount').textContent=
+    team.length+'/5';
+
+  document.getElementById('spent').textContent=
+    spent()+' M';
+
+  document.getElementById('left').textContent=
+    left()+' M';
+
+  document.getElementById('captainStat').textContent=
+    captain===null?'–':'Vald';
+
+  document.getElementById('homePitch').innerHTML=
+    teamHtml(true);
+
+  document.getElementById('teamPitch').innerHTML=
+    teamHtml(false);
+
+  bindTeam();
+  renderMarket();
+}
+
+async function loadCompetitionData(){
+
+  const [cRes,rRes]=await Promise.all([
+
+    sb.from('competitions')
+      .select('*')
+      .order('date',{ascending:false,nullsFirst:false}),
+
+    sb.from('competition_results')
+      .select('*')
+      .order('placement',{ascending:true})
+
+  ]);
+
+  if(cRes.error){
+    console.warn(cRes.error.message);
+    return;
+  }
+
+  competitions=(cRes.data||[]).map(c=>({
+    id:c.id,
+    name:c.name,
+    date:c.date||'',
+    level:c.level,
+    url:c.vote4dance_url||''
+  }));
+
+  results={};
+
+  (rRes.data||[]).forEach(r=>{
+
+    (results[r.competition_id]??=[]).push({
+      name:r.pair_name,
+      place:r.placement,
+      pairIndex:r.pair_index,
+      matched:r.matched,
+      points:r.fantasy_points
+    });
+  });
+
+  renderCompetitions();
+
+  if(competitions[0]){
+    renderPreview(competitions[0].id);
+  }
+}
+
+function renderCompetitions(){
+
+  const el=document.getElementById('competitionList');
+
+  if(!competitions.length){
+
+    el.innerHTML=
+      '<div class="emptyLight">Inga tävlingar importerade ännu.</div>';
+
+  }else{
+
+    el.innerHTML=
+      competitions.map(c=>`
+        <div class="competition">
+
+          <div class="badge">
+            ${c.level==='Nationell'?'N':c.level}
+          </div>
+
+          <div>
+            <div class="name">${c.name}</div>
+            <div class="meta">
+              ${c.date||'Datum saknas'} · ${c.level}
+            </div>
+          </div>
+
+          <button
+            class="btn soft"
+            data-opencomp="${c.id}">
+
+            ${(results[c.id]||[]).length} resultat
+
+          </button>
+
+        </div>
+      `).join('');
+
+    document.querySelectorAll('[data-opencomp]').forEach(btn=>{
+
+      btn.onclick=()=>{
+        renderPreview(btn.dataset.opencomp);
+      };
+    });
+  }
+
+  const home=document.getElementById('homeCompetition');
+
+  if(home){
+
+    const c=competitions[0];
+
+    home.innerHTML=c
+      ?`
+        <div class="competition">
+
+          <div class="badge">
+            ${c.level}
+          </div>
+
+          <div>
+            <div class="name">${c.name}</div>
+            <div class="meta">${c.date||''}</div>
+          </div>
+
+          <button
+            class="btn soft"
+            data-home-comp>
+            Visa
+          </button>
+
+        </div>
+      `
+      :'<div class="emptyLight">Ingen tävling importerad ännu.</div>';
+
+    const btn=home.querySelector('[data-home-comp]');
+
+    if(btn){
+      btn.onclick=()=>gotoPage('competitions');
+    }
+  }
+
+  const select=document.getElementById('streamComp');
+
+  select.innerHTML=
+    '<option value="">Ingen kopplad tävling</option>'+
+    competitions.map(c=>
+      `<option value="${c.id}">${c.name}</option>`
+    ).join('');
+}
+
+function renderPreview(compId){
+
+  const rows=results[compId]||[];
+
+  const el=document.getElementById('resultPreview');
+
+  if(!rows.length){
+
+    el.innerHTML=
+      '<div class="emptyLight">Inga resultat.</div>';
+
+    return;
+  }
+
+  el.innerHTML=
+    rows.slice(0,30).map(r=>`
+      <div class="scoreRow">
+
+        <div>
+          <b>${r.name}</b>
+          <div class="meta">
+            ${r.matched?'Matchad':'Ej matchad'}
+          </div>
+        </div>
+
+        <div>${r.place}:a</div>
+
+        <div><b>${r.points} p</b></div>
+
+      </div>
+    `).join('');
+}
+
+function saveStreams(){
+
+  localStorage.setItem(
+    'fb_streams',
+    JSON.stringify(streams)
+  );
+}
+
+function renderStreams(){
+
+  const html=streams.length
+    ?streams.map(x=>`
+      <div class="liveCard">
+
+        <div class="liveDot">▶</div>
+
+        <div>
+          <div class="liveBadge">Livesändning</div>
+          <div class="name">${x.title}</div>
+        </div>
+
+        <a
+          href="${x.url}"
+          target="_blank"
+          class="btn purple"
+          style="text-decoration:none">
+          Titta live
+        </a>
+
+      </div>
+    `).join('')
+    :'<div class="emptyLight">Ingen livesändning upplagd ännu.</div>';
+
+  document.getElementById('streamList').innerHTML=html;
+  document.getElementById('homeStreams').innerHTML=html;
+
+  document.getElementById('adminStreams').innerHTML=
+    streams.length
+      ?streams.map(x=>`
+        <div class="liveCard">
+
+          <div class="liveDot">▶</div>
+
+          <div>
+            <div class="name">${x.title}</div>
+          </div>
+
+          <button
+            class="btn red"
+            data-delstream="${x.id}">
+            Ta bort
+          </button>
+
+        </div>
+      `).join('')
+      :'<div class="emptyLight">Inga livesändningar.</div>';
+
+  document.querySelectorAll('[data-delstream]').forEach(btn=>{
+
+    btn.onclick=()=>{
+
+      streams=
+        streams.filter(x=>x.id!==btn.dataset.delstream);
+
+      saveStreams();
+      renderStreams();
+    };
+  });
+}
+
+function normalizeName(s){
+
+  return String(s||'')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9& ]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function parseCsvLine(line){
+
+  let out=[];
+  let cur='';
+  let quote=false;
+
+  for(let i=0;i<line.length;i++){
+
+    const c=line[i];
+
+    if(c==='"'){
+
+      if(quote&&line[i+1]==='"'){
+        cur+='"';
+        i++;
+      }else{
+        quote=!quote;
+      }
+
+    }else if(c===';'&&!quote){
+
+      out.push(cur);
+      cur='';
+
+    }else{
+
+      cur+=c;
+    }
+  }
+
+  out.push(cur);
+
+  return out;
+}
+
+function parseVote4Dance(text){
+
+  const lines=
+    text.replace(/^\uFEFF/,'').split(/\r?\n/);
+
+  let title='';
+  let date='';
+
+  for(const line of lines.slice(0,8)){
+
+    const t=line.replace(/^#\s?/,'').trim();
+
+    if(!t||t==='RESULTS')continue;
+
+    if(/^\d{4}-\d{2}-\d{2}$/.test(t)){
+      date=t;
+    }else if(!title){
+      title=t;
+    }
+  }
+
+  const hi=
+    lines.findIndex(x=>/^Klassrubrik;/.test(x));
+
+  if(hi<0){
+    throw new Error(
+      'Filen ser inte ut som Vote4Dance Result CSV.'
+    );
+  }
+
+  const header=parseCsvLine(lines[hi]);
+
+  const ix=
+    Object.fromEntries(
+      header.map((h,i)=>[h,i])
+    );
+
+  let current='';
+  const all=[];
+
+  const power={
+    N:1,
+    D:2,
+    C:3,
+    B:4,
+    A:5
+  };
+
+  for(const line of lines.slice(hi+1)){
+
+    if(!line.trim())continue;
+
+    if(!line.includes(';')){
+      current=line.trim();
+      continue;
+    }
+
+    const m=
+      current.match(
+        /^Bugg (Junior|Vuxen|Senior) ([NABCD])$/
+      );
+
+    if(!m)continue;
+
+    const r=parseCsvLine(line);
+
+    const n1=(r[ix['Namn 1']]||'').trim();
+    const n2=(r[ix['Namn 2']]||'').trim();
+
+    if(!n1||!n2)continue;
+
+    all.push({
+      age:m[1],
+      stage:m[2],
+      classPlace:
+        parseInt(r[ix['Plac']],10)||999,
+      name:n1+' & '+n2
+    });
+  }
+
+  const best=new Map();
+
+  for(const r of all){
+
+    const key=
+      r.age+'|'+normalizeName(r.name);
+
+    const old=best.get(key);
+
+    if(!old||power[r.stage]>power[old.stage]){
+      best.set(key,r);
+    }
+  }
+
+  const rows=[...best.values()];
+
+  for(const age of ['Junior','Vuxen','Senior']){
+
+    let offset=0;
+
+    for(const stage of ['A','B','C','D','N']){
+
+      const group=
+        rows.filter(
+          r=>r.age===age&&r.stage===stage
+        )
+        .sort(
+          (a,b)=>a.classPlace-b.classPlace
+        );
+
+      group.forEach((r,i)=>{
+        r.place=offset+i+1;
+      });
+
+      offset+=group.length;
+    }
+  }
+
+  return {
+    title:title||'Vote4Dance-tävling',
+    date,
+    rows
+  };
+}
+
+function placementBase(place){
+
+  if(place===1)return 100;
+  if(place===2)return 85;
+  if(place===3)return 75;
+  if(place===4)return 65;
+  if(place===5)return 60;
+  if(place<=10)return 50;
+  if(place<=20)return 35;
+  if(place<=40)return 20;
+
+  return 10;
+}
+
+function fantasyScore(place,entrants,level){
+
+  const raw=
+    placementBase(place)
+    +Math.max(0,entrants-place)
+    +(place<=10?15:0)
+    +(place<=3?10:0)
+    +(place===1?15:0);
+
+  return Math.round(
+    raw*multipliers[level]
+  );
+}
+
+function matchPair(name,age){
+
+  const n=normalizeName(name);
+
+  return pairs.findIndex(
+    p=>
+      p.cls===age &&
+      normalizeName(p.name)===n
+  );
+}
+
+async function loadMyFantasyPoints(){
+
+  if(!session?.userId)return;
+
+  try{
+
+    const {data,error}=
+      await sb.rpc('get_my_fantasy_total');
+
+    if(error)throw error;
+
+    const row=
+      Array.isArray(data)?data[0]:data;
+
+    const total=
+      Number(row?.total_points||0);
+
+    document.getElementById('totalPoints').textContent=
+      total.toLocaleString('sv-SE');
+
+    document.getElementById('globalLeaguePoints').textContent=
+      total.toLocaleString('sv-SE')+' p';
+
+    const {data:recent}=
+      await sb
+        .from('fantasy_competition_scores')
+        .select('team_points,calculated_at')
+        .eq('user_id',session.userId)
+        .order('calculated_at',{ascending:false})
+        .limit(1);
+
+    document.getElementById('roundPoints').textContent=
+      recent?.length
+        ?Number(recent[0].team_points||0)
+          .toLocaleString('sv-SE')
+        :'0';
+
+  }catch(e){
+
+    console.warn(e);
+  }
+}
+
+async function ensureProfile(user){
+
+  let {data,error}=
+    await sb
+      .from('profiles')
+      .select('fantasy_name,is_admin')
+      .eq('user_id',user.id)
+      .maybeSingle();
+
+  if(error)throw error;
+
+  if(!data){
+
+    const fallback=
+      user.user_metadata?.fantasy_name
+      ||user.email?.split('@')[0]
+      ||'Spelare';
+
+    const res=
+      await sb
+        .from('profiles')
+        .insert({
+          user_id:user.id,
+          fantasy_name:fallback
+        })
+        .select('fantasy_name,is_admin')
+        .single();
+
+    if(res.error)throw res.error;
+
+    data=res.data;
+  }
+
+  return data;
+}
+
+async function applyUser(user){
+
+  if(!user){
+
+    session=null;
+    team=[];
+    captain=null;
+
+    syncAuth();
+    render();
+
+    return;
+  }
+
+  const profile=
+    await ensureProfile(user);
+
+  session={
+    userId:user.id,
+    email:user.email,
+    name:profile.fantasy_name,
+    isAdmin:!!profile.is_admin
+  };
+
+  const {data}=
+    await sb
+      .from('fantasy_teams')
+      .select('pair_indices,captain_index')
+      .eq('user_id',user.id)
+      .maybeSingle();
+
+  team=
+    Array.isArray(data?.pair_indices)
+      ?data.pair_indices
+      :[];
+
+  captain=
+    data?.captain_index??null;
+
+  syncAuth();
+
+  await loadCompetitionData();
+  await loadMyFantasyPoints();
+
+  render();
+}
+
+let authMode='login';
+
+const authOverlay=
+  document.getElementById('authOverlay');
+
+const authTopBtn=
+  document.getElementById('authTopBtn');
+
+const accountMenu=
+  document.getElementById('accountMenu');
+
+function setAuthMode(mode){
+
+  authMode=mode;
+
+  const register=
+    mode==='register';
+
+  document.getElementById('loginTab')
+    .classList.toggle('active',!register);
+
+  document.getElementById('registerTab')
+    .classList.toggle('active',register);
+
+  document.getElementById('authName').style.display=
+    register?'block':'none';
+
+  document.getElementById('authSubmit').textContent=
+    register?'Skapa konto':'Logga in';
+
+  document.getElementById('authTitle').textContent=
+    register
+      ?'Skapa ditt Fantasy Bugg-konto'
+      :'Välkommen tillbaka';
+}
+
+function syncAuth(){
+
+  if(session){
+
+    authTopBtn.textContent=session.name;
+
+    authTopBtn.classList.add('signed');
+
+    document.getElementById('accountName').textContent=
+      session.name;
+
+    document.getElementById('accountEmail').textContent=
+      session.email;
+
+    authOverlay.classList.remove('show');
+
+  }else{
+
+    authTopBtn.textContent='Logga in';
+
+    authTopBtn.classList.remove('signed');
+
+    authOverlay.classList.add('show');
+  }
+
+  syncAdminAccess();
+}
+
+document.querySelectorAll('nav button').forEach(btn=>{
+
+  btn.onclick=()=>{
+    gotoPage(btn.dataset.page);
+  };
+});
+
+document.querySelectorAll('[data-go]').forEach(btn=>{
+
+  btn.onclick=()=>{
+    gotoPage(btn.dataset.go);
+  };
+});
+
+document.querySelectorAll('[data-filter]').forEach(btn=>{
+
+  btn.onclick=()=>{
+
+    filter=btn.dataset.filter;
+
+    document.querySelectorAll('[data-filter]').forEach(b=>{
+      b.classList.toggle('active',b===btn);
+    });
+
+    renderMarket();
+  };
+});
+
+document.getElementById('search').oninput=
+  renderMarket;
+
+document.getElementById('sort').onchange=
+  renderMarket;
+
+document.getElementById('loginTab').onclick=
+  ()=>setAuthMode('login');
+
+document.getElementById('registerTab').onclick=
+  ()=>setAuthMode('register');
+
+authTopBtn.onclick=()=>{
+
+  if(session){
+
+    accountMenu.classList.toggle('show');
+
+  }else{
+
+    authOverlay.classList.add('show');
+  }
+};
+
+document.getElementById('logoutBtn').onclick=
+async()=>{
+
+  await sb.auth.signOut();
+};
+
+document.getElementById('authForm').onsubmit=
+async e=>{
+
+  e.preventDefault();
+
+  const email=
+    document.getElementById('authEmail')
+      .value.trim().toLowerCase();
+
+  const password=
+    document.getElementById('authPassword').value;
+
+  const name=
+    document.getElementById('authName').value.trim();
+
+  const errorEl=
+    document.getElementById('authError');
+
+  errorEl.textContent='';
+
+  try{
+
+    if(authMode==='register'){
+
+      const {data,error}=
+        await sb.auth.signUp({
+          email,
+          password,
+          options:{
+            data:{
+              fantasy_name:name
+            }
+          }
+        });
+
+      if(error)throw error;
+
+      if(data.user){
+        await applyUser(data.user);
+      }
+
+    }else{
+
+      const {data,error}=
+        await sb.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if(error)throw error;
+
+      await applyUser(data.user);
+    }
+
+  }catch(e){
+
+    errorEl.textContent=
+      e.message||'Något gick fel.';
+  }
+};
+
+document.getElementById('addStream').onclick=()=>{
+
+  if(!requireAdmin())return;
+
+  const title=
+    document.getElementById('streamTitle')
+      .value.trim();
+
+  const url=
+    document.getElementById('streamUrl')
+      .value.trim();
+
+  if(!title||!url)return;
+
+  streams.unshift({
+    id:String(Date.now()),
+    title,
+    url,
+    compId:
+      document.getElementById('streamComp').value
+  });
+
+  saveStreams();
+  renderStreams();
+};
+
+document.getElementById('importComp').onclick=
+async()=>{
+
+  if(!requireAdmin())return;
+
+  const name=
+    document.getElementById('compName')
+      .value.trim();
+
+  const level=
+    document.getElementById('compLevel').value;
+
+  const id=
+    crypto.randomUUID();
+
+  const {error}=
+    await sb
+      .from('competitions')
+      .insert({
+        id,
+        name:name||'Ny tävling',
+        date:
+          document.getElementById('compDate').value||null,
+        level,
+        vote4dance_url:
+          document.getElementById('v4dUrl').value||null,
+        created_by:session.userId
+      });
+
+  if(error){
+
+    document.getElementById('compImportStatus').textContent=
+      error.message;
+
+    return;
+  }
+
+  document.getElementById('compImportStatus').innerHTML=
+    '<span class="ok">Sparad ✓</span>';
+
+  await loadCompetitionData();
+};
+
+document.getElementById('importCsv').onclick=()=>{
+
+  if(!requireAdmin())return;
+
+  const file=
+    document.getElementById('csvFile').files[0];
+
+  if(!file)return;
+
+  const reader=
+    new FileReader();
+
+  reader.onload=
+  async()=>{
+
+    try{
+
+      const parsed=
+        parseVote4Dance(reader.result);
+
+      const level=
+        document.getElementById('csvLevel').value;
+
+      const id=
+        'csv-'+Date.now();
+
+      const {error}=
+        await sb
+          .from('competitions')
+          .insert({
+            id,
+            name:parsed.title,
+            date:parsed.date||null,
+            level,
+            created_by:session.userId
+          });
+
+      if(error)throw error;
+
+      const countsByAge={
+        Junior:
+          parsed.rows.filter(r=>r.age==='Junior').length,
+        Vuxen:
+          parsed.rows.filter(r=>r.age==='Vuxen').length,
+        Senior:
+          parsed.rows.filter(r=>r.age==='Senior').length
+      };
+
+      const mapped=
+        parsed.rows.map(r=>{
+
+          const pairIndex=
+            matchPair(r.name,r.age);
+
+          return {
+            competition_id:id,
+            pair_index:
+              pairIndex>=0?pairIndex:null,
+            pair_name:r.name,
+            placement:r.place,
+            matched:pairIndex>=0,
+            fantasy_points:
+              fantasyScore(
+                r.place,
+                countsByAge[r.age],
+                level
+              )
+          };
+        });
+
+      const result=
+        await sb
+          .from('competition_results')
+          .insert(mapped);
+
+      if(result.error)throw result.error;
+
+      document.getElementById('csvStatus').innerHTML=
+        `<span class="ok">
+        Sparat ✓ ${mapped.filter(r=>r.matched).length}/${mapped.length} matchade
+        </span>`;
+
+      await loadCompetitionData();
+      await loadMyFantasyPoints();
+
+    }catch(e){
+
+      document.getElementById('csvStatus').innerHTML=
+        `<span class="warn">${e.message}</span>`;
+    }
+  };
+
+  reader.readAsText(file,'utf-8');
+};
+
+document.getElementById('createLeague').onclick=()=>{
+
+  alert('Privata ligor kopplar vi in som nästa funktion.');
+};
+
+async function init(){
+
+  renderStreams();
+  render();
+
+  const {data:{session:s}}=
+    await sb.auth.getSession();
+
+  await applyUser(s?.user||null);
+
+  sb.auth.onAuthStateChange((event,newSession)=>{
+
+    if(event==='SIGNED_IN'&&newSession?.user){
+
+      setTimeout(
+        ()=>applyUser(newSession.user),
+        0
+      );
+    }
+
+    if(event==='SIGNED_OUT'){
+
+      setTimeout(
+        ()=>applyUser(null),
+        0
+      );
+    }
+  });
+}
+
+init();
+
+</script>
+
+<script src=
+
+
+
+</body>
+</html>
