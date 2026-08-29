@@ -1,1439 +1,1553 @@
 <!doctype html>
 <html lang="sv">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Fantasy Bugg – CSV-import</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fantasy Bugg</title>
 
-  <style>
-    *{
-      box-sizing:border-box;
-    }
+<style>
+:root{
+  --purple:#37003c;
+  --purple2:#6a0879;
+  --green:#00ff87;
+  --ink:#24122b;
+  --muted:#786c7d;
+  --bg:#f5f4f8;
+  --card:#fff
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--ink)
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
 
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:#f4f1f5;
-      color:#26132b;
-    }
+.appbar{
+  background:linear-gradient(120deg,#26002c 0%,#5c006b 58%,#7a0c86 100%);
+  color:#fff;
+  position:sticky;
+  top:0;
+  z-index:30;
+  box-shadow:0 6px 24px #2d003533
+}
+.head{
+  max-width:1180px;
+  margin:auto;
+  padding:16px 18px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px
+}
+.brandmark{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  background:var(--green);
+  display:grid;
+  place-items:center;
+  box-shadow:0 7px 20px #00ff8740
+}
+.brandmark svg{
+  width:29px;
+  height:29px;
+  fill:#37003c
+}
+.brandtext{
+  font-weight:950;
+  letter-spacing:.5px;
+  font-size:24px
+}
+.brandtext b{color:var(--green)}
 
-    .top{
-      background:linear-gradient(135deg,#37003c,#690875);
-      color:white;
-      padding:28px 18px;
-    }
+.authTop{
+  display:flex;
+  align-items:center;
+  gap:10px
+}
+.wallet{
+  background:var(--green);
+  color:#102515;
+  border-radius:999px;
+  padding:9px 13px;
+  font-weight:900;
+  white-space:nowrap
+}
+.authBtn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:0;
+  background:linear-gradient(135deg,var(--green),#d8ff60);
+  color:var(--purple);
+  border-radius:999px;
+  padding:10px 16px;
+  font-weight:950;
+  box-shadow:0 8px 22px #00ff8730
+}
+.authBtn::before{content:'👤';font-size:15px}
+.authBtn.signed{
+  background:#fff;
+  color:var(--purple)
+}
+.authBtn.signed::before{
+  content:'✓';
+  display:grid;
+  place-items:center;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:var(--green);
+  font-size:12px
+}
 
-    .wrap{
-      max-width:850px;
-      margin:auto;
-    }
+nav{
+  max-width:1180px;
+  margin:auto;
+  padding:0 14px;
+  display:flex;
+  gap:4px;
+  overflow:auto
+}
+nav button{
+  border:0;
+  background:transparent;
+  color:#fff;
+  padding:13px 12px;
+  border-bottom:4px solid transparent;
+  font-weight:750;
+  white-space:nowrap
+}
+nav button.active{
+  border-color:var(--green);
+  color:var(--green)
+}
 
-    h1{
-      margin:0 0 8px;
-      font-size:30px;
-    }
+main{
+  max-width:1180px;
+  margin:auto;
+  padding:18px
+}
+.page{display:none}
+.page.active{display:block}
 
-    h2{
-      margin-top:0;
-    }
+.homeHero{
+  min-height:390px;
+  border-radius:28px;
+  background:radial-gradient(circle at 75% 35%,#8d1597 0,#590064 31%,#37003c 62%,#27002d 100%);
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  overflow:hidden;
+  color:white;
+  margin-bottom:16px;
+  box-shadow:0 18px 45px #37003c24
+}
+.homeHeroCopy{
+  padding:42px 38px;
+  position:relative;
+  z-index:2
+}
+.eyebrow{
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  font-size:12px;
+  font-weight:950;
+  color:var(--green);
+  margin-bottom:11px
+}
+.eyebrow.dark{color:#6a0879}
+.homeHero h1{
+  font-size:48px;
+  line-height:1.02;
+  margin:0 0 16px;
+  max-width:700px;
+  letter-spacing:-1.3px
+}
+.homeHero h1 span{color:var(--green)}
+.homeHero p{
+  font-size:17px;
+  line-height:1.6;
+  color:#f3e9f5;
+  max-width:680px
+}
+.heroButtons{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:23px
+}
+.heroMini{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  margin-top:22px;
+  font-size:13px;
+  color:#fff
+}
+.heroMini i{
+  width:4px;
+  height:4px;
+  background:var(--green);
+  border-radius:50%
+}
 
-    p{
-      line-height:1.45;
-    }
+.danceVisual{
+  display:grid;
+  place-items:center;
+  min-height:390px;
+  background:linear-gradient(135deg,#ffffff07,#00ff870b)
+}
+.danceVisual svg{
+  width:100%;
+  max-width:500px;
+  height:auto
+}
 
-    .card{
-      background:white;
-      margin:16px auto;
-      padding:18px;
-      border-radius:20px;
-      box-shadow:0 8px 30px rgba(55,0,60,.07);
-    }
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:9px 11px;
+  font-weight:850
+}
+.btn.big{
+  padding:13px 18px;
+  border-radius:12px
+}
+.btn.green{
+  background:var(--green);
+  color:#102515
+}
+.btn.purple{
+  background:var(--purple);
+  color:white
+}
+.btn.soft{
+  background:#eee7f0;
+  color:#4d3453
+}
+.btn.red{
+  background:#f5e8ea;
+  color:#8c2536
+}
+.btn.glass{
+  background:#ffffff15;
+  color:#fff;
+  border:1px solid #ffffff35
+}
 
-    label{
-      display:block;
-      font-weight:800;
-      margin:12px 0 6px;
-    }
+.introGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:16px 0
+}
+.introCard{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  gap:14px;
+  box-shadow:0 5px 20px #2f00340d;
+  border:1px solid #eee7ef
+}
+.introCard h3{margin:1px 0 6px}
+.introCard p{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.45
+}
+.stepNo{
+  flex:0 0 34px;
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  background:var(--purple);
+  color:var(--green);
+  display:grid;
+  place-items:center;
+  font-weight:950
+}
 
-    input,
-    select,
-    button{
-      width:100%;
-      padding:14px;
-      border-radius:12px;
-      font-size:16px;
-    }
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin:16px 0
+}
+.kpi{
+  background:#fff;
+  border-radius:18px;
+  padding:15px;
+  box-shadow:0 4px 18px #2f00340d
+}
+.kpi small{
+  color:var(--muted);
+  font-weight:700
+}
+.kpi strong{
+  display:block;
+  font-size:23px;
+  margin-top:3px
+}
 
-    input,
-    select{
-      border:1px solid #d8d0da;
-      background:white;
-    }
+.grid2{
+  display:grid;
+  grid-template-columns:1.05fr 1.45fr;
+  gap:16px
+}
+.homeFeed{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:16px
+}
+.panel{
+  background:#fff;
+  border-radius:20px;
+  padding:16px;
+  box-shadow:0 6px 20px #2f00340d
+}
+.panel h2,.panel h3{margin:0 0 12px}
 
-    button{
-      margin-top:14px;
-      border:0;
-      background:#00ff87;
-      color:#153522;
-      font-weight:900;
-      cursor:pointer;
-      -webkit-appearance:none;
-      appearance:none;
-    }
+.sectionTitle{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px
+}
+.sectionTitle p{
+  margin:4px 0 0;
+  color:var(--muted)
+}
 
-    button:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-    }
+.pitch{
+  background:linear-gradient(#16a75f,#087a45);
+  border-radius:20px;
+  padding:16px;
+  min-height:430px;
+  position:relative;
+  overflow:hidden
+}
+.pitch:before{
+  content:"";
+  position:absolute;
+  inset:16px;
+  border:2px solid #ffffff55;
+  border-radius:8px;
+  pointer-events:none
+}
+.pitch:after{
+  content:"";
+  position:absolute;
+  left:16px;
+  right:16px;
+  top:50%;
+  border-top:2px solid #ffffff55;
+  pointer-events:none
+}
+.pitchInner{
+  position:relative;
+  z-index:2
+}
+.compactPitch{min-height:310px}
+.empty{
+  text-align:center;
+  color:white;
+  font-weight:800;
+  padding:130px 10px
+}
+.teamCard{
+  background:white;
+  border-radius:16px;
+  margin:10px 0;
+  padding:12px;
+  box-shadow:0 5px 14px #0002
+}
+.teamTop{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start
+}
+.name{
+  font-weight:900;
+  line-height:1.25
+}
+.meta{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px
+}
+.teamActions{
+  display:flex;
+  gap:6px;
+  margin-top:9px
+}
 
-    button:active{
-      transform:scale(.99);
-    }
+.toolbar{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  margin-bottom:12px
+}
+.search{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid #ded6e0;
+  border-radius:13px;
+  outline:none;
+  background:#fff
+}
+.chips{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:12px
+}
+.chip{
+  border:0;
+  border-radius:999px;
+  padding:9px 12px;
+  background:#eee8f0;
+  color:#503556;
+  font-weight:800
+}
+.chip.active{
+  background:var(--purple);
+  color:white
+}
+.market{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  max-height:720px;
+  overflow:auto;
+  padding-right:2px
+}
+.pair{
+  border:1px solid #eee7ef;
+  border-radius:16px;
+  padding:13px;
+  background:white
+}
+.pairHead{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start
+}
+.price{
+  font-size:18px;
+  font-weight:950;
+  color:var(--purple);
+  white-space:nowrap
+}
+.add{
+  width:100%;
+  margin-top:10px
+}
+.add:disabled{
+  background:#ddd;
+  color:#777
+}
 
-    #status,
-    #saveStatus{
-      margin-top:14px;
-      font-weight:800;
-    }
+.competition{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center;
+  border:1px solid #eee7ef;
+  border-radius:16px;
+  padding:14px;
+  margin:10px 0
+}
+.badge{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background:#efe5f1;
+  display:grid;
+  place-items:center;
+  font-weight:950;
+  color:var(--purple)
+}
 
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:8px;
-      margin-top:15px;
-    }
+.notice{
+  background:#f0fff7;
+  border:1px solid #b8f5d5;
+  color:#185935;
+  padding:12px 14px;
+  border-radius:14px;
+  margin-bottom:14px
+}
+.emptyLight{
+  padding:18px;
+  border-radius:14px;
+  background:#faf8fb;
+  color:var(--muted);
+  text-align:center
+}
+.ok{
+  color:#16784a;
+  font-weight:800
+}
+.warn{
+  color:#9a5b00;
+  font-weight:800
+}
 
-    .stat{
-      background:#f6f2f7;
-      padding:12px;
-      border-radius:14px;
-    }
+.liveCard{
+  border:1px solid #e7dbea;
+  border-radius:16px;
+  padding:14px;
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center
+}
+.liveDot{
+  width:42px;
+  height:42px;
+  border-radius:13px;
+  background:#ffe9ec;
+  color:#d31734;
+  display:grid;
+  place-items:center;
+  font-weight:950
+}
+.liveBadge{
+  color:#c41431;
+  font-weight:950;
+  font-size:11px;
+  text-transform:uppercase
+}
 
-    .stat small{
-      display:block;
-      color:#77697a;
-    }
+.rulesTeaser{
+  background:linear-gradient(160deg,#fff,#faf6fb)
+}
+.rulesTeaser>p{
+  color:var(--muted);
+  line-height:1.55
+}
+.scoreChips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:18px 0
+}
+.scoreChips span{
+  background:#f0e8f2;
+  border-radius:999px;
+  padding:8px 10px;
+  font-size:13px;
+  font-weight:800
+}
 
-    .stat b{
-      font-size:23px;
-    }
+.pointsHero{
+  background:linear-gradient(135deg,#37003c,#6b0878);
+  color:white;
+  border-radius:24px;
+  padding:28px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:22px;
+  align-items:center;
+  margin-bottom:16px
+}
+.pointsHero h2{
+  font-size:30px;
+  margin:0 0 8px
+}
+.pointsHero p{
+  margin:0;
+  color:#efe3f1;
+  max-width:700px
+}
+.formula{
+  background:#ffffff12;
+  border:1px solid #ffffff25;
+  border-radius:18px;
+  padding:18px 24px;
+  text-align:center;
+  font-weight:900;
+  line-height:1.65;
+  min-width:220px
+}
+.formula b{color:var(--green)}
+.formula span{font-size:13px}
+.pointsGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px
+}
+.pointsTable>div,.bonusRow{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 2px;
+  border-bottom:1px solid #eee7ef
+}
+.pointsTable span,.bonusRow b{
+  font-weight:950;
+  color:var(--purple)
+}
 
-    .row{
-      padding:12px 0;
-      border-top:1px solid #eee7ef;
-    }
+.captainExplain{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:10px 0 16px
+}
+.capIcon{
+  width:55px;
+  height:55px;
+  border-radius:16px;
+  background:var(--purple);
+  color:var(--green);
+  display:grid;
+  place-items:center;
+  font-size:24px;
+  font-weight:950
+}
 
-    .name{
-      font-weight:900;
-    }
+.adminGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px
+}
+.adminBox{
+  border:1px solid #eee7ef;
+  border-radius:16px;
+  padding:16px
+}
+.streamAdmin{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr auto;
+  gap:8px
+}
+.scoreRow{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid #eee7ef
+}
+.league{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid #eee7ef
+}
+.rank{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  background:#f0eaf2;
+  display:grid;
+  place-items:center;
+  font-weight:900
+}
 
-    .meta{
-      color:#77697a;
-      font-size:13px;
-      margin-top:3px;
-    }
+.authOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(25,0,29,.86);
+  backdrop-filter:blur(10px);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px
+}
+.authOverlay.show{display:flex}
+.authCard{
+  width:min(440px,100%);
+  background:#fff;
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 25px 80px #0008
+}
+.authLogo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:22px;
+  font-weight:950;
+  color:var(--purple);
+  margin-bottom:10px
+}
+.authCard h2{
+  margin:10px 0 6px;
+  font-size:28px
+}
+.authCard>p{
+  color:var(--muted);
+  margin:0 0 18px;
+  line-height:1.5
+}
+.authTabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  background:#f2edf3;
+  border-radius:12px;
+  padding:4px;
+  margin-bottom:15px
+}
+.authTab{
+  border:0;
+  background:transparent;
+  padding:10px;
+  border-radius:9px;
+  font-weight:900
+}
+.authTab.active{
+  background:#fff;
+  color:var(--purple)
+}
+.authForm{
+  display:grid;
+  gap:10px
+}
+.authError{
+  min-height:18px;
+  color:#b52239;
+  font-size:13px;
+  font-weight:750
+}
+.authHint{
+  margin-top:13px;
+  font-size:12px;
+  color:var(--muted);
+  text-align:center
+}
+.accountMenu{
+  position:fixed;
+  top:72px;
+  right:18px;
+  z-index:9998;
+  background:#fff;
+  border:1px solid #ece2ee;
+  border-radius:14px;
+  padding:12px;
+  width:220px;
+  box-shadow:0 14px 40px #25002b25;
+  display:none
+}
+.accountMenu.show{display:block}
+.accountMenu strong{
+  display:block;
+  color:var(--purple)
+}
+.accountMenu small{
+  display:block;
+  color:var(--muted);
+  margin:3px 0 10px
+}
+.accountMenu button{width:100%}
 
-    .place{
-      color:#37003c;
-      font-weight:900;
-    }
+.footer{
+  text-align:center;
+  color:#887a8d;
+  padding:24px 12px 38px;
+  font-size:13px
+}
 
-    .match{
-      margin-top:6px;
-      font-size:13px;
-      font-weight:800;
-    }
-
-    .matched{
-      color:#16864d;
-    }
-
-    .unmatched{
-      color:#b13a46;
-    }
-
-    .hidden{
-      display:none;
-    }
-
-    @media(max-width:600px){
-      .stats{
-        grid-template-columns:1fr 1fr;
-      }
-
-      h1{
-        font-size:27px;
-      }
-    }
-  </style>
+@media(max-width:820px){
+  .grid2,.homeFeed,.pointsGrid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .adminGrid,.introGrid{grid-template-columns:1fr}
+  .market{grid-template-columns:1fr}
+  .homeHero{grid-template-columns:1fr}
+  .homeHeroCopy{padding:30px 22px}
+  .homeHero h1{font-size:36px}
+  .danceVisual{min-height:255px}
+  .streamAdmin{grid-template-columns:1fr}
+  .pointsHero{grid-template-columns:1fr}
+  .formula{min-width:0}
+  .heroMini{flex-wrap:wrap}
+  .brandtext{font-size:19px}
+  .wallet{font-size:13px;padding:8px 10px}
+}
+</style>
 </head>
 
 <body>
 
-  <div class="top">
-    <div class="wrap">
-      <h1>Fantasy Bugg</h1>
-      <p>Importera resultat direkt från Vote4Dance CSV.</p>
+<header class="appbar">
+  <div class="head">
+    <div class="brand">
+      <span class="brandmark">
+        <svg viewBox="0 0 64 64">
+          <path d="M20 14c6 0 9 4 9 9s-3 9-9 9-9-4-9-9 3-9 9-9Zm24 2c5 0 8 4 8 8s-3 8-8 8-8-4-8-8 3-8 8-8ZM26 34c4 0 8 2 11 6l4 6 5-7 5 4-9 13h-5l-6-9-8 11-6-4 10-14c-2-2-4-3-7-3-4 0-7 2-10 6l-5-4c4-6 10-9 17-9h4Z"/>
+        </svg>
+      </span>
+      <span class="brandtext">FANTASY <b>BUGG</b></span>
+    </div>
+
+    <div class="authTop">
+      <div class="wallet" id="wallet">100 M kvar</div>
+      <button class="authBtn" id="authTopBtn">Logga in</button>
     </div>
   </div>
 
-  <div class="wrap">
+  <nav>
+    <button class="active" data-page="home">Hem</button>
+    <button data-page="team">Mitt lag</button>
+    <button data-page="pairs">Danspar</button>
+    <button data-page="competitions">Tävlingar</button>
+    <button data-page="points">Poäng</button>
+    <button data-page="leagues">Ligor</button>
+    <button data-page="admin" id="adminNav" style="display:none">Admin</button>
+  </nav>
+</header>
 
-    <div class="card">
+<div class="authOverlay" id="authOverlay">
+  <div class="authCard">
+    <div class="authLogo">FANTASY BUGG</div>
 
-      <label for="csv">
-        Vote4Dance Result CSV
-      </label>
+    <h2 id="authTitle">Välkommen tillbaka</h2>
+    <p>Logga in för att spara ditt fantasylag och tävla i Fantasy Bugg.</p>
 
-      <input
-        id="csv"
-        type="file"
-        accept=".csv,text/csv,text/plain"
-      >
+    <div class="authTabs">
+      <button class="authTab active" id="loginTab">Logga in</button>
+      <button class="authTab" id="registerTab">Skapa konto</button>
+    </div>
 
-      <label for="level">
-        Tävlingsnivå
-      </label>
+    <form class="authForm" id="authForm">
+      <input class="search" id="authName" placeholder="Fantasynamn" style="display:none">
+      <input class="search" id="authEmail" type="email" placeholder="E-post" required>
+      <input class="search" id="authPassword" type="password" placeholder="Lösenord" required minlength="6">
 
-      <select id="level">
-        <option>ITT</option>
-        <option>Nationell</option>
-        <option selected>GP</option>
-        <option>DM</option>
-        <option>SM</option>
-      </select>
+      <div class="authError" id="authError"></div>
 
-      <button
-        id="readBtn"
-        type="button"
-      >
-        Läs resultat
-      </button>
+      <button class="btn green big" id="authSubmit" type="submit">Logga in</button>
+    </form>
 
-      <div id="status">
-        Välj CSV-filen från Vote4Dance.
+    <div class="authHint">Ditt konto och lag sparas med Supabase.</div>
+  </div>
+</div>
+
+<div class="accountMenu" id="accountMenu">
+  <strong id="accountName"></strong>
+  <small id="accountEmail"></small>
+
+  <div id="adminBadge"
+       style="display:none;margin:0 0 10px;width:max-content;background:#37003c;color:#00ff87;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:950">
+    ADMIN
+  </div>
+
+  <button class="btn soft" id="logoutBtn">Logga ut</button>
+</div>
+
+<main>
+
+<section class="page active" id="home">
+
+<div class="homeHero">
+
+  <div class="homeHeroCopy">
+    <div class="eyebrow">Sveriges fantasyspel för tävlingsbugg</div>
+
+    <h1>
+      Bygg laget. Följ tävlingarna.
+      <span>Jaga poäng.</span>
+    </h1>
+
+    <p>
+      Välj fem danspar från Junior, Vuxen och Senior för maximalt 100 M.
+      När paren tävlar samlar ditt fantasylag poäng utifrån placering,
+      slagna par och tävlingens nivå.
+    </p>
+
+    <div class="heroButtons">
+      <button class="btn green big" data-go="pairs">Bygg mitt lag</button>
+      <button class="btn glass big" data-go="points">Så fungerar poängen</button>
+    </div>
+
+    <div class="heroMini">
+      <b>5 danspar</b>
+      <i></i>
+      <b>100 M budget</b>
+      <i></i>
+      <b>Kapten ×1,5</b>
+    </div>
+  </div>
+
+  <div class="danceVisual">
+    <svg viewBox="0 0 520 420">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1">
+          <stop stop-color="#00ff87"/>
+          <stop offset="1" stop-color="#9dffcf"/>
+        </linearGradient>
+      </defs>
+
+      <circle cx="340" cy="190" r="165" fill="#ffffff0d"/>
+      <circle cx="340" cy="190" r="120" fill="#00ff8712"/>
+
+      <path d="M155 86c24 0 42 18 42 41s-18 41-42 41-42-18-42-41 18-41 42-41Zm219 18c22 0 39 17 39 38s-17 38-39 38-39-17-39-38 17-38 39-38Z" fill="url(#g)"/>
+
+      <path d="M174 178c38 7 66 28 87 63l18 30 27-42-34-52 21-14 34 50 36-52 23 16-48 72 42 72-24 15-39-65-27 42-18-9-33-54-54 88-28-17 65-105c-14-14-31-23-52-27-35-7-67 6-94 39l-25-20c36-45 79-63 123-55Z" fill="#fff"/>
+
+      <path d="M102 335c79-19 143-20 205-4 64 17 112 16 153 0"
+            fill="none" stroke="#00ff87" stroke-width="8" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+</div>
+
+<div class="introGrid">
+
+  <div class="introCard">
+    <span class="stepNo">1</span>
+    <div>
+      <h3>Välj fem danspar</h3>
+      <p>Handla smart inom 100 M. Priserna bygger på parets relativa ranking.</p>
+    </div>
+  </div>
+
+  <div class="introCard">
+    <span class="stepNo">2</span>
+    <div>
+      <h3>Utse din kapten</h3>
+      <p>Kaptenen får 1,5× poäng.</p>
+    </div>
+  </div>
+
+  <div class="introCard">
+    <span class="stepNo">3</span>
+    <div>
+      <h3>Följ tävlingarna</h3>
+      <p>Importerade resultat räknar automatiskt ut ditt lags poäng.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="kpis">
+
+  <div class="kpi">
+    <small>Senaste tävling</small>
+    <strong id="roundPoints">0</strong>
+  </div>
+
+  <div class="kpi">
+    <small>Totalpoäng</small>
+    <strong id="totalPoints">0</strong>
+  </div>
+
+  <div class="kpi">
+    <small>Valda par</small>
+    <strong id="homeCount">0/5</strong>
+  </div>
+
+  <div class="kpi">
+    <small>Budget kvar</small>
+    <strong id="homeBudget">100 M</strong>
+  </div>
+
+</div>
+
+<div class="homeFeed">
+
+  <div class="panel">
+    <div class="sectionTitle">
+      <div>
+        <h2>🎥 Livesändningar</h2>
+        <p>Följ tävlingarna utan att lämna Fantasy Bugg.</p>
+      </div>
+
+      <button class="btn soft" data-go="competitions">Alla tävlingar</button>
+    </div>
+
+    <div id="homeStreams"></div>
+  </div>
+
+  <div class="panel">
+    <div class="sectionTitle">
+      <div>
+        <h2>Kommande tävling</h2>
+        <p>Nästa fantasy-omgång</p>
+      </div>
+    </div>
+
+    <div id="homeCompetition"></div>
+  </div>
+
+</div>
+
+<div class="grid2" style="margin-top:16px">
+
+  <div class="panel">
+    <div class="sectionTitle">
+      <div>
+        <h2>Mitt lag</h2>
+        <p>Dina fem valda danspar</p>
+      </div>
+
+      <button class="btn soft" data-go="team">Öppna laget</button>
+    </div>
+
+    <div class="pitch compactPitch">
+      <div class="pitchInner" id="homePitch"></div>
+    </div>
+  </div>
+
+  <div class="panel rulesTeaser">
+    <div class="eyebrow dark">Poängsystemet</div>
+
+    <h2>Varje placering räknas</h2>
+
+    <p>
+      Fantasy-poängen består av placeringspoäng,
+      poäng för varje besegrat par och bonusar.
+    </p>
+
+    <div class="scoreChips">
+      <span>🥇 Vinstbonus +15</span>
+      <span>🏆 Topp 3 +10</span>
+      <span>🎯 Final +15</span>
+      <span>⚡ Kapten ×1,5</span>
+    </div>
+
+    <button class="btn purple" data-go="points">Se hela poängsystemet</button>
+  </div>
+
+</div>
+
+</section>
+
+
+<section class="page" id="team">
+
+<div class="sectionTitle">
+  <div>
+    <h1>Mitt lag</h1>
+    <p>Fem danspar · max 100 M · kapten 1,5×</p>
+  </div>
+</div>
+
+<div class="kpis">
+
+  <div class="kpi">
+    <small>Valda par</small>
+    <strong id="teamCount">0/5</strong>
+  </div>
+
+  <div class="kpi">
+    <small>Budget använd</small>
+    <strong id="spent">0 M</strong>
+  </div>
+
+  <div class="kpi">
+    <small>Budget kvar</small>
+    <strong id="left">100 M</strong>
+  </div>
+
+  <div class="kpi">
+    <small>Kapten</small>
+    <strong id="captainStat">–</strong>
+  </div>
+
+</div>
+
+<div class="grid2">
+
+  <div class="panel">
+    <div class="pitch">
+      <div class="pitchInner" id="teamPitch"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Lagregler</h2>
+
+    <p>
+      Välj exakt fem danspar.
+      Ett par kan utses till kapten och får 1,5× fantasy-poängen.
+    </p>
+
+    <div class="notice">
+      Priset baseras på parets relativa ranking inom sin egen klass.
+      Rankingplats och procentsats visas inte på marknaden.
+    </div>
+
+    <button class="btn green" data-go="pairs">Gå till marknaden</button>
+  </div>
+
+</div>
+
+</section>
+
+
+<section class="page" id="pairs">
+
+<div class="sectionTitle">
+  <div>
+    <h1>Danspar</h1>
+    <p id="pairCount">268 danspar</p>
+  </div>
+</div>
+
+<div class="panel">
+
+  <div class="toolbar">
+
+    <input
+      class="search"
+      id="search"
+      placeholder="Sök danspar eller klubb..."
+    >
+
+    <select class="search" id="sort">
+      <option value="priceDesc">Pris: högst först</option>
+      <option value="priceAsc">Pris: lägst först</option>
+      <option value="name">Namn A–Ö</option>
+    </select>
+
+  </div>
+
+  <div class="chips">
+    <button class="chip active" data-filter="Alla">Alla</button>
+    <button class="chip" data-filter="Junior">Junior</button>
+    <button class="chip" data-filter="Vuxen">Vuxen</button>
+    <button class="chip" data-filter="Senior">Senior</button>
+  </div>
+
+  <div class="market" id="market"></div>
+
+</div>
+
+</section>
+
+
+<section class="page" id="competitions">
+
+<div class="sectionTitle">
+  <div>
+    <h1>Tävlingar</h1>
+    <p>Vote4Dance-tävlingar, resultat och livesändningar.</p>
+  </div>
+</div>
+
+<div class="grid2">
+
+  <div class="panel">
+
+    <h2>Tävlingskalender</h2>
+
+    <div id="competitionList"></div>
+
+  </div>
+
+  <div class="panel">
+
+    <div class="sectionTitle">
+      <div>
+        <h2>🎥 Livesändningar</h2>
+        <p>Länkar upplagda av admin</p>
+      </div>
+    </div>
+
+    <div id="streamList"></div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<section class="page" id="points">
+
+<div class="sectionTitle">
+  <div>
+    <h1>Poängsystem</h1>
+    <p>Så räknas varje poäng i Fantasy Bugg.</p>
+  </div>
+</div>
+
+<div class="pointsHero">
+
+  <div>
+    <div class="eyebrow">Enkelt i grunden</div>
+
+    <h2>Placering + slagna par + bonusar</h2>
+
+    <p>
+      Först räknas parets grundpoäng.
+      Sedan multipliceras summan med tävlingens nivå.
+      Om paret är din kapten multipliceras poängen därefter med 1,5.
+    </p>
+  </div>
+
+  <div class="formula">
+    Grundpoäng<br>
+    <b>× tävlingsnivå</b><br>
+    <span>× 1,5 om kapten</span>
+  </div>
+
+</div>
+
+<div class="pointsGrid">
+
+  <div class="panel">
+
+    <h2>1. Placeringspoäng</h2>
+
+    <div class="pointsTable">
+      <div><b>1:a</b><span>100 p</span></div>
+      <div><b>2:a</b><span>85 p</span></div>
+      <div><b>3:a</b><span>75 p</span></div>
+      <div><b>4:a</b><span>65 p</span></div>
+      <div><b>5:a</b><span>60 p</span></div>
+      <div><b>6–10</b><span>50 p</span></div>
+      <div><b>11–20</b><span>35 p</span></div>
+      <div><b>21–40</b><span>20 p</span></div>
+      <div><b>41+</b><span>10 p</span></div>
+    </div>
+
+  </div>
+
+  <div class="panel">
+
+    <h2>2. Bonuspoäng</h2>
+
+    <div class="bonusRow">
+      <span>Varje besegrat par</span>
+      <b>+1 p</b>
+    </div>
+
+    <div class="bonusRow">
+      <span>Når final</span>
+      <b>+15 p</b>
+    </div>
+
+    <div class="bonusRow">
+      <span>Slutar topp 3</span>
+      <b>+10 p</b>
+    </div>
+
+    <div class="bonusRow">
+      <span>Vinner tävlingen</span>
+      <b>+15 p</b>
+    </div>
+
+  </div>
+
+  <div class="panel">
+
+    <h2>3. Tävlingsnivå</h2>
+
+    <div class="pointsTable">
+      <div><b>ITT</b><span>×1,00</span></div>
+      <div><b>Nationell</b><span>×1,20</span></div>
+      <div><b>GP</b><span>×1,50</span></div>
+      <div><b>DM</b><span>×1,75</span></div>
+      <div><b>SM</b><span>×2,00</span></div>
+    </div>
+
+  </div>
+
+  <div class="panel">
+
+    <h2>4. Kapten</h2>
+
+    <div class="captainExplain">
+
+      <div class="capIcon">C</div>
+
+      <div>
+        <h3>1,5× fantasy-poäng</h3>
+        <p>Din kapten får 50 % extra poäng.</p>
       </div>
 
     </div>
 
+  </div>
 
-    <div
-      id="summary"
-      class="card hidden"
-    >
+</div>
 
-      <h2 id="competitionName">
-        Tävling
-      </h2>
+</section>
 
-      <div id="competitionDate"></div>
 
-      <div class="stats">
+<section class="page" id="leagues">
 
-        <div class="stat">
-          <small>Junior</small>
-          <b id="juniorCount">0</b>
-        </div>
+<div class="sectionTitle">
 
-        <div class="stat">
-          <small>Vuxen</small>
-          <b id="adultCount">0</b>
-        </div>
+  <div>
+    <h1>Ligor</h1>
+    <p>Global liga och privata ligor.</p>
+  </div>
 
-        <div class="stat">
-          <small>Senior</small>
-          <b id="seniorCount">0</b>
-        </div>
+  <button class="btn green" id="createLeague">
+    Skapa privat liga
+  </button>
 
+</div>
+
+<div class="panel">
+
+  <h2>Mina ligor</h2>
+
+  <div class="league">
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="rank">–</div>
+
+      <div>
+        <div class="name">Fantasy Bugg Sverige</div>
+        <div class="meta">Global liga</div>
       </div>
-
     </div>
 
+    <b id="globalLeaguePoints">0 p</b>
+  </div>
 
-    <div
-      id="resultsCard"
-      class="card hidden"
-    >
+</div>
 
-      <h2>Förhandsgranskning</h2>
+</section>
 
-      <div id="results"></div>
 
-      <button
-        id="saveBtn"
-        type="button"
-      >
-        Spara resultat
-      </button>
+<section class="page" id="admin">
 
-      <div id="saveStatus"></div>
+<div class="sectionTitle">
+  <div>
+    <h1>Admin</h1>
+    <p>Hantera tävlingar, livesändningar och resultat.</p>
+  </div>
+</div>
 
-    </div>
+<div class="adminGrid">
+
+  <div class="adminBox">
+
+    <h3>Danspar</h3>
+
+    <p class="meta">
+      268 par från Bugg Junior, Vuxen och Senior.
+    </p>
+
+    <button class="btn purple" data-go="pairs">
+      Visa marknad
+    </button>
 
   </div>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="Marker.js"></script>
+  <div class="adminBox">
+
+    <h3>Vote4Dance-tävling</h3>
+
+    <p class="meta">
+      Lägg in en publik Vote4Dance-tävling.
+    </p>
+
+    <input
+      class="search"
+      id="v4dUrl"
+      placeholder="https://vote4dance.com/public/event/..."
+    >
+
+    <input
+      class="search"
+      id="compName"
+      placeholder="Tävlingsnamn"
+      style="margin-top:8px"
+    >
+
+    <input
+      class="search"
+      id="compDate"
+      type="date"
+      style="margin-top:8px"
+    >
+
+    <select
+      class="search"
+      id="compLevel"
+      style="margin-top:8px"
+    >
+      <option>ITT</option>
+      <option>Nationell</option>
+      <option>GP</option>
+      <option>DM</option>
+      <option>SM</option>
+    </select>
+
+    <button
+      class="btn green"
+      id="importComp"
+      style="margin-top:10px;width:100%"
+    >
+      Importera tävling
+    </button>
+
+    <div
+      class="meta"
+      id="compImportStatus"
+      style="margin-top:8px"
+    ></div>
+
+  </div>
+
+
+  <div class="adminBox">
+
+    <h3>Vote4Dance Result CSV</h3>
+
+    <p class="meta">
+      Ladda upp Vote4Dance Result CSV.
+      Endast Bugg Junior, Vuxen och Senior läses in.
+    </p>
+
+    <input
+      type="file"
+      id="csvFile"
+      accept=".csv,text/csv,text/plain"
+      class="search"
+    >
+
+    <select
+      class="search"
+      id="csvLevel"
+      style="margin-top:8px"
+    >
+      <option>ITT</option>
+      <option>Nationell</option>
+      <option selected>GP</option>
+      <option>DM</option>
+      <option>SM</option>
+    </select>
+
+    <button
+      class="btn purple"
+      id="importCsv"
+      style="margin-top:10px;width:100%"
+    >
+      Läs & spara resultat
+    </button>
+
+    <div
+      class="meta"
+      id="csvStatus"
+      style="margin-top:8px"
+    ></div>
+
+  </div>
+
+</div>
 
-  <script>
-    (function(){
 
-      var fileInput =
-        document.getElementById("csv");
+<div class="panel" style="margin-top:16px">
 
-      var readBtn =
-        document.getElementById("readBtn");
+  <div class="sectionTitle">
+    <div>
+      <h2>🎥 Livesändningar</h2>
+      <p>Lägg in publik streamlänk.</p>
+    </div>
+  </div>
 
-      var saveBtn =
-        document.getElementById("saveBtn");
+  <div class="streamAdmin">
 
-      var status =
-        document.getElementById("status");
+    <input
+      class="search"
+      id="streamTitle"
+      placeholder="Titel"
+    >
 
-      var saveStatus =
-        document.getElementById("saveStatus");
+    <input
+      class="search"
+      id="streamUrl"
+      placeholder="https://youtube.com/..."
+    >
 
-      var market =
-        window.FANTASY_MARKET || [];
+    <select
+      class="search"
+      id="streamComp"
+    >
+      <option value="">
+        Ingen kopplad tävling
+      </option>
+    </select>
 
-      var lastParsed = null;
-      var lastRows = [];
+    <button
+      class="btn green"
+      id="addStream"
+    >
+      Lägg till livesändning
+    </button>
 
+  </div>
 
-      var supabaseClient =
-        window.supabase.createClient(
-          "https://tkzjyasosqqshdzdvihr.supabase.co",
-          "sb_publishable_Ew_yx90GcTw51DXFowAtug_lXwevjzm",
-          {
-            auth:{
-              persistSession:true,
-              autoRefreshToken:true,
-              detectSessionInUrl:true
-            }
-          }
-        );
+  <div
+    id="adminStreams"
+    style="margin-top:12px"
+  ></div>
 
+</div>
 
-      function escapeHtml(value){
 
-        return String(value || "")
-          .replace(/&/g,"&amp;")
-          .replace(/</g,"&lt;")
-          .replace(/>/g,"&gt;");
+<div class="panel" style="margin-top:16px">
 
-      }
+  <div class="sectionTitle">
+    <div>
+      <h2>Resultat & poäng</h2>
+      <p>Senast importerade resultat.</p>
+    </div>
+  </div>
 
+  <div id="resultPreview"></div>
 
-      function norm(value){
+</div>
 
-        return String(value || "")
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g,"")
-          .replace(/[^a-z0-9& ]/g," ")
-          .replace(/\s+/g," ")
-          .trim();
+</section>
 
-      }
+</main>
 
+<div class="footer">
+  Fantasy Bugg
+</div>
 
-      function parseCsvLine(line){
 
-        var result = [];
-        var current = "";
-        var quote = false;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.min.js"></script>
 
-        for(
-          var i = 0;
-          i < line.length;
-          i++
-        ){
+<script>
 
-          var c = line[i];
+const SUPABASE_URL =
+"https://tkzjyasosqqshdzdvihr.supabase.co";
 
-          if(c === '"'){
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_Ew_yx90GcTw51DXFowAtug_lXwevjzm";
 
-            if(
-              quote &&
-              line[i + 1] === '"'
-            ){
+const sb = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth:{
+      persistSession:true,
+      autoRefreshToken:true,
+      detectSessionInUrl:true
+    }
+  }
+);
 
-              current += '"';
-              i++;
 
-            }else{
-
-              quote = !quote;
-
-            }
-
-          }else if(
-            c === ";" &&
-            !quote
-          ){
-
-            result.push(current);
-            current = "";
-
-          }else{
-
-            current += c;
-
-          }
-
-        }
-
-        result.push(current);
-
-        return result;
-
-      }
-
-
-      function readFile(file){
-
-        return new Promise(
-          function(resolve,reject){
-
-            var reader =
-              new FileReader();
-
-            reader.onload =
-              function(){
-
-                resolve(
-                  reader.result
-                );
-
-              };
-
-            reader.onerror =
-              function(){
-
-                reject(
-                  new Error(
-                    "Kunde inte läsa CSV-filen."
-                  )
-                );
-
-              };
-
-            reader.readAsText(
-              file,
-              "UTF-8"
-            );
-
-          }
-        );
-
-      }
-
-
-      function parseVote4Dance(text){
-
-        text =
-          text.replace(
-            /^\uFEFF/,
-            ""
-          );
-
-        var lines =
-          text.split(
-            /\r?\n/
-          );
-
-        var competitionName = "";
-        var competitionDate = "";
-
-
-        for(
-          var i = 0;
-          i < 8 &&
-          i < lines.length;
-          i++
-        ){
-
-          var line =
-            lines[i]
-              .replace(
-                /^#\s*/,
-                ""
-              )
-              .trim();
-
-          if(
-            !line ||
-            line === "RESULTS"
-          ){
-            continue;
-          }
-
-          if(
-            /^\d{4}-\d{2}-\d{2}$/
-              .test(line)
-          ){
-
-            competitionDate =
-              line;
-
-          }else if(
-            !competitionName
-          ){
-
-            competitionName =
-              line;
-
-          }
-
-        }
-
-
-        var headerIndex = -1;
-
-
-        for(
-          var j = 0;
-          j < lines.length;
-          j++
-        ){
-
-          if(
-            lines[j]
-              .indexOf(
-                "Klassrubrik;"
-              ) === 0
-          ){
-
-            headerIndex = j;
-            break;
-
-          }
-
-        }
-
-
-        if(
-          headerIndex === -1
-        ){
-
-          throw new Error(
-            "Hittar inte Vote4Dance-resultat i filen."
-          );
-
-        }
-
-
-        var header =
-          parseCsvLine(
-            lines[
-              headerIndex
-            ]
-          );
-
-
-        function col(name){
-
-          return header
-            .indexOf(name);
-
-        }
-
-
-        var startCol =
-          col("Startnr");
-
-        var placeCol =
-          col("Plac");
-
-        var name1Col =
-          col("Namn 1");
-
-        var name2Col =
-          col("Namn 2");
-
-        var clubCol =
-          col("Klubb");
-
-
-        if(
-          startCol === -1 ||
-          placeCol === -1 ||
-          name1Col === -1 ||
-          name2Col === -1
-        ){
-
-          throw new Error(
-            "CSV-filen saknar nödvändiga kolumner."
-          );
-
-        }
-
-
-        var currentClass = "";
-        var rows = [];
-
-
-        for(
-          var k =
-            headerIndex + 1;
-          k < lines.length;
-          k++
-        ){
-
-          var raw =
-            lines[k].trim();
-
-
-          if(!raw){
-            continue;
-          }
-
-
-          if(
-            raw.indexOf(";")
-            === -1
-          ){
-
-            currentClass =
-              raw;
-
-            continue;
-
-          }
-
-
-          var classMatch =
-            currentClass.match(
-              /^Bugg (Junior|Vuxen|Senior) ([NABCD])$/
-            );
-
-
-          if(!classMatch){
-            continue;
-          }
-
-
-          var cells =
-            parseCsvLine(
-              lines[k]
-            );
-
-
-          var name1 =
-            (
-              cells[
-                name1Col
-              ] || ""
-            ).trim();
-
-
-          var name2 =
-            (
-              cells[
-                name2Col
-              ] || ""
-            ).trim();
-
-
-          if(
-            !name1 ||
-            !name2
-          ){
-            continue;
-          }
-
-
-          rows.push({
-
-            age:
-              classMatch[1],
-
-            stage:
-              classMatch[2],
-
-            startNo:
-              (
-                cells[
-                  startCol
-                ] || ""
-              ).trim(),
-
-            place:
-              parseInt(
-                cells[
-                  placeCol
-                ],
-                10
-              ) || 0,
-
-            name:
-              name1 +
-              " & " +
-              name2,
-
-            club:
-              clubCol >= 0
-                ? (
-                    cells[
-                      clubCol
-                    ] || ""
-                  ).trim()
-                : ""
-
-          });
-
-        }
-
-
-        return {
-
-          name:
-            competitionName ||
-            "Vote4Dance-tävling",
-
-          date:
-            competitionDate,
-
-          rows:
-            rows
-
-        };
-
-      }
-
-
-      function highestStageRows(rows){
-
-        var value = {
-          N:1,
-          D:2,
-          C:3,
-          B:4,
-          A:5
-        };
-
-        var map = {};
-
-
-        rows.forEach(
-          function(row){
-
-            var key =
-              row.age +
-              "|" +
-              norm(
-                row.name
-              );
-
-
-            if(
-              !map[key] ||
-              value[
-                row.stage
-              ] >
-              value[
-                map[key]
-                  .stage
-              ]
-            ){
-
-              map[key] =
-                row;
-
-            }
-
-          }
-        );
-
-
-        return Object
-          .keys(map)
-          .map(
-            function(key){
-
-              return map[key];
-
-            }
-          );
-
-      }
-
-
-      function basePoints(place){
-
-        if(place === 1){
-          return 100;
-        }
-
-        if(place === 2){
-          return 85;
-        }
-
-        if(place === 3){
-          return 75;
-        }
-
-        if(place === 4){
-          return 65;
-        }
-
-        if(place === 5){
-          return 60;
-        }
-
-        if(place <= 10){
-          return 50;
-        }
-
-        if(place <= 20){
-          return 35;
-        }
-
-        if(place <= 40){
-          return 20;
-        }
-
-        return 10;
-
-      }
-
-
-      function getMultiplier(){
-
-        var level =
-          document
-            .getElementById(
-              "level"
-            )
-            .value;
-
-
-        var multipliers = {
-
-          ITT:1,
-          Nationell:1.2,
-          GP:1.5,
-          DM:1.75,
-          SM:2
-
-        };
-
-
-        return (
-          multipliers[level] ||
-          1
-        );
-
-      }
-
-
-      function prepareRows(parsed){
-
-        var rows =
-          highestStageRows(
-            parsed.rows
-          );
-
-        var multiplier =
-          getMultiplier();
-
-
-        rows.forEach(
-          function(row){
-
-            row.pairIndex =
-              market.findIndex(
-                function(pair){
-
-                  return (
-                    pair[0] ===
-                      row.age
-                    &&
-                    norm(
-                      pair[1]
-                    ) ===
-                    norm(
-                      row.name
-                    )
-                  );
-
-                }
-              );
-
-
-            row.matched =
-              row.pairIndex >= 0;
-
-
-            var entrants =
-              rows.filter(
-                function(r){
-
-                  return (
-                    r.age ===
-                    row.age
-                  );
-
-                }
-              ).length;
-
-
-            var raw =
-              basePoints(
-                row.place
-              )
-              +
-              Math.max(
-                0,
-                entrants -
-                row.place
-              )
-              +
-              (
-                row.place <= 10
-                  ? 15
-                  : 0
-              )
-              +
-              (
-                row.place <= 3
-                  ? 10
-                  : 0
-              )
-              +
-              (
-                row.place === 1
-                  ? 15
-                  : 0
-              );
-
-
-            row.points =
-              Math.round(
-                raw *
-                multiplier
-              );
-
-          }
-        );
-
-
-        return rows;
-
-      }
-
-
-      function render(parsed){
-
-        var rows =
-          prepareRows(
-            parsed
-          );
-
-
-        lastParsed =
-          parsed;
-
-        lastRows =
-          rows;
-
-
-        var junior =
-          rows.filter(
-            function(row){
-
-              return (
-                row.age ===
-                "Junior"
-              );
-
-            }
-          );
-
-
-        var adult =
-          rows.filter(
-            function(row){
-
-              return (
-                row.age ===
-                "Vuxen"
-              );
-
-            }
-          );
-
-
-        var senior =
-          rows.filter(
-            function(row){
-
-              return (
-                row.age ===
-                "Senior"
-              );
-
-            }
-          );
-
-
-        document
-          .getElementById(
-            "competitionName"
-          )
-          .textContent =
-            parsed.name;
-
-
-        document
-          .getElementById(
-            "competitionDate"
-          )
-          .textContent =
-            parsed.date || "";
-
-
-        document
-          .getElementById(
-            "juniorCount"
-          )
-          .textContent =
-            junior.length;
-
-
-        document
-          .getElementById(
-            "adultCount"
-          )
-          .textContent =
-            adult.length;
-
-
-        document
-          .getElementById(
-            "seniorCount"
-          )
-          .textContent =
-            senior.length;
-
-
-        document
-          .getElementById(
-            "summary"
-          )
-          .classList
-          .remove(
-            "hidden"
-          );
-
-
-        document
-          .getElementById(
-            "resultsCard"
-          )
-          .classList
-          .remove(
-            "hidden"
-          );
-
-
-        rows.sort(
-          function(a,b){
-
-            var order = {
-              Junior:1,
-              Vuxen:2,
-              Senior:3
-            };
-
-
-            if(
-              order[a.age] !==
-              order[b.age]
-            ){
-
-              return (
-                order[a.age] -
-                order[b.age]
-              );
-
-            }
-
-
-            return (
-              a.place -
-              b.place
-            );
-
-          }
-        );
-
-
-        var html = "";
-
-
-        rows.forEach(
-          function(row){
-
-            html +=
-              '<div class="row">' +
-
-                '<div class="name">' +
-                  escapeHtml(
-                    row.name
-                  ) +
-                '</div>' +
-
-                '<div class="meta">' +
-
-                  'Bugg ' +
-                  escapeHtml(
-                    row.age
-                  ) +
-
-                  ' · klass ' +
-                  escapeHtml(
-                    row.stage
-                  ) +
-
-                  ' · startnr ' +
-                  escapeHtml(
-                    row.startNo
-                  ) +
-
-                  ' · <span class="place">placering ' +
-                  escapeHtml(
-                    row.place
-                  ) +
-                  '</span>' +
-
-                '</div>' +
-
-                '<div class="match ' +
-                  (
-                    row.matched
-                      ? 'matched'
-                      : 'unmatched'
-                  ) +
-                '">' +
-
-                  (
-                    row.matched
-                      ? '✓ Matchad mot fantasy-marknaden'
-                      : '⚠ Ej matchad'
-                  ) +
-
-                  ' · ' +
-
-                  row.points +
-
-                  ' fantasy-poäng' +
-
-                '</div>' +
-
-              '</div>';
-
-          }
-        );
-
-
-        document
-          .getElementById(
-            "results"
-          )
-          .innerHTML =
-            html;
-
-
-        status.textContent =
-          "✅ " +
-          rows.length +
-          " unika Bugg-par lästa.";
-
-
-        saveStatus.textContent =
-          "";
-
-      }
-
-
-      readBtn.addEventListener(
-        "click",
-        async function(){
-
-          try{
-
-            var file =
-              fileInput.files &&
-              fileInput.files[0];
-
-
-            if(!file){
-
-              status.textContent =
-                "Välj CSV-filen först.";
-
-              return;
-
-            }
-
-
-            status.textContent =
-              "Läser resultat…";
-
-
-            var text =
-              await readFile(
-                file
-              );
-
-
-            var parsed =
-              parseVote4Dance(
-                text
-              );
-
-
-            render(
-              parsed
-            );
-
-
-          }catch(error){
-
-            console.error(
-              error
-            );
-
-
-            status.textContent =
-              "Fel: " +
-              (
-                error.message ||
-                error
-              );
-
-          }
-
-        }
-      );
-
-
-      saveBtn.addEventListener(
-        "click",
-        async function(){
-
-          try{
-
-            saveBtn.disabled =
-              true;
-
-
-            saveStatus.textContent =
-              "Sparar…";
-
-
-            if(
-              !lastParsed ||
-              !lastRows.length
-            ){
-
-              throw new Error(
-                "Läs in CSV-filen först."
-              );
-
-            }
-
-
-            var sessionResult =
-              await supabaseClient
-                .auth
-                .getSession();
-
-
-            if(
-              sessionResult.error
-            ){
-
-              throw (
-                sessionResult.error
-              );
-
-            }
-
-
-            var session =
-              sessionResult
-                .data
-                .session;
-
-
-            if(!session){
-
-              throw new Error(
-                "Du måste vara inloggad som admin."
-              );
-
-            }
-
-
-            var level =
-              document
-                .getElementById(
-                  "level"
-                )
-                .value;
-
-
-            var competitionId =
-              "csv-" +
-              Date.now();
-
-
-            var compInsert =
-              await supabaseClient
-                .from(
-                  "competitions"
-                )
-                .insert({
-
-                  id:
-                    competitionId,
-
-                  name:
-                    lastParsed.name,
-
-                  date:
-                    lastParsed.date ||
-                    null,
-
-                  level:
-                    level,
-
-                  created_by:
-                    session.user.id
-
-                });
-
-
-            if(
-              compInsert.error
-            ){
-
-              throw (
-                compInsert.error
-              );
-
-            }
-
-
-            var resultRows =
-              lastRows
-                .filter(
-                  function(row){
-
-                    return (
-                      row.matched &&
-                      row.pairIndex >= 0
-                    );
-
-                  }
-                )
-                .map(
-                  function(row){
-
-                    return {
-
-                      competition_id:
-                        competitionId,
-
-                      pair_index:
-                        row.pairIndex,
-
-                      pair_name:
-                        row.name,
-
-                      placement:
-                        row.place,
-
-                      matched:
-                        true,
-
-                      fantasy_points:
-                        row.points
-
-                    };
-
-                  }
-                );
-
-
-            if(
-              !resultRows.length
-            ){
-
-              throw new Error(
-                "Inga matchade resultat att spara."
-              );
-
-            }
-
-
-            var resultsInsert =
-              await supabaseClient
-                .from(
-                  "competition_results"
-                )
-                .insert(
-                  resultRows
-                );
-
-
-            if(
-              resultsInsert.error
-            ){
-
-              throw (
-                resultsInsert.error
-              );
-
-            }
-
-
-            saveStatus.textContent =
-              "✅ Sparat! " +
-              resultRows.length +
-              " resultat.";
-
-
-          }catch(error){
-
-            console.error(
-              error
-            );
-
-
-            saveStatus.textContent =
-              "Fel: " +
-              (
-                error.message ||
-                error
-              );
-
-
-          }finally{
-
-            saveBtn.disabled =
-              false;
-
-          }
-
-        }
-      );
-
-    })();
-  </script>
-
-</body>
-</html>
+/*
+==========================================================
+DANSPAREN + ALL FUNKTIONALITET FORTSÄTTER I DEL 2
+KListra DEL 2 DIREKT UNDER DENNA RAD.
+STÄNG INTE <script> HÄR.
+==========================================================
+*/
+  const pairs=[{"rank":1,"name":"Jacob Berggren & Nathalie Albrigtsen","club":"BDF","cls":"Vuxen"},{"rank":2,"name":"Benjamin Österlund & Angelica Källström","club":"UBSS","cls":"Vuxen"},{"rank":3,"name":"Viktor Edlund & Wilma Edlund","club":"UMDK","cls":"Vuxen"},{"rank":3,"name":"Conrad Lindström & Cajsa Weinemo","club":"BLÅ
