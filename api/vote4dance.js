@@ -21,74 +21,21 @@ export default async function handler(req, res) {
     }
 
     browser = await puppeteer.launch({
-  args: chromium.args,
-  defaultViewport: {
-    width: 390,
-    height: 844,
-    deviceScaleFactor: 1
-  },
-  executablePath: await chromium.executablePath(),
-  headless: 'shell'
-});
+      args: chromium.args,
+      defaultViewport: {
+        width: 390,
+        height: 844,
+        deviceScaleFactor: 1
+      },
+      executablePath: await chromium.executablePath(),
+      headless: 'shell'
+    });
 
     const page = await browser.newPage();
 
     await page.setUserAgent(
       'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1'
     );
-
-    const network = [];
-    const failed = [];
-    const candidates = [];
-
-    page.on('requestfailed', request => {
-      failed.push({
-        url: request.url(),
-        method: request.method(),
-        error: request.failure()?.errorText || 'request failed'
-      });
-    });
-
-    page.on('response', async response => {
-      const responseUrl = response.url();
-
-      if (!/vote4dance/i.test(responseUrl)) return;
-
-      const contentType =
-        response.headers()['content-type'] || '';
-
-      network.push({
-        url: responseUrl,
-        status: response.status(),
-        method: response.request().method(),
-        contentType
-      });
-
-      if (
-        /application\/json|text\/json/i.test(contentType) ||
-        /api\.vote4dance\.com/i.test(responseUrl)
-      ) {
-        try {
-          const text = await response.text();
-
-          if (!text || text.length > 2000000) return;
-
-          let data;
-
-          try {
-            data = JSON.parse(text);
-          } catch {
-            return;
-          }
-
-          candidates.push({
-            url: responseUrl,
-            status: response.status(),
-            data
-          });
-        } catch {}
-      }
-    });
 
     await page.goto(url, {
       waitUntil: 'domcontentloaded',
@@ -97,24 +44,70 @@ export default async function handler(req, res) {
 
     await new Promise(resolve => setTimeout(resolve, 7000));
 
-    const finalUrl = page.url();
-    const title = await page.title();
+    const debug = await page.evaluate(() => {
+      const text = el => (el?.innerText || el?.textContent || '').trim();
 
-    const bodyText = await page.evaluate(() =>
-      document.body?.innerText?.trim() || ''
-    );
+      const tables = [...document.querySelectorAll('table')].map((table, i) => ({
+        index: i,
+        text: text(table).slice(0, 12000),
+        html: table.outerHTML.slice(0, 25000),
+        rows: [...table.querySelectorAll('tr')].map((tr, ri) => ({
+          row: ri,
+          text: text(tr),
+          cells: [...tr.querySelectorAll('th,td')].map((cell, ci) => ({
+            cell: ci,
+            text: text(cell),
+            html: cell.outerHTML.slice(0, 3000)
+          }))
+        }))
+      }));
+
+      const links = [...document.querySelectorAll('a')]
+        .map(a => ({
+          text: text(a),
+          href: a.href
+        }))
+        .filter(x => x.text || x.href);
+
+      const interesting = [...document.querySelectorAll('body *')]
+        .map((el, i) => {
+          const t = text(el);
+          const cls =
+            typeof el.className === 'string'
+              ? el.className
+              : el.getAttribute('class') || '';
+
+          return {
+            i,
+            tag: el.tagName,
+            id: el.id || '',
+            className: cls,
+            text: t.slice(0, 1000)
+          };
+        })
+        .filter(x =>
+          x.text &&
+          (
+            /391|372|397|382|403|343|369|411|357|407|405|338/.test(x.text) ||
+            /plac|sum|final|kvarts|ranking|omdans/i.test(x.text)
+          )
+        )
+        .slice(0, 500);
+
+      return {
+        title: document.title,
+        bodyText: text(document.body).slice(0, 50000),
+        tables,
+        links: links.slice(0, 500),
+        interesting
+      };
+    });
 
     return res.status(200).json({
       ok: true,
-      mode: /\/results\/\d+(?:[/?#]|$)/i.test(url)
-        ? 'direct-result'
-        : 'results',
-      finalUrl,
-      title,
-      candidates,
-      network,
-      failed,
-      bodyText: bodyText.slice(0, 50000)
+      mode: 'dom-debug',
+      finalUrl: page.url(),
+      ...debug
     });
 
   } catch (error) {
