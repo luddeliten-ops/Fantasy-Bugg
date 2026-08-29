@@ -1,3 +1,270 @@
-<!doctype html><html lang="sv"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fantasy Bugg – resultatimport</title>
-<style>body{font-family:system-ui;background:#f6f4f8;color:#28152d;margin:0}.w{max-width:760px;margin:auto;padding:20px}.c{background:#fff;border-radius:22px;padding:20px;margin:14px 0;box-shadow:0 6px 30px #2b0a3210}label{font-weight:800;display:block;margin:16px 0 6px}input,button{width:100%;box-sizing:border-box;padding:14px;border-radius:12px;font:inherit}input{border:1px solid #ddd}button{border:0;background:#410047;color:#fff;font-weight:800;margin-top:18px}.muted{color:#786b7b;font-size:14px}.ok{color:#18794e;font-weight:800}.err{color:#a12b3a;font-weight:800}.row{padding:12px 0;border-top:1px solid #eee}pre{white-space:pre-wrap;word-break:break-word;background:#f3f1f4;padding:12px;border-radius:12px;font-size:12px;max-height:420px;overflow:auto}</style>
-<body><div class="w"><div class="c"><h1>Importera Bugg
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantasy Bugg – Resultatimport</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 22px;
+      background: #f7f4fa;
+      color: #26102e;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 22px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 21px;
+    }
+
+    p {
+      color: #6d6170;
+      line-height: 1.45;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin: 20px 0 7px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #d8d1dc;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 16px;
+      border: 0;
+      border-radius: 13px;
+      background: #5ee98a;
+      color: #102416;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+    }
+
+    .status {
+      margin-top: 18px;
+      font-weight: 700;
+    }
+
+    .result {
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .class-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 20px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 12px;
+      background: #f5f2f7;
+      padding: 12px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <div class="card">
+    <h1>Importera Bugg</h1>
+    <p>
+      Klistra in den direkta resultatlänken från Vote4Dance
+      för varje Bugg-klass.
+    </p>
+
+    <label>Bugg Junior</label>
+    <input
+      id="junior"
+      placeholder="https://vote4dance.com/public/event/.../results/..."
+    >
+
+    <label>Bugg Vuxen</label>
+    <input
+      id="vuxen"
+      value="https://vote4dance.com/public/event/3983/comp/4027/results/91787"
+      placeholder="https://vote4dance.com/public/event/.../results/..."
+    >
+
+    <label>Bugg Senior</label>
+    <input
+      id="senior"
+      placeholder="https://vote4dance.com/public/event/.../results/..."
+    >
+
+    <button id="fetchBtn" onclick="hamtaResultat()">
+      Hämta resultat
+    </button>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Förhandsgranskning</h2>
+    <p>
+      Resultaten visas här först. Ingenting sparas ännu.
+    </p>
+
+    <div id="results">
+      Inga resultat hämtade ännu.
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function hamtaResultat() {
+
+  const button = document.getElementById("fetchBtn");
+  const status = document.getElementById("status");
+  const results = document.getElementById("results");
+
+  const classes = [
+    {
+      name: "Bugg Junior",
+      url: document.getElementById("junior").value.trim()
+    },
+    {
+      name: "Bugg Vuxen",
+      url: document.getElementById("vuxen").value.trim()
+    },
+    {
+      name: "Bugg Senior",
+      url: document.getElementById("senior").value.trim()
+    }
+  ].filter(x => x.url);
+
+  if (!classes.length) {
+    status.textContent = "Klistra in minst en resultatlänk.";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "Hämtar resultat från Vote4Dance…";
+  results.innerHTML = "";
+
+  try {
+
+    for (const cls of classes) {
+
+      const heading = document.createElement("div");
+      heading.className = "class-title";
+      heading.textContent = cls.name;
+      results.appendChild(heading);
+
+      const response = await fetch(
+        "/api/vote4dance?url=" + encodeURIComponent(cls.url)
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        const error = document.createElement("div");
+        error.className = "result";
+        error.textContent =
+          "Fel: " + (data.error || "Kunde inte hämta resultat.");
+        results.appendChild(error);
+        continue;
+      }
+
+      if (Array.isArray(data.rows) && data.rows.length) {
+
+        data.rows.forEach(row => {
+          const div = document.createElement("div");
+          div.className = "result";
+
+          div.innerHTML =
+            "<strong>" +
+            (row.placement ?? "?") +
+            ". " +
+            escapeHtml(row.name || row.pair_name || "Okänt danspar") +
+            "</strong>";
+
+          results.appendChild(div);
+        });
+
+      } else if (
+        Array.isArray(data.candidates) &&
+        data.candidates.length
+      ) {
+
+        const pre = document.createElement("pre");
+        pre.textContent =
+          JSON.stringify(data.candidates, null, 2);
+
+        results.appendChild(pre);
+
+      } else {
+
+        const pre = document.createElement("pre");
+
+        pre.textContent =
+          data.bodyText ||
+          "Sidan öppnades men inga resultat kunde identifieras.";
+
+        results.appendChild(pre);
+      }
+    }
+
+    status.textContent = "Hämtningen är klar ✓";
+
+  } catch (error) {
+
+    status.textContent =
+      "Ett fel uppstod: " + error.message;
+
+  } finally {
+
+    button.disabled = false;
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>
+
