@@ -1,0 +1,1 @@
+{"version":2,"rewrites":[{"source":"/api/vote4dance","destination":"/api/vote4dance.js"}]}
