@@ -178,13 +178,23 @@
   <div id="resultsCard" class="card hidden">
 
     <h2>Förhandsgranskning</h2>
+    
+  <div id="results"></div>
 
-    <div id="results"></div>
+<button id="saveBtn" type="button">
+  Spara resultat
+</button>
 
-  </div>
+<div id="saveStatus"></div>
+
+</div>
+
+
+  
 
 </div>
   
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="Marker.js"></script>
 <script>
 
@@ -647,7 +657,10 @@ rows.forEach(function(row){
   );
 
 })();
-
+document.getElementById("saveBtn").addEventListener("click", function(){
+  document.getElementById("saveStatus").textContent =
+    "✅ Spara-knappen fungerar!";
+});
 </script>
 
 </body>
