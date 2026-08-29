@@ -184,7 +184,8 @@
   </div>
 
 </div>
-
+  
+<script src="market.js"></script>
 <script>
 
 (function(){
@@ -428,14 +429,7 @@
 
     var rows =
       highestStageRows(parsed.rows);
-var market = [
-  ["Junior","Felix Freidmann & Emilia Hedlund"],
-  ["Junior","Alma Forsberg & Maja Forsberg"],
-  ["Junior","Hannes Ardbäck & Selma Lundin"],
-  ["Junior","Oliver Odenius & Emelie Nordeberg"],
-  ["Junior","William Johansson & Rebecka Ärlestig"],
-  ["Vuxen","Ludwig Wilhelmsson & Felicia Strömstedt"]
-];
+var market = window.FANTASY_MARKET || [];
 
 function norm(s){
   return String(s || "")
