@@ -428,7 +428,68 @@
 
     var rows =
       highestStageRows(parsed.rows);
+var market = [
+  ["Junior","Felix Freidmann & Emilia Hedlund"],
+  ["Junior","Alma Forsberg & Maja Forsberg"],
+  ["Junior","Hannes Ardbäck & Selma Lundin"],
+  ["Junior","Oliver Odenius & Emelie Nordeberg"],
+  ["Junior","William Johansson & Rebecka Ärlestig"],
+  ["Vuxen","Ludwig Wilhelmsson & Felicia Strömstedt"]
+];
 
+function norm(s){
+  return String(s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9& ]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function isMatched(row){
+  return market.some(function(p){
+    return p[0] === row.age &&
+           norm(p[1]) === norm(row.name);
+  });
+}
+
+function basePoints(place){
+  if(place === 1) return 100;
+  if(place === 2) return 85;
+  if(place === 3) return 75;
+  if(place === 4) return 65;
+  if(place === 5) return 60;
+  if(place <= 10) return 50;
+  if(place <= 20) return 35;
+  if(place <= 40) return 20;
+  return 10;
+}
+
+var multiplier = {
+  ITT:1,
+  Nationell:1.2,
+  GP:1.5,
+  DM:1.75,
+  SM:2
+}[document.getElementById("level").value] || 1;
+
+rows.forEach(function(row){
+  row.matched = isMatched(row);
+
+  var entrants = rows.filter(function(r){
+    return r.age === row.age;
+  }).length;
+
+  var raw =
+    basePoints(row.place) +
+    Math.max(0, entrants - row.place) +
+    (row.place <= 10 ? 15 : 0) +
+    (row.place <= 3 ? 10 : 0) +
+    (row.place === 1 ? 15 : 0);
+
+  row.points = Math.round(raw * multiplier);
+});
     var junior =
       rows.filter(function(r){
         return r.age === "Junior";
