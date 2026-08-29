@@ -657,7 +657,150 @@ rows.forEach(function(row){
   );
 
 })();
+var supabaseClient = window.supabase.createClient(
+  "https://tkzjyasosqqshdzdvihr.supabase.co",
+  "sb_publishable_Ew_yx90GcTw51DXFowAtug_lXwevjzm",
+  {
+    auth:{
+      persistSession:true,
+      autoRefreshToken:true,
+      detectSessionInUrl:true
+    }
+  }
+);
 
+document.getElementById("saveBtn").addEventListener("click", async function(){
+
+  var saveStatus = document.getElementById("saveStatus");
+
+  try{
+
+    var sessionResult = await supabaseClient.auth.getSession();
+    var session = sessionResult.data.session;
+
+    if(!session){
+      saveStatus.textContent =
+        "Du måste vara inloggad som admin.";
+      return;
+    }
+
+    saveStatus.textContent = "Sparar…";
+
+    var rows =
+      highestStageRows(
+        window.__lastParsedRows || []
+      );
+
+    if(!rows.length){
+      saveStatus.textContent =
+        "Läs in CSV-filen först.";
+      return;
+    }
+
+    var level =
+      document.getElementById("level").value;
+
+    var competitionId =
+      "csv-" + Date.now();
+
+    var competitionName =
+      document.getElementById("competitionName").textContent ||
+      "Vote4Dance-tävling";
+
+    var competitionDate =
+      document.getElementById("competitionDate").textContent || null;
+
+    var compInsert =
+      await supabaseClient
+        .from("competitions")
+        .insert({
+          id: competitionId,
+          name: competitionName,
+          date: competitionDate || null,
+          level: level,
+          created_by: session.user.id
+        });
+
+    if(compInsert.error){
+      throw compInsert.error;
+    }
+
+    var resultRows = [];
+
+    rows.forEach(function(row){
+
+      var pairIndex = market.findIndex(function(p){
+        return p[0] === row.age &&
+               norm(p[1]) === norm(row.name);
+      });
+
+      if(pairIndex < 0){
+        return;
+      }
+
+      var entrants =
+        rows.filter(function(r){
+          return r.age === row.age;
+        }).length;
+
+      var multiplier = {
+        ITT:1,
+        Nationell:1.2,
+        GP:1.5,
+        DM:1.75,
+        SM:2
+      }[level] || 1;
+
+      var raw =
+        basePoints(row.place) +
+        Math.max(0, entrants - row.place) +
+        (row.place <= 10 ? 15 : 0) +
+        (row.place <= 3 ? 10 : 0) +
+        (row.place === 1 ? 15 : 0);
+
+      var points =
+        Math.round(raw * multiplier);
+
+      resultRows.push({
+        competition_id: competitionId,
+        pair_index: pairIndex,
+        pair_name: row.name,
+        placement: row.place,
+        matched: true,
+        fantasy_points: points
+      });
+
+    });
+
+    if(!resultRows.length){
+      throw new Error("Inga matchade resultat att spara.");
+    }
+
+    var resultsInsert =
+      await supabaseClient
+        .from("competition_results")
+        .insert(resultRows);
+
+    if(resultsInsert.error){
+      throw resultsInsert.error;
+    }
+
+    saveStatus.textContent =
+      "✅ Sparat! " +
+      resultRows.length +
+      " resultat.";
+
+  }catch(error){
+
+    console.error(error);
+
+    saveStatus.textContent =
+      "Fel: " +
+      (error.message || error);
+
+  }
+
+});
 </script>
 
 </body>
