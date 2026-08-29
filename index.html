@@ -550,34 +550,51 @@ rows.forEach(function(row){
     });
 
     var html = "";
+    
+rows.forEach(function(row){
 
-    rows.forEach(function(row){
+  html +=
+    '<div class="row">' +
 
-      html +=
-        '<div class="row">' +
+      '<div class="name">' +
+        escapeHtml(row.name) +
+      '</div>' +
 
-          '<div class="name">' +
-            escapeHtml(row.name) +
-          '</div>' +
+      '<div class="meta">' +
 
-          '<div class="meta">' +
+        'Bugg ' +
+        escapeHtml(row.age) +
 
-            'Bugg ' +
-            escapeHtml(row.age) +
+        ' · klass ' +
+        escapeHtml(row.stage) +
 
-            ' · klass ' +
-            escapeHtml(row.stage) +
+        ' · startnr ' +
+        escapeHtml(row.startNo) +
 
-            ' · startnr ' +
-            escapeHtml(row.startNo) +
+        ' · <span class="place">placering ' +
+        escapeHtml(row.place) +
+        '</span>' +
 
-            ' · <span class="place">placering ' +
-            escapeHtml(row.place) +
-            '</span>' +
+      '</div>' +
 
-          '</div>' +
+      '<div style="margin-top:6px;font-size:13px;font-weight:800;color:' +
+        (row.matched ? '#16864d' : '#b13a46') +
+      '">' +
 
-        '</div>';
+        (row.matched
+          ? '✓ Matchad mot fantasy-marknaden'
+          : '⚠ Ej matchad') +
+
+        ' · ' +
+        row.points +
+        ' fantasy-poäng' +
+
+      '</div>' +
+
+    '</div>';
+
+});
+   
 
     });
 
