@@ -1,268 +1,581 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fantasy Bugg – Resultatimport</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fantasy Bugg – CSV-import</title>
 
   <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      padding: 22px;
-      background: #f7f4fa;
-      color: #26102e;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#f4f1f5;
+      color:#26132b;
     }
-
-    .container {
-      max-width: 700px;
-      margin: auto;
+    .top{
+      background:linear-gradient(135deg,#37003c,#690875);
+      color:white;
+      padding:28px 18px;
     }
-
-    .card {
-      background: white;
-      border-radius: 22px;
-      padding: 24px;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+    .wrap{
+      max-width:850px;
+      margin:auto;
     }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 34px;
+    h1{
+      margin:0 0 8px;
+      font-size:30px;
     }
-
-    h2 {
-      margin-top: 0;
-      font-size: 21px;
+    p{
+      line-height:1.45;
     }
-
-    p {
-      color: #6d6170;
-      line-height: 1.45;
+    .card{
+      background:white;
+      margin:16px auto;
+      padding:18px;
+      border-radius:20px;
+      box-shadow:0 8px 30px rgba(55,0,60,.07);
     }
-
-    label {
-      display: block;
-      font-weight: 700;
-      margin: 20px 0 7px;
+    label{
+      display:block;
+      font-weight:800;
+      margin:12px 0 6px;
     }
-
-    input {
-      width: 100%;
-      padding: 15px;
-      border: 1px solid #d8d1dc;
-      border-radius: 12px;
-      font-size: 16px;
+    input,select,button{
+      width:100%;
+      padding:14px;
+      border-radius:12px;
+      font-size:16px;
     }
-
-    button {
-      width: 100%;
-      margin-top: 24px;
-      padding: 16px;
-      border: 0;
-      border-radius: 13px;
-      background: #5ee98a;
-      color: #102416;
-      font-size: 17px;
-      font-weight: 800;
-      cursor: pointer;
+    input,select{
+      border:1px solid #d8d0da;
+      background:white;
     }
-
-    button:disabled {
-      opacity: .55;
+    button{
+      margin-top:14px;
+      border:0;
+      background:#00ff87;
+      color:#153522;
+      font-weight:900;
+      cursor:pointer;
+      -webkit-appearance:none;
+      appearance:none;
     }
-
-    .status {
-      margin-top: 18px;
-      font-weight: 700;
+    button:active{
+      transform:scale(.99);
     }
-
-    .result {
-      padding: 14px 0;
-      border-bottom: 1px solid #eee;
+    #status{
+      margin-top:14px;
+      font-weight:800;
     }
-
-    .class-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin-top: 20px;
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:15px;
     }
-
-    pre {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      font-size: 12px;
-      background: #f5f2f7;
-      padding: 12px;
-      border-radius: 10px;
+    .stat{
+      background:#f6f2f7;
+      padding:12px;
+      border-radius:14px;
+    }
+    .stat small{
+      display:block;
+      color:#77697a;
+    }
+    .stat b{
+      font-size:23px;
+    }
+    .row{
+      padding:12px 0;
+      border-top:1px solid #eee7ef;
+    }
+    .name{
+      font-weight:900;
+    }
+    .meta{
+      color:#77697a;
+      font-size:13px;
+      margin-top:3px;
+    }
+    .place{
+      color:#37003c;
+      font-weight:900;
+    }
+    .hidden{
+      display:none;
+    }
+    @media(max-width:600px){
+      .stats{grid-template-columns:1fr 1fr}
+      h1{font-size:27px}
     }
   </style>
 </head>
 
 <body>
-<div class="container">
+
+<div class="top">
+  <div class="wrap">
+    <h1>Fantasy Bugg</h1>
+    <p>Importera resultat direkt från Vote4Dance CSV.</p>
+  </div>
+</div>
+
+<div class="wrap">
 
   <div class="card">
-    <h1>Importera Bugg</h1>
-    <p>
-      Klistra in den direkta resultatlänken från Vote4Dance
-      för varje Bugg-klass.
-    </p>
 
-    <label>Bugg Junior</label>
+    <label for="csv">Vote4Dance Result CSV</label>
     <input
-      id="junior"
-      placeholder="https://vote4dance.com/public/event/.../results/..."
+      id="csv"
+      type="file"
+      accept=".csv,text/csv,text/plain"
     >
 
-    <label>Bugg Vuxen</label>
-    <input
-      id="vuxen"
-      value="https://vote4dance.com/public/event/3983/comp/4027/results/91787"
-      placeholder="https://vote4dance.com/public/event/.../results/..."
-    >
+    <label for="level">Tävlingsnivå</label>
+    <select id="level">
+      <option>ITT</option>
+      <option>Nationell</option>
+      <option selected>GP</option>
+      <option>DM</option>
+      <option>SM</option>
+    </select>
 
-    <label>Bugg Senior</label>
-    <input
-      id="senior"
-      placeholder="https://vote4dance.com/public/event/.../results/..."
-    >
-
-    <button id="fetchBtn" onclick="hamtaResultat()">
-      Hämta resultat
+    <button id="readBtn" type="button">
+      Läs resultat
     </button>
 
-    <div id="status" class="status"></div>
+    <div id="status">
+      Välj CSV-filen från Vote4Dance.
+    </div>
+
   </div>
 
-  <div class="card">
-    <h2>Förhandsgranskning</h2>
-    <p>
-      Resultaten visas här först. Ingenting sparas ännu.
-    </p>
+  <div id="summary" class="card hidden">
 
-    <div id="results">
-      Inga resultat hämtade ännu.
+    <h2 id="competitionName">Tävling</h2>
+    <div id="competitionDate"></div>
+
+    <div class="stats">
+      <div class="stat">
+        <small>Junior</small>
+        <b id="juniorCount">0</b>
+      </div>
+
+      <div class="stat">
+        <small>Vuxen</small>
+        <b id="adultCount">0</b>
+      </div>
+
+      <div class="stat">
+        <small>Senior</small>
+        <b id="seniorCount">0</b>
+      </div>
     </div>
+
+  </div>
+
+  <div id="resultsCard" class="card hidden">
+
+    <h2>Förhandsgranskning</h2>
+
+    <div id="results"></div>
+
   </div>
 
 </div>
 
 <script>
-async function hamtaResultat() {
 
-  const button = document.getElementById("fetchBtn");
-  const status = document.getElementById("status");
-  const results = document.getElementById("results");
+(function(){
 
-  const classes = [
-    {
-      name: "Bugg Junior",
-      url: document.getElementById("junior").value.trim()
-    },
-    {
-      name: "Bugg Vuxen",
-      url: document.getElementById("vuxen").value.trim()
-    },
-    {
-      name: "Bugg Senior",
-      url: document.getElementById("senior").value.trim()
-    }
-  ].filter(x => x.url);
+  var fileInput = document.getElementById("csv");
+  var button = document.getElementById("readBtn");
+  var status = document.getElementById("status");
 
-  if (!classes.length) {
-    status.textContent = "Klistra in minst en resultatlänk.";
-    return;
+  function escapeHtml(value){
+    return String(value || "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;");
   }
 
-  button.disabled = true;
-  status.textContent = "Hämtar resultat från Vote4Dance…";
-  results.innerHTML = "";
+  function parseCsvLine(line){
 
-  try {
+    var result = [];
+    var current = "";
+    var quote = false;
 
-    for (const cls of classes) {
+    for(var i=0;i<line.length;i++){
 
-      const heading = document.createElement("div");
-      heading.className = "class-title";
-      heading.textContent = cls.name;
-      results.appendChild(heading);
+      var c = line[i];
 
-      const response = await fetch(
-        "/api/vote4dance?url=" + encodeURIComponent(cls.url)
-      );
+      if(c === '"'){
 
-      const data = await response.json();
+        if(quote && line[i+1] === '"'){
+          current += '"';
+          i++;
+        }else{
+          quote = !quote;
+        }
 
-      if (!response.ok || !data.ok) {
-        const error = document.createElement("div");
-        error.className = "result";
-        error.textContent =
-          "Fel: " + (data.error || "Kunde inte hämta resultat.");
-        results.appendChild(error);
+      }else if(c === ";" && !quote){
+
+        result.push(current);
+        current = "";
+
+      }else{
+
+        current += c;
+
+      }
+
+    }
+
+    result.push(current);
+
+    return result;
+  }
+
+  function readFile(file){
+
+    return new Promise(function(resolve,reject){
+
+      var reader = new FileReader();
+
+      reader.onload = function(){
+        resolve(reader.result);
+      };
+
+      reader.onerror = function(){
+        reject(new Error("Kunde inte läsa filen."));
+      };
+
+      reader.readAsText(file,"UTF-8");
+
+    });
+
+  }
+
+  function parseVote4Dance(text){
+
+    text = text.replace(/^\uFEFF/,"");
+
+    var lines = text.split(/\r?\n/);
+
+    var competitionName = "";
+    var competitionDate = "";
+
+    for(var i=0;i<8 && i<lines.length;i++){
+
+      var line = lines[i]
+        .replace(/^#\s*/,"")
+        .trim();
+
+      if(!line || line === "RESULTS"){
         continue;
       }
 
-      if (Array.isArray(data.rows) && data.rows.length) {
-
-        data.rows.forEach(row => {
-          const div = document.createElement("div");
-          div.className = "result";
-
-          div.innerHTML =
-            "<strong>" +
-            (row.placement ?? "?") +
-            ". " +
-            escapeHtml(row.name || row.pair_name || "Okänt danspar") +
-            "</strong>";
-
-          results.appendChild(div);
-        });
-
-      } else if (
-        Array.isArray(data.candidates) &&
-        data.candidates.length
-      ) {
-
-        const pre = document.createElement("pre");
-        pre.textContent =
-          JSON.stringify(data.candidates, null, 2);
-
-        results.appendChild(pre);
-
-      } else {
-
-        const pre = document.createElement("pre");
-
-        pre.textContent =
-          data.bodyText ||
-          "Sidan öppnades men inga resultat kunde identifieras.";
-
-        results.appendChild(pre);
+      if(/^\d{4}-\d{2}-\d{2}$/.test(line)){
+        competitionDate = line;
+      }else if(!competitionName){
+        competitionName = line;
       }
+
     }
 
-    status.textContent = "Hämtningen är klar ✓";
+    var headerIndex = -1;
 
-  } catch (error) {
+    for(var j=0;j<lines.length;j++){
 
-    status.textContent =
-      "Ett fel uppstod: " + error.message;
+      if(lines[j].indexOf("Klassrubrik;") === 0){
+        headerIndex = j;
+        break;
+      }
 
-  } finally {
+    }
 
-    button.disabled = false;
+    if(headerIndex === -1){
+      throw new Error("Hittar inte Vote4Dance-resultat i filen.");
+    }
+
+    var header = parseCsvLine(lines[headerIndex]);
+
+    function col(name){
+      return header.indexOf(name);
+    }
+
+    var startCol = col("Startnr");
+    var placeCol = col("Plac");
+    var name1Col = col("Namn 1");
+    var name2Col = col("Namn 2");
+    var clubCol = col("Klubb");
+
+    if(
+      startCol === -1 ||
+      placeCol === -1 ||
+      name1Col === -1 ||
+      name2Col === -1
+    ){
+      throw new Error("CSV-filen saknar nödvändiga kolumner.");
+    }
+
+    var currentClass = "";
+    var rows = [];
+
+    for(var k=headerIndex+1;k<lines.length;k++){
+
+      var raw = lines[k].trim();
+
+      if(!raw){
+        continue;
+      }
+
+      if(raw.indexOf(";") === -1){
+
+        currentClass = raw;
+        continue;
+
+      }
+
+      var classMatch =
+        currentClass.match(
+          /^Bugg (Junior|Vuxen|Senior) ([NABCD])$/
+        );
+
+      if(!classMatch){
+        continue;
+      }
+
+      var cells = parseCsvLine(lines[k]);
+
+      var name1 = (cells[name1Col] || "").trim();
+      var name2 = (cells[name2Col] || "").trim();
+
+      if(!name1 || !name2){
+        continue;
+      }
+
+      rows.push({
+
+        age: classMatch[1],
+
+        stage: classMatch[2],
+
+        startNo:
+          (cells[startCol] || "").trim(),
+
+        place:
+          parseInt(cells[placeCol],10) || 0,
+
+        name:
+          name1 + " & " + name2,
+
+        club:
+          clubCol >= 0
+            ? (cells[clubCol] || "").trim()
+            : ""
+
+      });
+
+    }
+
+    return {
+      name: competitionName || "Vote4Dance-tävling",
+      date: competitionDate,
+      rows: rows
+    };
+
   }
-}
 
-function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
-}
+  function highestStageRows(rows){
+
+    var value = {
+      N:1,
+      D:2,
+      C:3,
+      B:4,
+      A:5
+    };
+
+    var map = {};
+
+    rows.forEach(function(row){
+
+      var key =
+        row.age +
+        "|" +
+        row.name.toLowerCase();
+
+      if(
+        !map[key] ||
+        value[row.stage] >
+        value[map[key].stage]
+      ){
+        map[key] = row;
+      }
+
+    });
+
+    return Object.keys(map)
+      .map(function(key){
+        return map[key];
+      });
+
+  }
+
+  function render(parsed){
+
+    var rows =
+      highestStageRows(parsed.rows);
+
+    var junior =
+      rows.filter(function(r){
+        return r.age === "Junior";
+      });
+
+    var adult =
+      rows.filter(function(r){
+        return r.age === "Vuxen";
+      });
+
+    var senior =
+      rows.filter(function(r){
+        return r.age === "Senior";
+      });
+
+    document.getElementById(
+      "competitionName"
+    ).textContent = parsed.name;
+
+    document.getElementById(
+      "competitionDate"
+    ).textContent = parsed.date;
+
+    document.getElementById(
+      "juniorCount"
+    ).textContent = junior.length;
+
+    document.getElementById(
+      "adultCount"
+    ).textContent = adult.length;
+
+    document.getElementById(
+      "seniorCount"
+    ).textContent = senior.length;
+
+    document.getElementById(
+      "summary"
+    ).classList.remove("hidden");
+
+    document.getElementById(
+      "resultsCard"
+    ).classList.remove("hidden");
+
+    rows.sort(function(a,b){
+
+      var order = {
+        Junior:1,
+        Vuxen:2,
+        Senior:3
+      };
+
+      if(order[a.age] !== order[b.age]){
+        return order[a.age] - order[b.age];
+      }
+
+      return a.place - b.place;
+
+    });
+
+    var html = "";
+
+    rows.forEach(function(row){
+
+      html +=
+        '<div class="row">' +
+
+          '<div class="name">' +
+            escapeHtml(row.name) +
+          '</div>' +
+
+          '<div class="meta">' +
+
+            'Bugg ' +
+            escapeHtml(row.age) +
+
+            ' · klass ' +
+            escapeHtml(row.stage) +
+
+            ' · startnr ' +
+            escapeHtml(row.startNo) +
+
+            ' · <span class="place">placering ' +
+            escapeHtml(row.place) +
+            '</span>' +
+
+          '</div>' +
+
+        '</div>';
+
+    });
+
+    document.getElementById(
+      "results"
+    ).innerHTML = html;
+
+    status.innerHTML =
+      "✅ " +
+      rows.length +
+      " unika Bugg-par lästa.";
+
+  }
+
+  button.addEventListener(
+    "click",
+    async function(){
+
+      try{
+
+        var file =
+          fileInput.files &&
+          fileInput.files[0];
+
+        if(!file){
+
+          status.textContent =
+            "Välj CSV-filen först.";
+
+          return;
+
+        }
+
+        status.textContent =
+          "Läser resultat…";
+
+        var text =
+          await readFile(file);
+
+        var parsed =
+          parseVote4Dance(text);
+
+        render(parsed);
+
+      }catch(error){
+
+        console.error(error);
+
+        status.textContent =
+          "Fel: " +
+          error.message;
+
+      }
+
+    }
+  );
+
+})();
+
 </script>
 
 </body>
