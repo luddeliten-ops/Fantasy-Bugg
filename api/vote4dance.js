@@ -21,18 +21,15 @@ export default async function handler(req, res) {
     }
 
     browser = await puppeteer.launch({
-      args: puppeteer.defaultArgs({
-        args: chromium.args,
-        headless: 'shell'
-      }),
-      defaultViewport: {
-        width: 390,
-        height: 844,
-        deviceScaleFactor: 1
-      },
-      executablePath: await chromium.executablePath(),
-      headless: 'shell'
-    });
+  args: chromium.args,
+  defaultViewport: {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 1
+  },
+  executablePath: await chromium.executablePath(),
+  headless: 'shell'
+});
 
     const page = await browser.newPage();
 
