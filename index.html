@@ -5376,38 +5376,85 @@ async function importResults(){
 
   const parsed = [];
 
-  for(
-    const row of rows
-  ){
+  let currentClassName = "";
 
-    const className =
-      pick(
-        row,
-        "klass",
-        "class",
-        "grenklass",
-        "competitionclass",
-        "tävlingsklass"
-      );
+for(
+  const row of rows
+){
 
-    const cls =
-      fantasyClass(
-        className
-      );
+  /*
+    Vote4Dance lägger klassnamnet på en egen rad,
+    exempelvis "Bugg Senior N".
+  */
+  const classHeading =
+    pick(
+      row,
+      "klassrubrik"
+    );
 
-    if(!cls){
-      continue;
-    }
+  if(classHeading){
 
-    const pairName =
-      pick(
-        row,
-        "danspar",
-        "par",
-        "pair",
-        "namn",
-        "name",
-        "couple"
+    currentClassName =
+      classHeading;
+
+    continue;
+  }
+
+
+  const className =
+    currentClassName ||
+    pick(
+      row,
+      "klass",
+      "class",
+      "grenklass",
+      "competitionclass",
+      "tävlingsklass"
+    );
+
+
+  const cls =
+    fantasyClass(
+      className
+    );
+
+
+  if(!cls){
+    continue;
+  }
+
+
+  /*
+    Vote4Dance har personerna i två separata kolumner:
+    Namn 1 + Namn 2
+  */
+  const name1 =
+    pick(
+      row,
+      "namn 1",
+      "namn1"
+    );
+
+  const name2 =
+    pick(
+      row,
+      "namn 2",
+      "namn2"
+    );
+
+
+  const pairName =
+    name1 && name2
+      ? `${name1.trim()} & ${name2.trim()}`
+      : pick(
+          row,
+          "danspar",
+          "par",
+          "pair",
+          "namn",
+          "name",
+          "couple"
+        );
       );
 
     const placement =
