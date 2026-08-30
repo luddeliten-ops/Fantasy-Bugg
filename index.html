@@ -1704,8 +1704,8 @@ const ADMIN_UID =
 
 const START_BUDGET = 100;
 const TEAM_SIZE = 5;
-const EXTRA_TRANSFER_PENALTY = 35;
-const DNS_PENALTY = 8;
+const EXTRA_TRANSFER_PENALTY = 100;
+const DNS_PENALTY = 50;
 
 const LEVEL_MULTIPLIERS = {
   ITT:1,
@@ -3168,35 +3168,97 @@ function calculateFantasyPoints(
   price
 ){
 
-  const raw =
-    basePlacementPoints(
-      placement
-    ) +
+  const total =
     Math.max(
-      0,
-      entrants -
-      placement
-    ) +
-    (
-      placement <= 10
-        ? 15
-        : 0
-    ) +
-    (
-      placement <= 3
-        ? 10
-        : 0
-    ) +
-    (
-      placement === 1
-        ? 15
-        : 0
+      1,
+      Number(entrants) || 1
     );
 
+  const place =
+    Math.max(
+      1,
+      Math.min(
+        Number(placement) || total,
+        total
+      )
+    );
+
+
+  /*
+    PROCENTUELL PLACERING
+
+    1:a = 100 %
+    sista = 0 %
+  */
+
+  const placementPercent =
+    total <= 1
+      ? 1
+      : (
+          total - place
+        ) /
+        (
+          total - 1
+        );
+
+
+  /*
+    JÄMN POÄNGKURVA
+
+    Sista plats ≈ 25 poäng
+    Mitten ≈ 47 poäng
+    Vinnare ≈ 70 poäng
+  */
+
+  const placementPoints =
+    25 +
+    (
+      45 *
+      placementPercent
+    );
+
+
+  /*
+    KLASSENS STORLEK
+
+    Storleken påverkar,
+    men inte jättemycket.
+
+    40 par eller fler
+    ger full faktor.
+  */
+
+  const classSizeFactor =
+    0.85 +
+    (
+      0.15 *
+      (
+        Math.min(
+          total,
+          40
+        ) / 40
+      )
+    );
+
+
+  let raw =
+    placementPoints *
+    classSizeFactor;
+
+
+  /*
+    LITEN VALUE-BONUS
+
+    Billigare par får fortfarande
+    lite extra värde.
+
+    Max 15 extra poäng.
+  */
+
   const valueBonus =
-    placement <= 20
+    place <= 20
       ? Math.min(
-          30,
+          15,
           Math.round(
             raw *
             (
@@ -3209,11 +3271,16 @@ function calculateFantasyPoints(
         )
       : 0;
 
+
+  raw += valueBonus;
+
+
+  /*
+    TÄVLINGSNIVÅ
+  */
+
   return Math.round(
-    (
-      raw +
-      valueBonus
-    ) *
+    raw *
     (
       LEVEL_MULTIPLIERS[
         level
