@@ -798,7 +798,7 @@ main{
   >
     Logga ut
   </button>
-</div>
+  </div>
 
 <main>
 
@@ -1598,8 +1598,7 @@ main{
 </div>
 
 <div class="authOverlay" id="authOverlay">
-
-  <div class="authCard">
+    <div class="authCard">
 
     <div class="brand" style="color:var(--navy)">
       <span class="brandmark">♬</span>
@@ -2398,7 +2397,7 @@ function renderMarket(){
   document
     .querySelectorAll(
       "[data-select]"
-    )
+          )
     .forEach(
       button => {
 
@@ -3198,8 +3197,7 @@ function renderAdminCompetitions(){
 
       <div style="flex:1">
         <b>${esc(competition.name || "Tävling")}</b>
-
-        <div class="meta">
+                <div class="meta">
           ${esc(competition.date || "")}
         </div>
       </div>
@@ -3998,6 +3996,2407 @@ async function loadMyLeagues(){
 
     return;
   }
+      )
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            selectPair(
+              Number(
+                button.dataset.select
+              )
+            );
+      }
+    );
+}
+
+async function selectPair(index){
+
+  const pair =
+    getPair(index);
+
+  if(
+    !pair ||
+    isSelected(index)
+  ){
+    return;
+  }
+
+  if(
+    pendingTransferOut !==
+    null
+  ){
+
+    const outgoing =
+      getPair(
+        pendingTransferOut
+      );
+
+    const available =
+      bank +
+      outgoing.price;
+
+    if(
+      pair.price >
+      available
+    ){
+
+      alert(
+        "Inte tillräcklig budget."
+      );
+
+      return;
+    }
+
+    selectedPairs =
+      selectedPairs.map(
+        value =>
+          value ===
+          pendingTransferOut
+            ? index
+            : value
+      );
+
+    if(
+      captainIndex ===
+      pendingTransferOut
+    ){
+
+      captainIndex =
+        index;
+    }
+
+    bank =
+      available -
+      pair.price;
+
+    pendingTransferOut =
+      null;
+
+  }else{
+
+    if(
+      selectedPairs.length >=
+      TEAM_SIZE ||
+      pair.price >
+      bank
+    ){
+      return;
+    }
+
+    selectedPairs.push(
+      index
+    );
+
+    bank -=
+      pair.price;
+
+    if(
+      captainIndex ===
+      null
+    ){
+      captainIndex =
+        index;
+    }
+  }
+
+  await saveTeam();
+
+  renderTeam();
+  renderMarket();
+}
+
+function openPairModal(index){
+
+  const pair =
+    getPair(index);
+
+  if(!pair){
+    return;
+  }
+
+  $("pairModalTitle").textContent =
+    pair.name;
+
+  $("pairModalBody").innerHTML = `
+    <p class="meta">
+      Bugg ${esc(pair.cls)}
+    </p>
+
+    <div class="kpis">
+
+      <div class="kpi">
+        <small>Pris</small>
+        <strong>
+          ${money(pair.price)}
+        </strong>
+      </div>
+
+      <div class="kpi">
+        <small>Form</small>
+        <strong>
+          ${
+            pair.recentPoints.length
+              ? pair.form.toFixed(1)
+              : "–"
+          }
+        </strong>
+      </div>
+
+    </div>
+
+    ${
+      pair.recentPoints.length
+        ? pair.recentPoints
+            .map(
+              result => `
+                <div class="scoreRow">
+
+                  <div>
+                    ${
+                      esc(
+                        result.competition ||
+                        "Tävling"
+                      )
+                    }
+                  </div>
+
+                  <div>
+                    ${
+                      result.placement ||
+                      "–"
+                    }
+                  </div>
+
+                  <div>
+                    <b>
+                      ${
+                        result.points ||
+                        0
+                      }
+                      p
+                    </b>
+                  </div>
+
+                </div>
+              `
+            )
+            .join("")
+        : `
+          <div class="empty">
+            Inga resultat ännu.
+          </div>
+        `
+    }
+  `;
+
+  openModal(
+    "pairModal"
+  );
+}
+
+async function saveTeam(){
+
+  localStorage.setItem(
+    "fb_team",
+    JSON.stringify({
+      selectedPairs,
+      captainIndex,
+      bank
+    })
+  );
+
+  if(
+    !currentUser
+  ){
+    return;
+  }
+
+  const {
+    error
+  } =
+    await sb
+      .from(
+        "fantasy_teams"
+      )
+      .upsert(
+        {
+          user_id:
+            currentUser.id,
+          pair_indices:
+            selectedPairs,
+          captain_index:
+            captainIndex,
+          updated_at:
+            new Date()
+              .toISOString()
+        },
+        {
+          onConflict:
+            "user_id"
+        }
+      );
+
+  if(error){
+    console.warn(
+      error.message
+    );
+  }
+
+  try{
+
+    await sb
+      .from(
+        "fantasy_wallets"
+      )
+      .upsert(
+        {
+          user_id:
+            currentUser.id,
+          bank
+        },
+        {
+          onConflict:
+            "user_id"
+        }
+      );
+
+  }catch(error){}
+}
+
+async function loadTeam(){
+
+  const loadLocal =
+    () => {
+
+      try{
+
+        const local =
+          JSON.parse(
+            localStorage.getItem(
+              "fb_team"
+            ) ||
+            "null"
+          );
+
+        if(
+          !local
+        ){
+          return;
+        }
+
+        selectedPairs =
+          (
+            local.selectedPairs ||
+            []
+          )
+            .map(Number)
+            .filter(
+              index =>
+                getPair(index)
+            );
+
+        captainIndex =
+          local.captainIndex ==
+          null
+            ? null
+            : Number(
+                local.captainIndex
+              );
+
+        bank =
+          Number.isFinite(
+            Number(
+              local.bank
+            )
+          )
+            ? Number(
+                local.bank
+              )
+            : START_BUDGET -
+              teamCurrentValue();
+
+      }catch(error){}
+    };
+
+  if(
+    !currentUser
+  ){
+
+    loadLocal();
+
+    renderTeam();
+
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "fantasy_teams"
+      )
+      .select(
+        "pair_indices,captain_index"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .maybeSingle();
+
+  if(
+    error ||
+    !data
+  ){
+
+    loadLocal();
+
+  }else{
+
+    selectedPairs =
+      (
+        data.pair_indices ||
+        []
+      )
+        .map(Number)
+        .filter(
+          index =>
+            getPair(index)
+        );
+
+    captainIndex =
+      data.captain_index ==
+      null
+        ? null
+        : Number(
+            data.captain_index
+          );
+
+    bank =
+      START_BUDGET -
+      teamCurrentValue();
+
+    try{
+
+      const wallet =
+        await sb
+          .from(
+            "fantasy_wallets"
+          )
+          .select(
+            "bank"
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .maybeSingle();
+
+      if(
+        wallet.data &&
+        Number.isFinite(
+          Number(
+            wallet.data.bank
+          )
+        )
+      ){
+
+        bank =
+          Number(
+            wallet.data.bank
+          );
+      }
+
+    }catch(error){}
+  }
+
+  renderTeam();
+  renderMarket();
+}
+
+function basePlacementPoints(
+  placement
+){
+
+  if(placement === 1){
+    return 100;
+  }
+
+  if(placement === 2){
+    return 85;
+  }
+
+  if(placement === 3){
+    return 75;
+  }
+
+  if(placement === 4){
+    return 65;
+  }
+
+  if(placement === 5){
+    return 60;
+  }
+
+  if(placement <= 10){
+    return 50;
+  }
+
+  if(placement <= 20){
+    return 35;
+  }
+
+  if(placement <= 40){
+    return 20;
+  }
+
+  return 10;
+}
+
+function calculateFantasyPoints(
+  placement,
+  entrants,
+  level,
+  price
+){
+
+  const raw =
+    basePlacementPoints(
+      placement
+    ) +
+    Math.max(
+      0,
+      entrants -
+      placement
+    ) +
+    (
+      placement <= 10
+        ? 15
+        : 0
+    ) +
+    (
+      placement <= 3
+        ? 10
+        : 0
+    ) +
+    (
+      placement === 1
+        ? 15
+        : 0
+    );
+
+  const valueBonus =
+    placement <= 20
+      ? Math.min(
+          30,
+          Math.round(
+            raw *
+            (
+              VALUE_BONUS[
+                price
+              ] ||
+              0
+            )
+          )
+        )
+      : 0;
+
+  return Math.round(
+    (
+      raw +
+      valueBonus
+    ) *
+    (
+      LEVEL_MULTIPLIERS[
+        level
+      ] ||
+      1
+    )
+  );
+}
+
+async function loadPairHistory(){
+
+  for(
+    const pair of pairs
+  ){
+
+    pair.recentPoints = [];
+    pair.form = 0;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "competition_results"
+      )
+      .select(
+        "pair_index,placement,fantasy_points,competition_id,created_at"
+      )
+      .eq(
+        "matched",
+        true
+      )
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(2500);
+
+  if(error){
+    return;
+  }
+
+  for(
+    const result of
+    data || []
+  ){
+
+    const pair =
+      getPair(
+        result.pair_index
+      );
+
+    if(
+      !pair ||
+      pair.recentPoints.length >=
+      5
+    ){
+      continue;
+    }
+
+    pair.recentPoints.push({
+      placement:
+        result.placement,
+      points:
+        Number(
+          result.fantasy_points ||
+          0
+        ),
+      competition:
+        result.competition_id
+    });
+  }
+
+  for(
+    const pair of pairs
+  ){
+
+    if(
+      pair.recentPoints.length
+    ){
+
+      pair.form =
+        pair.recentPoints.reduce(
+          (sum,result) =>
+            sum +
+            result.points,
+          0
+        ) /
+        pair.recentPoints.length;
+    }
+  }
+
+  renderMarket();
+}
+
+async function loadCompetitions(){
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "competitions"
+      )
+      .select("*")
+      .order(
+        "date",
+        {
+          ascending:false
+        }
+      );
+
+  competitions =
+    error
+      ? []
+      : data || [];
+
+  renderCompetitions();
+  renderAdminCompetitionSelects();
+  renderAdminCompetitions();
+}
+
+function renderCompetitions(){
+
+  if(
+    !competitions.length
+  ){
+
+    $("competitionList").innerHTML = `
+      <div class="empty">
+        Inga tävlingar importerade ännu.
+      </div>
+    `;
+
+    $("homeLatestCompetition").innerHTML = `
+      <div class="empty">
+        Ingen tävling importerad ännu.
+      </div>
+    `;
+
+    return;
+  }
+
+  $("competitionList").innerHTML =
+    competitions
+      .map(
+        competition => `
+          <div class="competition">
+
+            <div class="badge">
+              ${
+                esc(
+                  competition.level
+                )
+              }
+            </div>
+
+            <div>
+              <b>
+                ${
+                  esc(
+                    competition.name
+                  )
+                }
+              </b>
+
+              <div class="meta">
+                ${
+                  esc(
+                    competition.date ||
+                    ""
+                  )
+                }
+                · ×
+                ${
+                  (
+                    LEVEL_MULTIPLIERS[
+                      competition.level
+                    ] ||
+                    1
+                  ).toFixed(2)
+                }
+              </div>
+            </div>
+
+            <button
+              class="btn soft"
+              data-results="${
+                esc(
+                  competition.id
+                )
+              }"
+            >
+              Resultat
+            </button>
+
+          </div>
+        `
+      )
+      .join("");
+
+  document
+    .querySelectorAll(
+      "[data-results]"
+    )
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            openCompetitionResults(
+              button.dataset.results
+            );
+      }
+    );
+
+  const latest =
+    competitions[0];
+
+  $("homeLatestCompetition").innerHTML = `
+    <div class="competition">
+
+      <div class="badge">
+        ${esc(latest.level)}
+      </div>
+
+      <div>
+
+        <b>
+          ${esc(latest.name)}
+        </b>
+
+        <div class="meta">
+          ${esc(latest.date || "")}
+        </div>
+
+      </div>
+
+      <button
+        class="btn soft"
+        id="latestResultsBtn"
+      >
+        Resultat
+      </button>
+
+    </div>
+  `;
+
+  $("latestResultsBtn").onclick =
+    () =>
+      openCompetitionResults(
+        latest.id
+      );
+}
+
+function renderAdminCompetitions(){
+
+  const container = $("adminCompetitionList");
+
+  if(!container){
+    return;
+  }
+
+  if(!competitions.length){
+    container.innerHTML = `
+      <div class="empty">
+        Inga tävlingar.
+      </div>
+    `;
+    return;
+  }
+
+    )
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            selectPair(
+              Number(
+                button.dataset.select
+              )
+            );
+      }
+    );
+}
+
+async function selectPair(index){
+
+  const pair =
+    getPair(index);
+
+  if(
+    !pair ||
+    isSelected(index)
+  ){
+    return;
+  }
+
+  if(
+    pendingTransferOut !==
+    null
+  ){
+
+    const outgoing =
+      getPair(
+        pendingTransferOut
+      );
+
+    const available =
+      bank +
+      outgoing.price;
+
+    if(
+      pair.price >
+      available
+    ){
+
+      alert(
+        "Inte tillräcklig budget."
+      );
+
+      return;
+    }
+
+    selectedPairs =
+      selectedPairs.map(
+        value =>
+          value ===
+          pendingTransferOut
+            ? index
+            : value
+      );
+
+    if(
+      captainIndex ===
+      pendingTransferOut
+    ){
+
+      captainIndex =
+        index;
+    }
+
+    bank =
+      available -
+      pair.price;
+
+    pendingTransferOut =
+      null;
+
+  }else{
+
+    if(
+      selectedPairs.length >=
+      TEAM_SIZE ||
+      pair.price >
+      bank
+    ){
+      return;
+    }
+
+    selectedPairs.push(
+      index
+    );
+
+    bank -=
+      pair.price;
+
+    if(
+      captainIndex ===
+      null
+    ){
+      captainIndex =
+        index;
+    }
+  }
+
+  await saveTeam();
+
+  renderTeam();
+  renderMarket();
+}
+
+function openPairModal(index){
+
+  const pair =
+    getPair(index);
+
+  if(!pair){
+    return;
+  }
+
+  $("pairModalTitle").textContent =
+    pair.name;
+
+  $("pairModalBody").innerHTML = `
+    <p class="meta">
+      Bugg ${esc(pair.cls)}
+    </p>
+
+    <div class="kpis">
+
+      <div class="kpi">
+        <small>Pris</small>
+        <strong>
+          ${money(pair.price)}
+        </strong>
+      </div>
+
+      <div class="kpi">
+        <small>Form</small>
+        <strong>
+          ${
+            pair.recentPoints.length
+              ? pair.form.toFixed(1)
+              : "–"
+          }
+        </strong>
+      </div>
+
+    </div>
+
+    ${
+      pair.recentPoints.length
+        ? pair.recentPoints
+            .map(
+              result => `
+                <div class="scoreRow">
+
+                  <div>
+                    ${
+                      esc(
+                        result.competition ||
+                        "Tävling"
+                      )
+                    }
+                  </div>
+
+                  <div>
+                    ${
+                      result.placement ||
+                      "–"
+                    }
+                  </div>
+
+                  <div>
+                    <b>
+                      ${
+                        result.points ||
+                        0
+                      }
+                      p
+                    </b>
+                  </div>
+
+                </div>
+              `
+            )
+            .join("")
+        : `
+          <div class="empty">
+            Inga resultat ännu.
+          </div>
+        `
+    }
+  `;
+
+  openModal(
+    "pairModal"
+  );
+}
+
+async function saveTeam(){
+
+  localStorage.setItem(
+    "fb_team",
+    JSON.stringify({
+      selectedPairs,
+      captainIndex,
+      bank
+    })
+  );
+
+  if(
+    !currentUser
+  ){
+    return;
+  }
+
+  const {
+    error
+  } =
+    await sb
+      .from(
+        "fantasy_teams"
+      )
+      .upsert(
+        {
+          user_id:
+            currentUser.id,
+          pair_indices:
+            selectedPairs,
+          captain_index:
+            captainIndex,
+          updated_at:
+            new Date()
+              .toISOString()
+        },
+        {
+          onConflict:
+            "user_id"
+        }
+      );
+
+  if(error){
+    console.warn(
+      error.message
+    );
+  }
+
+  try{
+
+    await sb
+      .from(
+        "fantasy_wallets"
+      )
+      .upsert(
+        {
+          user_id:
+            currentUser.id,
+          bank
+        },
+        {
+          onConflict:
+            "user_id"
+        }
+      );
+
+  }catch(error){}
+}
+
+async function loadTeam(){
+
+  const loadLocal =
+    () => {
+
+      try{
+
+        const local =
+          JSON.parse(
+            localStorage.getItem(
+              "fb_team"
+            ) ||
+            "null"
+          );
+
+        if(
+          !local
+        ){
+          return;
+        }
+
+        selectedPairs =
+          (
+            local.selectedPairs ||
+            []
+          )
+            .map(Number)
+            .filter(
+              index =>
+                getPair(index)
+            );
+
+        captainIndex =
+          local.captainIndex ==
+          null
+            ? null
+            : Number(
+                local.captainIndex
+              );
+
+        bank =
+          Number.isFinite(
+            Number(
+              local.bank
+            )
+          )
+            ? Number(
+                local.bank
+              )
+            : START_BUDGET -
+              teamCurrentValue();
+
+      }catch(error){}
+    };
+
+  if(
+    !currentUser
+  ){
+
+    loadLocal();
+
+    renderTeam();
+
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "fantasy_teams"
+      )
+      .select(
+        "pair_indices,captain_index"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .maybeSingle();
+
+  if(
+    error ||
+    !data
+  ){
+
+    loadLocal();
+
+  }else{
+
+    selectedPairs =
+      (
+        data.pair_indices ||
+        []
+      )
+        .map(Number)
+        .filter(
+          index =>
+            getPair(index)
+        );
+
+    captainIndex =
+      data.captain_index ==
+      null
+        ? null
+        : Number(
+            data.captain_index
+          );
+
+    bank =
+      START_BUDGET -
+      teamCurrentValue();
+
+    try{
+
+      const wallet =
+        await sb
+          .from(
+            "fantasy_wallets"
+          )
+          .select(
+            "bank"
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .maybeSingle();
+
+      if(
+        wallet.data &&
+        Number.isFinite(
+          Number(
+            wallet.data.bank
+          )
+        )
+      ){
+
+        bank =
+          Number(
+            wallet.data.bank
+          );
+      }
+
+    }catch(error){}
+  }
+
+  renderTeam();
+  renderMarket();
+}
+
+function basePlacementPoints(
+  placement
+){
+
+  if(placement === 1){
+    return 100;
+  }
+
+  if(placement === 2){
+    return 85;
+  }
+
+  if(placement === 3){
+    return 75;
+  }
+
+  if(placement === 4){
+    return 65;
+  }
+
+  if(placement === 5){
+    return 60;
+  }
+
+  if(placement <= 10){
+    return 50;
+  }
+
+  if(placement <= 20){
+    return 35;
+  }
+
+  if(placement <= 40){
+    return 20;
+  }
+
+  return 10;
+}
+
+function calculateFantasyPoints(
+  placement,
+  entrants,
+  level,
+  price
+){
+
+  const raw =
+    basePlacementPoints(
+      placement
+    ) +
+    Math.max(
+      0,
+      entrants -
+      placement
+    ) +
+    (
+      placement <= 10
+        ? 15
+        : 0
+    ) +
+    (
+      placement <= 3
+        ? 10
+        : 0
+    ) +
+    (
+      placement === 1
+        ? 15
+        : 0
+    );
+
+  const valueBonus =
+    placement <= 20
+      ? Math.min(
+          30,
+          Math.round(
+            raw *
+            (
+              VALUE_BONUS[
+                price
+              ] ||
+              0
+            )
+          )
+        )
+      : 0;
+
+  return Math.round(
+    (
+      raw +
+      valueBonus
+    ) *
+    (
+      LEVEL_MULTIPLIERS[
+        level
+      ] ||
+      1
+    )
+  );
+}
+
+async function loadPairHistory(){
+
+  for(
+    const pair of pairs
+  ){
+
+    pair.recentPoints = [];
+    pair.form = 0;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "competition_results"
+      )
+      .select(
+        "pair_index,placement,fantasy_points,competition_id,created_at"
+      )
+      .eq(
+        "matched",
+        true
+      )
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(2500);
+
+  if(error){
+    return;
+  }
+
+  for(
+    const result of
+    data || []
+  ){
+
+    const pair =
+      getPair(
+        result.pair_index
+      );
+
+    if(
+      !pair ||
+      pair.recentPoints.length >=
+      5
+    ){
+      continue;
+    }
+
+    pair.recentPoints.push({
+      placement:
+        result.placement,
+      points:
+        Number(
+          result.fantasy_points ||
+          0
+        ),
+      competition:
+        result.competition_id
+    });
+  }
+
+  for(
+    const pair of pairs
+  ){
+
+    if(
+      pair.recentPoints.length
+    ){
+
+      pair.form =
+        pair.recentPoints.reduce(
+          (sum,result) =>
+            sum +
+            result.points,
+          0
+        ) /
+        pair.recentPoints.length;
+    }
+  }
+
+  renderMarket();
+}
+
+async function loadCompetitions(){
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "competitions"
+      )
+      .select("*")
+      .order(
+        "date",
+        {
+          ascending:false
+        }
+      );
+
+  competitions =
+    error
+      ? []
+      : data || [];
+
+  renderCompetitions();
+  renderAdminCompetitionSelects();
+  renderAdminCompetitions();
+}
+
+function renderCompetitions(){
+
+  if(
+    !competitions.length
+  ){
+
+    $("competitionList").innerHTML = `
+      <div class="empty">
+        Inga tävlingar importerade ännu.
+      </div>
+    `;
+
+    $("homeLatestCompetition").innerHTML = `
+      <div class="empty">
+        Ingen tävling importerad ännu.
+      </div>
+    `;
+
+    return;
+  }
+
+  $("competitionList").innerHTML =
+    competitions
+      .map(
+        competition => `
+          <div class="competition">
+
+            <div class="badge">
+              ${
+                esc(
+                  competition.level
+                )
+              }
+            </div>
+
+            <div>
+              <b>
+                ${
+                  esc(
+                    competition.name
+                  )
+                }
+              </b>
+
+              <div class="meta">
+                ${
+                  esc(
+                    competition.date ||
+                    ""
+                  )
+                }
+                · ×
+                ${
+                  (
+                    LEVEL_MULTIPLIERS[
+                      competition.level
+                    ] ||
+                    1
+                  ).toFixed(2)
+                }
+              </div>
+            </div>
+
+            <button
+              class="btn soft"
+              data-results="${
+                esc(
+                  competition.id
+                )
+              }"
+            >
+              Resultat
+            </button>
+
+          </div>
+        `
+      )
+      .join("");
+
+  document
+    .querySelectorAll(
+      "[data-results]"
+    )
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            openCompetitionResults(
+              button.dataset.results
+            );
+      }
+    );
+
+  const latest =
+    competitions[0];
+
+  $("homeLatestCompetition").innerHTML = `
+    <div class="competition">
+
+      <div class="badge">
+        ${esc(latest.level)}
+      </div>
+
+      <div>
+
+        <b>
+          ${esc(latest.name)}
+        </b>
+
+        <div class="meta">
+          ${esc(latest.date || "")}
+        </div>
+
+      </div>
+
+      <button
+        class="btn soft"
+        id="latestResultsBtn"
+      >
+        Resultat
+      </button>
+
+    </div>
+  `;
+
+  $("latestResultsBtn").onclick =
+    () =>
+      openCompetitionResults(
+        latest.id
+      );
+}
+
+function renderAdminCompetitions(){
+
+  const container = $("adminCompetitionList");
+
+  if(!container){
+    return;
+  }
+
+  if(!competitions.length){
+    container.innerHTML = `
+      <div class="empty">
+        Inga tävlingar.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = competitions.map(competition => `
+    <div class="competition">
+
+      <div class="badge">
+        ${esc(competition.level || "")}
+      </div>
+
+      <div style="flex:1">
+        <b>${esc(competition.name || "Tävling")}</b>
+                <div class="meta">
+          ${esc(competition.date || "")}
+        </div>
+      </div>
+
+      <div style="
+        display:flex;
+        gap:7px;
+        flex-wrap:wrap;
+        justify-content:flex-end;
+      ">
+
+        <button
+          class="btn soft"
+          data-clear-results="${esc(competition.id)}"
+        >
+          Rensa resultat
+        </button>
+
+        <button
+          class="btn red"
+          data-delete-competition="${esc(competition.id)}"
+        >
+          Ta bort tävling
+        </button>
+
+      </div>
+
+    </div>
+  `).join("");
+
+  container
+    .querySelectorAll("[data-clear-results]")
+    .forEach(button => {
+
+      button.onclick = () => {
+        deleteCompetitionResults(
+          button.dataset.clearResults
+        );
+      };
+
+    });
+
+  container
+    .querySelectorAll("[data-delete-competition]")
+    .forEach(button => {
+
+      button.onclick = () => {
+        deleteCompetition(
+          button.dataset.deleteCompetition
+        );
+      };
+
+    });
+}
+
+
+async function deleteCompetitionResults(competitionId){
+
+  const competition = competitions.find(
+    item => String(item.id) === String(competitionId)
+  );
+
+  if(!competition){
+    alert("Tävlingen kunde inte hittas.");
+    return;
+  }
+
+  const confirmed = confirm(
+    `Rensa alla resultat från "${competition.name}"?\n\n` +
+    `Tävlingen kommer ligga kvar, men importerade resultat och beräknade fantasypoäng för tävlingen tas bort.`
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+
+  const scoreDelete = await sb
+    .from("fantasy_competition_scores")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(scoreDelete.error){
+    alert(
+      "Kunde inte rensa fantasypoängen:\n" +
+      scoreDelete.error.message
+    );
+    return;
+  }
+
+
+  const resultDelete = await sb
+    .from("competition_results")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(resultDelete.error){
+    alert(
+      "Kunde inte rensa resultaten:\n" +
+      resultDelete.error.message
+    );
+    return;
+  }
+
+
+  alert(
+    `Resultaten för "${competition.name}" är borttagna.`
+  );
+
+  await loadCompetitions();
+
+  if(typeof loadPairHistory === "function"){
+    await loadPairHistory();
+  }
+
+  if(typeof loadFantasyTotal === "function"){
+    await loadFantasyTotal();
+  }
+
+  if(typeof loadGlobalLeaderboard === "function"){
+    await loadGlobalLeaderboard();
+  }
+}
+
+
+async function deleteCompetition(competitionId){
+
+  const competition = competitions.find(
+    item => String(item.id) === String(competitionId)
+  );
+
+  if(!competition){
+    alert("Tävlingen kunde inte hittas.");
+    return;
+  }
+
+
+  const confirmed = confirm(
+    `Ta bort "${competition.name}" helt?\n\n` +
+    `Tävlingen, alla importerade resultat och alla beräknade fantasypoäng för tävlingen kommer att tas bort.`
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+
+  const reallyConfirmed = confirm(
+    `Är du helt säker?\n\n` +
+    `"${competition.name}" kommer att raderas permanent.`
+  );
+
+  if(!reallyConfirmed){
+    return;
+  }
+
+
+  const scoreDelete = await sb
+    .from("fantasy_competition_scores")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(scoreDelete.error){
+    alert(
+      "Kunde inte ta bort fantasypoängen:\n" +
+      scoreDelete.error.message
+    );
+    return;
+  }
+
+
+  const resultDelete = await sb
+    .from("competition_results")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(resultDelete.error){
+    alert(
+      "Kunde inte ta bort resultaten:\n" +
+      resultDelete.error.message
+    );
+    return;
+  }
+
+
+  const streamDelete = await sb
+    .from("fantasy_streams")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(streamDelete.error){
+    console.warn(
+      "Livestream kunde inte tas bort:",
+      streamDelete.error.message
+    );
+  }
+
+
+  const competitionDelete = await sb
+    .from("competitions")
+    .delete()
+    .eq("id", competitionId);
+
+  if(competitionDelete.error){
+    alert(
+      "Kunde inte ta bort tävlingen:\n" +
+      competitionDelete.error.message
+    );
+    return;
+  }
+
+
+  alert(
+    `"${competition.name}" är borttagen.`
+  );
+
+
+  await loadCompetitions();
+
+  if(typeof loadStreams === "function"){
+    await loadStreams();
+  }
+
+  if(typeof loadPairHistory === "function"){
+    await loadPairHistory();
+  }
+
+  if(typeof loadFantasyTotal === "function"){
+    await loadFantasyTotal();
+  }
+
+  if(typeof loadGlobalLeaderboard === "function"){
+    await loadGlobalLeaderboard();
+  }
+}
+
+
+async function openCompetitionResults(
+  id
+){
+
+  const competition =
+    competitions.find(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  $("resultModalTitle").textContent =
+    competition?.name ||
+    "Resultat";
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "competition_results"
+      )
+      .select("*")
+      .eq(
+        "competition_id",
+        id
+      )
+      .order(
+        "placement"
+      );
+
+  if(error){
+
+    $("resultModalBody").innerHTML = `
+      <div class="err">
+        ${esc(error.message)}
+      </div>
+    `;
+
+  }else if(
+    !(data || []).length
+  ){
+
+    $("resultModalBody").innerHTML = `
+      <div class="empty">
+        Inga resultat.
+      </div>
+    `;
+
+  }else{
+
+    $("resultModalBody").innerHTML =
+      data
+        .map(
+          result => `
+            <div class="scoreRow">
+
+              <div>
+                <b>
+                  ${
+                    esc(
+                      result.pair_name ||
+                      getPair(
+                        result.pair_index
+                      )?.name ||
+                      ""
+                    )
+                  }
+                </b>
+              </div>
+
+              <div>
+                ${
+                  result.placement ||
+                  "–"
+                }
+              </div>
+
+              <div>
+                <b>
+                  ${
+                    result.fantasy_points ||
+                    0
+                  }
+                  p
+                </b>
+              </div>
+
+            </div>
+          `
+        )
+        .join("");
+  }
+
+  openModal(
+    "resultModal"
+  );
+}
+
+
+async function loadStreams(){
+
+  const {
+    data,
+    error
+  } =
+    await sb
+      .from(
+        "fantasy_streams"
+      )
+      .select("*")
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+  streams =
+    error
+      ? []
+      : data || [];
+
+  renderStreams();
+  renderAdminStreams();
+}
+
+
+function streamHtml(
+  stream
+){
+
+  const competition =
+    competitions.find(
+      item =>
+        String(item.id) ===
+        String(
+          stream.competition_id
+        )
+    );
+
+  return `
+    <div class="liveCard">
+
+      <div>
+        🔴
+      </div>
+
+      <div>
+
+        <b>
+          ${
+            esc(
+              stream.title ||
+              "Livestream"
+            )
+          }
+        </b>
+
+        <div class="meta">
+          ${
+            esc(
+              competition?.name ||
+              ""
+            )
+          }
+        </div>
+
+      </div>
+
+      <a
+        class="btn blue"
+        href="${esc(stream.url)}"
+        target="_blank"
+        rel="noopener"
+      >
+        Öppna
+      </a>
+
+    </div>
+  `;
+}
+
+
+function renderStreams(){
+
+  const html =
+    streams.length
+      ? streams
+          .map(streamHtml)
+          .join("")
+      : `
+        <div class="empty">
+          Ingen livestream publicerad.
+        </div>
+      `;
+
+  $("streamList").innerHTML =
+    html;
+
+  $("homeStreams").innerHTML =
+    html;
+}
+
+
+async function loadFantasyTotal(){
+
+  if(
+    !currentUser
+  ){
+
+    totalFantasyPoints = 0;
+    totalCompetitions = 0;
+
+    renderStats();
+
+    return;
+  }
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await sb.rpc(
+        "get_my_fantasy_total"
+      );
+
+    if(!error){
+
+      const result =
+        Array.isArray(data)
+          ? data[0]
+          : data;
+
+      totalFantasyPoints =
+        Number(
+          result?.total_points ??
+          result ??
+          0
+        );
+
+      totalCompetitions =
+        Number(
+          result?.competitions_count ??
+          0
+        );
+    }
+
+  }catch(error){}
+
+  renderStats();
+}
+
+
+function renderStats(){
+
+  const points =
+    totalFantasyPoints
+      .toFixed(1)
+      .replace(
+        ".0",
+        ""
+      );
+
+  $("homePoints").textContent =
+    points;
+
+  $("teamPoints").textContent =
+    points;
+
+  $("profilePoints").textContent =
+    points;
+
+  $("profileCompetitions").textContent =
+    totalCompetitions;
+
+  $("homeRank").textContent =
+    globalRank;
+
+  $("profileRank").textContent =
+    globalRank;
+
+  updateWallet();
+}
+
+
+function rowValue(
+  row,
+  ...keys
+){
+
+  for(
+    const key of keys
+  ){
+
+    if(
+      row?.[key] != null
+    ){
+      return row[key];
+    }
+  }
+
+  return null;
+}
+
+
+async function loadGlobalLeaderboard(){
+
+  const {
+    data,
+    error
+  } =
+    await sb.rpc(
+      "get_global_leaderboard"
+    );
+
+  if(error){
+
+    $("globalLeaderboard").innerHTML = `
+      <div class="err">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+  const rows =
+    data || [];
+
+  if(
+    !rows.length
+  ){
+
+    $("globalLeaderboard").innerHTML = `
+      <div class="empty">
+        Topplistan är tom.
+      </div>
+    `;
+
+    return;
+  }
+
+  $("globalLeaderboard").innerHTML =
+    rows
+      .map(
+        (row,index) => {
+
+          const userId =
+            rowValue(
+              row,
+              "user_id",
+              "id"
+            );
+
+          const name =
+            rowValue(
+              row,
+              "fantasy_name",
+              "display_name",
+              "name",
+              "email"
+            ) ||
+            "Fantasyspelare";
+
+          const points =
+            Number(
+              rowValue(
+                row,
+                "total_points",
+                "points"
+              ) ||
+              0
+            );
+
+          if(
+            currentUser &&
+            String(userId) ===
+            String(
+              currentUser.id
+            )
+          ){
+
+            globalRank =
+              index + 1;
+          }
+
+          return `
+            <div class="leagueRow">
+
+              <div class="rank">
+                ${index + 1}
+              </div>
+
+              <div>
+                <b>
+                  ${esc(name)}
+                </b>
+              </div>
+
+              <button
+                class="btn soft"
+                data-public-team="${
+                  esc(
+                    userId ||
+                    ""
+                  )
+                }"
+              >
+                ${
+                  points
+                    .toFixed(1)
+                    .replace(
+                      ".0",
+                      ""
+                    )
+                }
+                p
+              </button>
+
+            </div>
+          `;
+        }
+      )
+      .join("");
+
+  document
+    .querySelectorAll(
+      "[data-public-team]"
+    )
+    .forEach(
+      button => {
+
+        button.onclick =
+          () =>
+            openPublicTeam(
+              button.dataset
+                .publicTeam
+            );
+      }
+    );
+
+  renderStats();
+}
+
+
+async function openPublicTeam(
+  userId
+){
+
+  if(!userId){
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await sb.rpc(
+      "get_public_team",
+      {
+        p_user_id:
+          userId
+      }
+    );
+
+  $("publicTeamTitle").textContent =
+    "Fantasylag";
+
+  if(error){
+
+    $("publicTeamBody").innerHTML = `
+      <div class="err">
+        ${esc(error.message)}
+      </div>
+    `;
+
+  }else{
+
+    const team =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+    const indices =
+      team?.pair_indices ||
+      [];
+
+    $("publicTeamTitle").textContent =
+      team?.fantasy_name ||
+      "Fantasylag";
+
+    $("publicTeamBody").innerHTML =
+      indices
+        .map(
+          index => {
+
+            const pair =
+              getPair(index);
+
+            if(!pair){
+              return "";
+            }
+
+            return `
+              <div class="teamCard">
+
+                <b>
+                  ${esc(pair.name)}
+                </b>
+
+                <div class="meta">
+                  Bugg
+                  ${esc(pair.cls)}
+                  ·
+                  ${money(pair.price)}
+                </div>
+
+              </div>
+            `;
+          }
+        )
+        .join("") ||
+      `
+        <div class="empty">
+          Inget lag.
+        </div>
+      `;
+  }
+
+  openModal(
+    "publicTeamModal"
+  );
+}
+
+
+async function loadMyLeagues(){
+
+  if(
+    !currentUser
+  ){
+
+    $("myLeagues").innerHTML = `
+      <div class="empty">
+        Logga in för att se dina ligor.
+      </div>
+    `;
+
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await sb.rpc(
+      "get_my_leagues"
+    );
+
+  if(error){
+
+    $("myLeagues").innerHTML = `
+      <div class="err">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
 
   $("myLeagues").innerHTML =
     (data || [])
@@ -4070,6 +6469,7 @@ async function loadMyLeagues(){
       }
     );
 }
+
 
 async function createLeague(){
 
@@ -4148,6 +6548,7 @@ async function createLeague(){
   loadMyLeagues();
 }
 
+
 async function joinLeague(){
 
   if(
@@ -4198,6 +6599,7 @@ async function joinLeague(){
 
   loadMyLeagues();
 }
+
 
 async function openLeague(
   id
@@ -4283,6 +6685,7 @@ async function openLeague(
       .join("");
 }
 
+
 async function loadProfile(){
 
   if(
@@ -4316,6 +6719,7 @@ async function loadProfile(){
   renderProfile();
 }
 
+
 function displayName(){
 
   return (
@@ -4330,6 +6734,7 @@ function displayName(){
     "Fantasyspelare"
   );
 }
+
 
 function renderProfile(){
 
@@ -4398,6 +6803,7 @@ function renderProfile(){
   renderStats();
 }
 
+
 async function saveAvatar(){
 
   if(
@@ -4452,8 +6858,7 @@ async function saveAvatar(){
 
   loadProfile();
 }
-
-function setAuthMode(
+  function setAuthMode(
   mode
 ){
 
@@ -5094,232 +7499,310 @@ function renderAdminStreams(){
       }
     );
 }
-function parseCSV(text){
+  function parseCSV(
+  text
+){
+
+  const source =
+    String(text || "")
+      .replace(/^\uFEFF/, "");
 
   const lines =
-    String(text || "")
-      .replace(/^\uFEFF/, "")
-      .split(/\r?\n/);
+    source.split(/\r?\n/);
 
   if(!lines.length){
     return [];
   }
 
-  function splitLine(line){
+  function splitLine(line, delimiter){
 
     const output = [];
     let current = "";
     let quoted = false;
 
-    for(let i = 0; i < line.length; i++){
+    for(let index = 0; index < line.length; index++){
 
-      const character = line[i];
+      const character = line[index];
 
       if(character === '"'){
 
-        if(
-          quoted &&
-          line[i + 1] === '"'
-        ){
+        if(quoted && line[index + 1] === '"'){
           current += '"';
-          i++;
+          index++;
         }else{
           quoted = !quoted;
         }
 
-      }else if(
-        character === ";" &&
-        !quoted
-      ){
+      }else if(character === delimiter && !quoted){
 
         output.push(current.trim());
         current = "";
 
       }else{
-
         current += character;
       }
     }
 
     output.push(current.trim());
-
     return output;
   }
 
+  const normalizeHeader = value =>
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]/g, "");
 
-  /*
-    Leta upp den riktiga Vote4Dance-rubriken.
+  const delimiters = [";", "\t", ","];
 
-    Filen kan innehålla tävlingsnamn,
-    datum och annan information före tabellen.
-  */
-  const headerIndex =
-    lines.findIndex(
-      line => {
+  let delimiter = ";";
+  let headerIndex = -1;
+  let headers = [];
 
-        const normalized =
-          line
-            .toLowerCase()
-            .replace(/\s+/g, "");
+  for(let lineIndex = 0; lineIndex < lines.length; lineIndex++){
 
-        return (
-          normalized.includes("startnr") &&
-          normalized.includes("plac") &&
-          normalized.includes("namn1") &&
-          normalized.includes("namn2")
-        );
+    for(const candidate of delimiters){
+
+      const candidateHeaders =
+        splitLine(lines[lineIndex], candidate)
+          .map(normalizeHeader);
+
+      if(
+        candidateHeaders.includes("plac") &&
+        candidateHeaders.includes("namn1") &&
+        candidateHeaders.includes("namn2")
+      ){
+        delimiter = candidate;
+        headerIndex = lineIndex;
+        headers = candidateHeaders;
+        break;
       }
-    );
+    }
 
+    if(headerIndex >= 0){
+      break;
+    }
+  }
 
   if(headerIndex < 0){
-
     throw new Error(
-      "CSV-filen saknar Vote4Dance-kolumnerna Startnr, Plac, Namn 1 och Namn 2."
+      "CSV-filen ser inte ut som en Vote4Dance-resultatfil. Kolumnerna Plac, Namn 1 och Namn 2 hittades inte."
     );
   }
 
+  const indexes = {};
 
-  const rawHeaders =
-    splitLine(
-      lines[headerIndex]
-    );
+  headers.forEach((header, index) => {
+    if(header){
+      indexes[header] = index;
+    }
+  });
 
+  const stagePower = {
+    N:1,
+    D:2,
+    C:3,
+    B:4,
+    A:5
+  };
 
-  const headers =
-    rawHeaders.map(
-      header =>
-        String(header || "")
-          .toLowerCase()
-          .trim()
-          .replace(
-            /[^a-z0-9åäö]/g,
-            ""
-          )
-    );
-
-
-  const rows = [];
+  const classPattern =
+    /^Bugg\s+(Junior|Vuxen|Senior)\s+([NABCD])(?:\s|$)/i;
 
   let currentClass = "";
+  const allResults = [];
 
+  for(let lineIndex = headerIndex + 1; lineIndex < lines.length; lineIndex++){
 
-  for(
-    let lineIndex =
-      headerIndex + 1;
+    const rawLine = String(lines[lineIndex] || "").trim();
 
-    lineIndex < lines.length;
+    if(!rawLine){
+      continue;
+    }
 
-    lineIndex++
-  ){
+    const cells = splitLine(rawLine, delimiter);
 
-    const rawLine =
-      lines[lineIndex];
+    const normalizedCells = cells.map(normalizeHeader);
 
     if(
-      !rawLine ||
-      !rawLine.trim()
+      normalizedCells.includes("plac") &&
+      normalizedCells.includes("namn1") &&
+      normalizedCells.includes("namn2")
     ){
       continue;
     }
 
+    const firstNonEmpty =
+      cells.find(value => String(value || "").trim()) || "";
 
-    const cells =
-      splitLine(rawLine);
+    const headingMatch =
+      String(firstNonEmpty).trim().match(classPattern);
 
+    const classColumnValue =
+      indexes.klassrubrik != null
+        ? String(cells[indexes.klassrubrik] || "").trim()
+        : "";
 
-    /*
-      Vote4Dance har klassrubriker som t.ex.
+    const classColumnMatch =
+      classColumnValue.match(classPattern);
 
-      Bugg Junior N
-      Bugg Vuxen D
-      Bugg Senior A
+    const detectedClass =
+      classColumnMatch || headingMatch;
 
-      De kan ligga antingen som en ensam rad
-      eller i första CSV-kolumnen.
-    */
-    const firstCell =
-      String(
-        cells[0] || ""
-      ).trim();
+    if(detectedClass){
 
+      const age =
+        detectedClass[1].charAt(0).toUpperCase() +
+        detectedClass[1].slice(1).toLowerCase();
 
-    const classMatch =
-      firstCell.match(
-        /^Bugg\s+(Junior|Vuxen|Senior)(?:\s+[A-ZÅÄÖ0-9]+)?$/i
-      );
-
-
-    const otherCellsEmpty =
-      cells
-        .slice(1)
-        .every(
-          value =>
-            !String(value || "").trim()
-        );
-
-
-    if(
-      classMatch &&
-      (
-        !rawLine.includes(";") ||
-        otherCellsEmpty
-      )
-    ){
+      const stage =
+        detectedClass[2].toUpperCase();
 
       currentClass =
-        firstCell;
-
-      continue;
+        `Bugg ${age} ${stage}`;
     }
 
+    const name1 =
+      indexes.namn1 != null
+        ? String(cells[indexes.namn1] || "").trim()
+        : "";
 
-    /*
-      I vissa Vote4Dance-exporter ligger
-      klassrubriken på en egen rad helt
-      utan semikolon.
-    */
+    const name2 =
+      indexes.namn2 != null
+        ? String(cells[indexes.namn2] || "").trim()
+        : "";
+
+    const placement =
+      indexes.plac != null
+        ? parseInt(String(cells[indexes.plac] || "").trim(), 10)
+        : NaN;
+
     if(
-      !rawLine.includes(";") &&
-      /^Bugg\s+/i.test(
-        rawLine.trim()
-      )
+      !currentClass ||
+      !name1 ||
+      !name2 ||
+      !Number.isFinite(placement) ||
+      placement <= 0
     ){
-
-      currentClass =
-        rawLine.trim();
-
       continue;
     }
 
+    const currentMatch =
+      currentClass.match(classPattern);
 
-    const row = {
-      klassrubrik:
-        currentClass
-    };
+    if(!currentMatch){
+      continue;
+    }
 
+    const age =
+      currentMatch[1].charAt(0).toUpperCase() +
+      currentMatch[1].slice(1).toLowerCase();
 
-    headers.forEach(
-      (
-        header,
-        index
-      ) => {
+    const stage =
+      currentMatch[2].toUpperCase();
 
-        row[header] =
-          String(
-            cells[index] ?? ""
-          )
-            .trim();
-      }
-    );
-
-
-    rows.push(row);
+    allResults.push({
+      age,
+      stage,
+      className:currentClass,
+      classPlacement:placement,
+      name1,
+      name2
+    });
   }
 
+  const bestResultByPair =
+    new Map();
 
-  return rows;
+  const personKey = value =>
+    String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+
+  allResults.forEach(result => {
+
+    const people =
+      [personKey(result.name1), personKey(result.name2)]
+        .sort();
+
+    const key =
+      `${result.age}|${people[0]}|${people[1]}`;
+
+    const previous =
+      bestResultByPair.get(key);
+
+    if(
+      !previous ||
+      stagePower[result.stage] > stagePower[previous.stage] ||
+      (
+        stagePower[result.stage] === stagePower[previous.stage] &&
+        result.classPlacement < previous.classPlacement
+      )
+    ){
+      bestResultByPair.set(key, result);
+    }
+  });
+
+  const terminalResults =
+    Array.from(bestResultByPair.values());
+
+  const finalRows = [];
+
+  ["Junior", "Vuxen", "Senior"].forEach(age => {
+
+    const ageResults =
+      terminalResults.filter(result => result.age === age);
+
+    let offset = 0;
+
+    ["A", "B", "C", "D", "N"].forEach(stage => {
+
+      const stageResults =
+        ageResults
+          .filter(result => result.stage === stage)
+          .sort(
+            (a,b) =>
+              a.classPlacement - b.classPlacement ||
+              `${a.name1} ${a.name2}`.localeCompare(
+                `${b.name1} ${b.name2}`,
+                "sv"
+              )
+          );
+
+      let previousClassPlacement = null;
+      let previousOverallPlacement = offset;
+
+      stageResults.forEach((result, index) => {
+
+        if(
+          previousClassPlacement === null ||
+          result.classPlacement !== previousClassPlacement
+        ){
+          previousOverallPlacement = offset + index + 1;
+        }
+
+        previousClassPlacement = result.classPlacement;
+
+        finalRows.push({
+          klass:result.className,
+          namn1:result.name1,
+          namn2:result.name2,
+          plac:String(previousOverallPlacement)
+        });
+      });
+
+      offset += stageResults.length;
+    });
+  });
+
+  return finalRows;
 }
+
 function fantasyClass(
   name
 ){
@@ -5436,15 +7919,10 @@ async function importResults(){
     competitions.find(
       item =>
         String(item.id) ===
-        String(
-          competitionId
-        )
+        String(competitionId)
     );
 
-  if(
-    !file ||
-    !competition
-  ){
+  if(!file || !competition){
 
     $("resultAdminStatus").innerHTML = `
       <span class="err">
@@ -5455,307 +7933,248 @@ async function importResults(){
     return;
   }
 
-  const rows =
-    parseCSV(
-      await file.text()
-    );
+  let rows = [];
 
-  const parsed = [];
-
-  let currentClassName = "";
-
-for(
-  const row of rows
-){
-
-  const className =
-    pick(
-      row,
-      "klassrubrik",
-      "klass",
-      "class",
-      "grenklass",
-      "competitionclass",
-      "tävlingsklass"
-    );
-
-
-  const cls =
-    fantasyClass(
-      className
-    );
-
-
-  /*
-    Ignorera allt som inte är
-    Bugg Junior, Vuxen eller Senior.
-  */
-  if(!cls){
-    continue;
-  }
-
-
-  /*
-    Vote4Dance:
-    Namn 1 = första personen
-    Namn 2 = andra personen
-  */
-  const name1 =
-    pick(
-      row,
-      "namn1"
-    );
-
-
-  const name2 =
-    pick(
-      row,
-      "namn2"
-    );
-
-
-  if(
-    !name1 ||
-    !name2
-  ){
-    continue;
-  }
-
-
-  const pairName =
-    `${name1.trim()} & ${name2.trim()}`;
-
-
-  /*
-    Vote4Dance heter "Plac".
-    Efter normaliseringen blir det "plac".
-  */
-  const placement =
-    parseInt(
-      pick(
-        row,
-        "plac",
-        "placering",
-        "place",
-        "placement",
-        "rank"
-      ),
-      10
-    );
-
-
-  if(
-    !Number.isFinite(
-      placement
-    ) ||
-    placement <= 0
-  ){
-    continue;
-  }
-
-
-  const normalizedName1 =
-    normalizeName(
-      name1
-    );
-
-
-  const normalizedName2 =
-    normalizeName(
-      name2
-    );
-
-
-  /*
-    Först exakt match.
-  */
-  let pair =
-    pairs.find(
-      candidate =>
-        candidate.cls ===
-          cls &&
-        normalizeName(
-          candidate.name
-        ) ===
-        normalizeName(
-          pairName
-        )
-    );
-
-
-  /*
-    Om ordningen på personerna är omvänd
-    i fantasy-marknaden jämfört med Vote4Dance.
-  */
-  if(!pair){
-
-    const reversedName =
-      `${name2.trim()} & ${name1.trim()}`;
-
-
-    pair =
-      pairs.find(
-        candidate =>
-          candidate.cls ===
-            cls &&
-          normalizeName(
-            candidate.name
-          ) ===
-          normalizeName(
-            reversedName
-          )
-      );
-  }
-
-
-  /*
-    Extra reservmatchning.
-
-    Om fantasy-marknaden använder lite
-    annorlunda skiljetecken mellan namnen
-    räcker det att båda personernas namn
-    finns i kandidatens namn.
-  */
-  if(!pair){
-
-    pair =
-      pairs.find(
-        candidate => {
-
-          if(
-            candidate.cls !==
-            cls
-          ){
-            return false;
-          }
-
-
-          const candidateName =
-            normalizeName(
-              candidate.name
-            );
-
-
-          return (
-            candidateName.includes(
-              normalizedName1
-            ) &&
-            candidateName.includes(
-              normalizedName2
-            )
-          );
-        }
-      );
-  }
-
-
-  parsed.push({
-    pairName,
-    className,
-    cls,
-    placement,
-    pair
-  });
-}
-  const entrantsByClass =
-    {};
-
-  parsed.forEach(
-    result => {
-
-      entrantsByClass[
-        result.cls
-      ] =
-        (
-          entrantsByClass[
-            result.cls
-          ] ||
-          0
-        ) +
-        1;
-    }
-  );
-
-  const matched =
-    parsed
-      .filter(
-        result =>
-          result.pair
-      )
-      .map(
-        result => ({
-          competition_id:
-            competition.id,
-
-          pair_index:
-            result.pair.index,
-
-          pair_name:
-            result.pair.name,
-
-          placement:
-            result.placement,
-
-          matched:true,
-
-          fantasy_points:
-            calculateFantasyPoints(
-              result.placement,
-              entrantsByClass[
-                result.cls
-              ],
-              competition.level,
-              result.pair.price
-            )
-        })
-      );
-
-  if(
-    !matched.length
-  ){
+  try{
+    rows = parseCSV(await file.text());
+  }catch(error){
 
     $("resultAdminStatus").innerHTML = `
       <span class="err">
-        Inga danspar kunde matchas.
+        ${esc(error?.message || "CSV-filen kunde inte läsas.")}
       </span>
     `;
 
     return;
   }
 
-  await sb
-    .from(
-      "competition_results"
-    )
-    .delete()
-    .eq(
-      "competition_id",
-      competition.id
-    );
+  const parsed = [];
 
-  const {
-    error
-  } =
-    await sb
-      .from(
-        "competition_results"
-      )
-      .insert(
-        matched
+  function nameTokens(value){
+    return normalizeName(value)
+      .split(" ")
+      .filter(Boolean);
+  }
+
+  function personMatches(candidateName, personName){
+
+    const candidate = normalizeName(candidateName);
+    const tokens = nameTokens(personName);
+
+    if(!tokens.length){
+      return false;
+    }
+
+    if(tokens.every(token => candidate.includes(token))){
+      return true;
+    }
+
+    if(tokens.length >= 2){
+      const first = tokens[0];
+      const last = tokens[tokens.length - 1];
+      return candidate.includes(first) && candidate.includes(last);
+    }
+
+    return false;
+  }
+
+  for(const row of rows){
+
+    const className =
+      pick(
+        row,
+        "klass",
+        "class",
+        "grenklass",
+        "competitionclass",
+        "tävlingsklass"
       );
+
+    const cls =
+      fantasyClass(className);
+
+    if(!cls){
+      continue;
+    }
+
+    const name1 =
+      pick(row, "namn1", "namn 1");
+
+    const name2 =
+      pick(row, "namn2", "namn 2");
+
+    const placement =
+      parseInt(
+        pick(
+          row,
+          "plac",
+          "placering",
+          "place",
+          "placement",
+          "rank"
+        ),
+        10
+      );
+
+    if(
+      !name1 ||
+      !name2 ||
+      !Number.isFinite(placement) ||
+      placement <= 0
+    ){
+      continue;
+    }
+
+    const pairName =
+      `${name1.trim()} & ${name2.trim()}`;
+
+    const reversePairName =
+      `${name2.trim()} & ${name1.trim()}`;
+
+    let pair =
+      pairs.find(
+        candidate =>
+          candidate.cls === cls &&
+          normalizeName(candidate.name) === normalizeName(pairName)
+      );
+
+    if(!pair){
+      pair =
+        pairs.find(
+          candidate =>
+            candidate.cls === cls &&
+            normalizeName(candidate.name) === normalizeName(reversePairName)
+        );
+    }
+
+    if(!pair){
+      pair =
+        pairs.find(candidate => {
+
+          if(candidate.cls !== cls){
+            return false;
+          }
+
+          return (
+            personMatches(candidate.name, name1) &&
+            personMatches(candidate.name, name2)
+          );
+        });
+    }
+
+    parsed.push({
+      pairName,
+      className,
+      cls,
+      placement,
+      pair
+    });
+  }
+
+  const entrantsByClass = {};
+
+  parsed.forEach(result => {
+    entrantsByClass[result.cls] =
+      (entrantsByClass[result.cls] || 0) + 1;
+  });
+
+  const matched =
+    parsed
+      .filter(result => result.pair)
+      .map(result => ({
+        competition_id:competition.id,
+        pair_index:result.pair.index,
+        pair_name:result.pair.name,
+        placement:result.placement,
+        matched:true,
+        fantasy_points:
+          calculateFantasyPoints(
+            result.placement,
+            entrantsByClass[result.cls],
+            competition.level,
+            result.pair.price
+          )
+      }));
+
+  if(!parsed.length){
+
+    $("resultAdminStatus").innerHTML = `
+      <span class="err">
+        CSV-filen lästes, men inga Bugg-resultat hittades.
+      </span>
+    `;
+
+    $("resultPreview").innerHTML = `
+      <div class="notice">
+        Kontrollera att filen är en Vote4Dance Result CSV med Plac, Namn 1 och Namn 2.
+      </div>
+    `;
+
+    return;
+  }
+
+  if(!matched.length){
+
+    $("resultAdminStatus").innerHTML = `
+      <span class="err">
+        CSV:n lästes (${parsed.length} resultat), men inga danspar kunde matchas mot Marker.js.
+      </span>
+    `;
+
+    $("resultPreview").innerHTML =
+      `
+        <div class="notice">
+          CSV läst: <b>${parsed.length}</b> resultat · Matchade: <b>0</b>
+        </div>
+      ` +
+      parsed
+        .slice(0,100)
+        .map(result => `
+          <div class="scoreRow">
+            <div>
+              <b>${esc(result.pairName)}</b>
+              <div class="meta">Bugg ${esc(result.cls)}</div>
+            </div>
+            <div>${result.placement}</div>
+            <div><span class="err">Ej match</span></div>
+          </div>
+        `)
+        .join("");
+
+    return;
+  }
+
+  const deleteResponse =
+    await sb
+      .from("competition_results")
+      .delete()
+      .eq("competition_id", competition.id);
+
+  if(deleteResponse.error){
+
+    $("resultAdminStatus").innerHTML = `
+      <span class="err">
+        ${esc(deleteResponse.error.message)}
+      </span>
+    `;
+
+    return;
+  }
+
+  const { error } =
+    await sb
+      .from("competition_results")
+      .insert(matched);
 
   if(!error){
 
     try{
-
       await sb.rpc(
         "calculate_competition_scores",
         {
-          p_competition_id:
-            competition.id
+          p_competition_id:competition.id
         }
       );
-
     }catch(error){}
 
     await Promise.all([
@@ -5777,9 +8196,7 @@ for(
 
     $("resultAdminStatus").innerHTML = `
       <span class="ok">
-        Importerade
-        ${matched.length}
-        matchade resultat.
+        Importerade ${matched.length} matchade resultat.
       </span>
     `;
   }
@@ -5787,60 +8204,26 @@ for(
   $("resultPreview").innerHTML =
     `
       <div class="notice">
-        Matchade
-        <b>
-          ${matched.length}
-        </b>
-        av
-        ${parsed.length}
+        Matchade <b>${matched.length}</b> av ${parsed.length}
       </div>
     ` +
     parsed
-      .map(
-        result => `
-          <div class="scoreRow">
-
-            <div>
-
-              <b>
-                ${
-                  esc(
-                    result.pair?.name ||
-                    result.pairName
-                  )
-                }
-              </b>
-
-              <div class="meta">
-                Bugg
-                ${esc(result.cls)}
-              </div>
-
-            </div>
-
-            <div>
-              ${result.placement}
-            </div>
-
-            <div>
-              ${
-                result.pair
-                  ? `
-                    <span class="ok">
-                      Match
-                    </span>
-                  `
-                  : `
-                    <span class="err">
-                      Ej match
-                    </span>
-                  `
-              }
-            </div>
-
+      .map(result => `
+        <div class="scoreRow">
+          <div>
+            <b>${esc(result.pair?.name || result.pairName)}</b>
+            <div class="meta">Bugg ${esc(result.cls)}</div>
           </div>
-        `
-      )
+          <div>${result.placement}</div>
+          <div>
+            ${
+              result.pair
+                ? '<span class="ok">Match</span>'
+                : '<span class="err">Ej match</span>'
+            }
+          </div>
+        </div>
+      `)
       .join("");
 }
 
@@ -5960,6 +8343,15 @@ function closeModal(
 }
 
 function closeDrawer(){
+
+  $("drawer")
+    .classList
+    .remove("show");
+
+  $("drawerBackdrop")
+    .classList
+    .remove("show");
+  function closeDrawer(){
 
   $("drawer")
     .classList
@@ -6396,3 +8788,4 @@ start().catch(
 
 </body>
 </html>
+  
