@@ -5094,299 +5094,232 @@ function renderAdminStreams(){
       }
     );
 }
-function parseCSV(
-  text
-){
+function parseCSV(text){
 
-  text =
-    String(
-      text || ""
-    )
-      .replace(
-        /^\uFEFF/,
-        ""
-      );
+  const lines =
+    String(text || "")
+      .replace(/^\uFEFF/, "")
+      .split(/\r?\n/);
 
-  if(
-    !text.trim()
-  ){
+  if(!lines.length){
     return [];
   }
 
-  /*
-    Hitta automatiskt vilken avgränsare CSV-filen använder:
-    ;
-    ,
-    tab
-  */
-  const firstLine =
-    text
-      .split(
-        /\r?\n/,
-        1
-      )[0] ||
-    "";
+  function splitLine(line){
 
-  const delimiters =
-    [
-      ";",
-      ",",
-      "\t"
-    ];
+    const output = [];
+    let current = "";
+    let quoted = false;
 
-  let delimiter = ";";
-  let bestCount = -1;
+    for(let i = 0; i < line.length; i++){
 
-  delimiters.forEach(
-    candidate => {
+      const character = line[i];
 
-      let count = 0;
-      let quoted = false;
-
-      for(
-        let index = 0;
-        index < firstLine.length;
-        index++
-      ){
-
-        const character =
-          firstLine[index];
+      if(character === '"'){
 
         if(
-          character ===
-          '"'
+          quoted &&
+          line[i + 1] === '"'
         ){
-
-          if(
-            quoted &&
-            firstLine[index + 1] ===
-            '"'
-          ){
-
-            index++;
-
-          }else{
-
-            quoted =
-              !quoted;
-          }
-
-        }else if(
-          character ===
-            candidate &&
-          !quoted
-        ){
-
-          count++;
+          current += '"';
+          i++;
+        }else{
+          quoted = !quoted;
         }
-      }
 
-      if(
-        count >
-        bestCount
+      }else if(
+        character === ";" &&
+        !quoted
       ){
 
-        bestCount =
-          count;
-
-        delimiter =
-          candidate;
-      }
-    }
-  );
-
-
-  /*
-    Läs hela CSV-filen tecken för tecken.
-    Detta gör att citattecken fungerar korrekt
-    även om ett fält innehåller komma/semikolon.
-  */
-  const table = [];
-
-  let row = [];
-  let current = "";
-  let quoted = false;
-
-  for(
-    let index = 0;
-    index < text.length;
-    index++
-  ){
-
-    const character =
-      text[index];
-
-    if(
-      character ===
-      '"'
-    ){
-
-      /*
-        Två citattecken inne i ett citerat
-        CSV-fält betyder ett riktigt citattecken.
-      */
-      if(
-        quoted &&
-        text[index + 1] ===
-        '"'
-      ){
-
-        current += '"';
-
-        index++;
+        output.push(current.trim());
+        current = "";
 
       }else{
 
-        quoted =
-          !quoted;
+        current += character;
       }
-
-    }else if(
-      character ===
-        delimiter &&
-      !quoted
-    ){
-
-      row.push(
-        current.trim()
-      );
-
-      current = "";
-
-    }else if(
-      (
-        character === "\n" ||
-        character === "\r"
-      ) &&
-      !quoted
-    ){
-
-      /*
-        Windows använder \r\n.
-        Hoppa över \n efter \r så samma rad
-        inte avslutas två gånger.
-      */
-      if(
-        character === "\r" &&
-        text[index + 1] === "\n"
-      ){
-
-        index++;
-      }
-
-      row.push(
-        current.trim()
-      );
-
-      current = "";
-
-      /*
-        Ignorera helt tomma rader.
-      */
-      if(
-        row.some(
-          value =>
-            value !== ""
-        )
-      ){
-
-        table.push(
-          row
-        );
-      }
-
-      row = [];
-
-    }else{
-
-      current +=
-        character;
     }
+
+    output.push(current.trim());
+
+    return output;
   }
 
 
   /*
-    Lägg till sista raden om filen inte
-    avslutas med radbrytning.
+    Leta upp den riktiga Vote4Dance-rubriken.
+
+    Filen kan innehålla tävlingsnamn,
+    datum och annan information före tabellen.
   */
-  row.push(
-    current.trim()
-  );
+  const headerIndex =
+    lines.findIndex(
+      line => {
 
-  if(
-    row.some(
-      value =>
-        value !== ""
-    )
-  ){
+        const normalized =
+          line
+            .toLowerCase()
+            .replace(/\s+/g, "");
 
-    table.push(
-      row
+        return (
+          normalized.includes("startnr") &&
+          normalized.includes("plac") &&
+          normalized.includes("namn1") &&
+          normalized.includes("namn2")
+        );
+      }
+    );
+
+
+  if(headerIndex < 0){
+
+    throw new Error(
+      "CSV-filen saknar Vote4Dance-kolumnerna Startnr, Plac, Namn 1 och Namn 2."
     );
   }
 
 
-  if(
-    !table.length
+  const rawHeaders =
+    splitLine(
+      lines[headerIndex]
+    );
+
+
+  const headers =
+    rawHeaders.map(
+      header =>
+        String(header || "")
+          .toLowerCase()
+          .trim()
+          .replace(
+            /[^a-z0-9åäö]/g,
+            ""
+          )
+    );
+
+
+  const rows = [];
+
+  let currentClass = "";
+
+
+  for(
+    let lineIndex =
+      headerIndex + 1;
+
+    lineIndex < lines.length;
+
+    lineIndex++
   ){
-    return [];
+
+    const rawLine =
+      lines[lineIndex];
+
+    if(
+      !rawLine ||
+      !rawLine.trim()
+    ){
+      continue;
+    }
+
+
+    const cells =
+      splitLine(rawLine);
+
+
+    /*
+      Vote4Dance har klassrubriker som t.ex.
+
+      Bugg Junior N
+      Bugg Vuxen D
+      Bugg Senior A
+
+      De kan ligga antingen som en ensam rad
+      eller i första CSV-kolumnen.
+    */
+    const firstCell =
+      String(
+        cells[0] || ""
+      ).trim();
+
+
+    const classMatch =
+      firstCell.match(
+        /^Bugg\s+(Junior|Vuxen|Senior)(?:\s+[A-ZÅÄÖ0-9]+)?$/i
+      );
+
+
+    const otherCellsEmpty =
+      cells
+        .slice(1)
+        .every(
+          value =>
+            !String(value || "").trim()
+        );
+
+
+    if(
+      classMatch &&
+      (
+        !rawLine.includes(";") ||
+        otherCellsEmpty
+      )
+    ){
+
+      currentClass =
+        firstCell;
+
+      continue;
+    }
+
+
+    /*
+      I vissa Vote4Dance-exporter ligger
+      klassrubriken på en egen rad helt
+      utan semikolon.
+    */
+    if(
+      !rawLine.includes(";") &&
+      /^Bugg\s+/i.test(
+        rawLine.trim()
+      )
+    ){
+
+      currentClass =
+        rawLine.trim();
+
+      continue;
+    }
+
+
+    const row = {
+      klassrubrik:
+        currentClass
+    };
+
+
+    headers.forEach(
+      (
+        header,
+        index
+      ) => {
+
+        row[header] =
+          String(
+            cells[index] ?? ""
+          )
+            .trim();
+      }
+    );
+
+
+    rows.push(row);
   }
 
 
-  /*
-    Samma normalisering av kolumnnamnen
-    som din gamla kod hade.
-
-    Exempel:
-    "Namn 1" -> "namn1"
-    "Tävlingsklass" -> "tävlingsklass"
-  */
-  const headers =
-    table
-      .shift()
-      .map(
-        header =>
-          String(
-            header ||
-            ""
-          )
-            .toLowerCase()
-            .replace(
-              /[^a-z0-9åäö]/g,
-              ""
-            )
-      );
-
-
-  /*
-    Gör varje CSV-rad till samma typ av objekt
-    som resten av din befintliga kod redan använder.
-  */
-  return table.map(
-    values => {
-
-      const result = {};
-
-      headers.forEach(
-        (
-          header,
-          index
-        ) => {
-
-          result[header] =
-            String(
-              values[index] ??
-              ""
-            )
-              .trim();
-        }
-      );
-
-      return result;
-    }
-  );
+  return rows;
 }
-
 function fantasyClass(
   name
 ){
@@ -5535,29 +5468,10 @@ for(
   const row of rows
 ){
 
-  /*
-    Vote4Dance lägger klassnamnet på en egen rad,
-    exempelvis "Bugg Senior N".
-  */
-  const classHeading =
-    pick(
-      row,
-      "klassrubrik"
-    );
-
-  if(classHeading){
-
-    currentClassName =
-      classHeading;
-
-    continue;
-  }
-
-
   const className =
-    currentClassName ||
     pick(
       row,
+      "klassrubrik",
       "klass",
       "class",
       "grenklass",
@@ -5566,104 +5480,183 @@ for(
     );
 
 
-  const cleanClass =
-  String(className || "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-
-let cls = "";
-
-if(/^bugg junior(?:\s|$)/.test(cleanClass)){
-  cls = "Junior";
-}
-else if(/^bugg vuxen(?:\s|$)/.test(cleanClass)){
-  cls = "Vuxen";
-}
-else if(/^bugg senior(?:\s|$)/.test(cleanClass)){
-  cls = "Senior";
-}
-
-if(!cls){
-  continue;
-}
+  const cls =
+    fantasyClass(
+      className
+    );
 
 
   /*
-    Vote4Dance har personerna i två separata kolumner:
-    Namn 1 + Namn 2
+    Ignorera allt som inte är
+    Bugg Junior, Vuxen eller Senior.
+  */
+  if(!cls){
+    continue;
+  }
+
+
+  /*
+    Vote4Dance:
+    Namn 1 = första personen
+    Namn 2 = andra personen
   */
   const name1 =
     pick(
       row,
-      "namn 1",
       "namn1"
     );
+
 
   const name2 =
     pick(
       row,
-      "namn 2",
       "namn2"
     );
 
 
+  if(
+    !name1 ||
+    !name2
+  ){
+    continue;
+  }
+
+
   const pairName =
-    name1 && name2
-      ? `${name1.trim()} & ${name2.trim()}`
-      : pick(
-          row,
-          "danspar",
-          "par",
-          "pair",
-          "namn",
-          "name",
-          "couple"
-        );
-  
+    `${name1.trim()} & ${name2.trim()}`;
 
-    const placement =
-      parseInt(
-        pick(
-          row,
-          "place",
-          "placering",
-          "place",
-          "placement",
-          "rank"
-        ),
-        10
-      );
 
-    if(
-      !pairName ||
-      !placement
-    ){
-      continue;
-    }
+  /*
+    Vote4Dance heter "Plac".
+    Efter normaliseringen blir det "plac".
+  */
+  const placement =
+    parseInt(
+      pick(
+        row,
+        "plac",
+        "placering",
+        "place",
+        "placement",
+        "rank"
+      ),
+      10
+    );
 
-    const pair =
+
+  if(
+    !Number.isFinite(
+      placement
+    ) ||
+    placement <= 0
+  ){
+    continue;
+  }
+
+
+  const normalizedName1 =
+    normalizeName(
+      name1
+    );
+
+
+  const normalizedName2 =
+    normalizeName(
+      name2
+    );
+
+
+  /*
+    Först exakt match.
+  */
+  let pair =
+    pairs.find(
+      candidate =>
+        candidate.cls ===
+          cls &&
+        normalizeName(
+          candidate.name
+        ) ===
+        normalizeName(
+          pairName
+        )
+    );
+
+
+  /*
+    Om ordningen på personerna är omvänd
+    i fantasy-marknaden jämfört med Vote4Dance.
+  */
+  if(!pair){
+
+    const reversedName =
+      `${name2.trim()} & ${name1.trim()}`;
+
+
+    pair =
       pairs.find(
         candidate =>
           candidate.cls ===
-          cls &&
+            cls &&
           normalizeName(
             candidate.name
           ) ===
           normalizeName(
-            pairName
+            reversedName
           )
       );
-
-    parsed.push({
-      pairName,
-      className,
-      cls,
-      placement,
-      pair
-    });
   }
 
+
+  /*
+    Extra reservmatchning.
+
+    Om fantasy-marknaden använder lite
+    annorlunda skiljetecken mellan namnen
+    räcker det att båda personernas namn
+    finns i kandidatens namn.
+  */
+  if(!pair){
+
+    pair =
+      pairs.find(
+        candidate => {
+
+          if(
+            candidate.cls !==
+            cls
+          ){
+            return false;
+          }
+
+
+          const candidateName =
+            normalizeName(
+              candidate.name
+            );
+
+
+          return (
+            candidateName.includes(
+              normalizedName1
+            ) &&
+            candidateName.includes(
+              normalizedName2
+            )
+          );
+        }
+      );
+  }
+
+
+  parsed.push({
+    pairName,
+    className,
+    cls,
+    placement,
+    pair
+  });
+}
   const entrantsByClass =
     {};
 
