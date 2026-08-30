@@ -1491,7 +1491,23 @@ main{
   </div>
 
   <div class="panel" style="margin-top:16px">
+<div class="panel" style="margin-top:16px">
 
+  <h2>Importerade tävlingar</h2>
+
+  <p class="meta">
+    Här kan du rensa testresultat eller ta bort en tävling helt innan lansering.
+  </p>
+
+  <div id="adminCompetitionList">
+    <div class="empty">
+      Inga tävlingar.
+    </div>
+  </div>
+
+</div>
+    
+    <div class="panel" style="margin-top:16px">
     <h2>Publicerade livestreams</h2>
 
     <div id="adminStreamList"></div>
@@ -3019,8 +3035,9 @@ async function loadCompetitions(){
       : data || [];
 
   renderCompetitions();
-
   renderAdminCompetitionSelects();
+  renderAdminCompetitions();
+  
 }
 
 function renderCompetitions(){
@@ -3155,7 +3172,269 @@ function renderCompetitions(){
         latest.id
       );
 }
+function renderAdminCompetitions(){
 
+  const container = $("adminCompetitionList");
+
+  if(!container){
+    return;
+  }
+
+  if(!competitions.length){
+    container.innerHTML = `
+      <div class="empty">
+        Inga tävlingar.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = competitions.map(competition => `
+    <div class="competition">
+
+      <div class="badge">
+        ${esc(competition.level || "")}
+      </div>
+
+      <div style="flex:1">
+        <b>${esc(competition.name || "Tävling")}</b>
+
+        <div class="meta">
+          ${esc(competition.date || "")}
+        </div>
+      </div>
+
+      <div style="
+        display:flex;
+        gap:7px;
+        flex-wrap:wrap;
+        justify-content:flex-end;
+      ">
+
+        <button
+          class="btn soft"
+          data-clear-results="${esc(competition.id)}"
+        >
+          Rensa resultat
+        </button>
+
+        <button
+          class="btn red"
+          data-delete-competition="${esc(competition.id)}"
+        >
+          Ta bort tävling
+        </button>
+
+      </div>
+
+    </div>
+  `).join("");
+
+  container
+    .querySelectorAll("[data-clear-results]")
+    .forEach(button => {
+
+      button.onclick = () => {
+        deleteCompetitionResults(
+          button.dataset.clearResults
+        );
+      };
+
+    });
+
+  container
+    .querySelectorAll("[data-delete-competition]")
+    .forEach(button => {
+
+      button.onclick = () => {
+        deleteCompetition(
+          button.dataset.deleteCompetition
+        );
+      };
+
+    });
+}
+
+
+async function deleteCompetitionResults(competitionId){
+
+  const competition = competitions.find(
+    item => String(item.id) === String(competitionId)
+  );
+
+  if(!competition){
+    alert("Tävlingen kunde inte hittas.");
+    return;
+  }
+
+  const confirmed = confirm(
+    `Rensa alla resultat från "${competition.name}"?\n\n` +
+    `Tävlingen kommer ligga kvar, men importerade resultat och beräknade fantasypoäng för tävlingen tas bort.`
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+
+  const scoreDelete = await sb
+    .from("fantasy_competition_scores")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(scoreDelete.error){
+    alert(
+      "Kunde inte rensa fantasypoängen:\n" +
+      scoreDelete.error.message
+    );
+    return;
+  }
+
+
+  const resultDelete = await sb
+    .from("competition_results")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(resultDelete.error){
+    alert(
+      "Kunde inte rensa resultaten:\n" +
+      resultDelete.error.message
+    );
+    return;
+  }
+
+
+  alert(
+    `Resultaten för "${competition.name}" är borttagna.`
+  );
+
+  await loadCompetitions();
+
+  if(typeof loadPairHistory === "function"){
+    await loadPairHistory();
+  }
+
+  if(typeof loadFantasyTotal === "function"){
+    await loadFantasyTotal();
+  }
+
+  if(typeof loadGlobalLeaderboard === "function"){
+    await loadGlobalLeaderboard();
+  }
+}
+
+
+async function deleteCompetition(competitionId){
+
+  const competition = competitions.find(
+    item => String(item.id) === String(competitionId)
+  );
+
+  if(!competition){
+    alert("Tävlingen kunde inte hittas.");
+    return;
+  }
+
+
+  const confirmed = confirm(
+    `Ta bort "${competition.name}" helt?\n\n` +
+    `Tävlingen, alla importerade resultat och alla beräknade fantasypoäng för tävlingen kommer att tas bort.`
+  );
+
+  if(!confirmed){
+    return;
+  }
+
+
+  const reallyConfirmed = confirm(
+    `Är du helt säker?\n\n` +
+    `"${competition.name}" kommer att raderas permanent.`
+  );
+
+  if(!reallyConfirmed){
+    return;
+  }
+
+
+  const scoreDelete = await sb
+    .from("fantasy_competition_scores")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(scoreDelete.error){
+    alert(
+      "Kunde inte ta bort fantasypoängen:\n" +
+      scoreDelete.error.message
+    );
+    return;
+  }
+
+
+  const resultDelete = await sb
+    .from("competition_results")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(resultDelete.error){
+    alert(
+      "Kunde inte ta bort resultaten:\n" +
+      resultDelete.error.message
+    );
+    return;
+  }
+
+
+  const streamDelete = await sb
+    .from("fantasy_streams")
+    .delete()
+    .eq("competition_id", competitionId);
+
+  if(streamDelete.error){
+    console.warn(
+      "Livestream kunde inte tas bort:",
+      streamDelete.error.message
+    );
+  }
+
+
+  const competitionDelete = await sb
+    .from("competitions")
+    .delete()
+    .eq("id", competitionId);
+
+  if(competitionDelete.error){
+    alert(
+      "Kunde inte ta bort tävlingen:\n" +
+      competitionDelete.error.message
+    );
+    return;
+  }
+
+
+  alert(
+    `"${competition.name}" är borttagen.`
+  );
+
+
+  await loadCompetitions();
+
+  if(typeof loadStreams === "function"){
+    await loadStreams();
+  }
+
+  if(typeof loadPairHistory === "function"){
+    await loadPairHistory();
+  }
+
+  if(typeof loadFantasyTotal === "function"){
+    await loadFantasyTotal();
+  }
+
+  if(typeof loadGlobalLeaderboard === "function"){
+    await loadGlobalLeaderboard();
+  }
+}
 async function openCompetitionResults(
   id
 ){
