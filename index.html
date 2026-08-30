@@ -5094,60 +5094,63 @@ function renderAdminStreams(){
       }
     );
 }
-
 function parseCSV(
   text
 ){
 
-  const lines =
-    text
+  text =
+    String(
+      text || ""
+    )
       .replace(
         /^\uFEFF/,
         ""
-      )
-      .split(
-        /\r?\n/
-      )
-      .filter(Boolean);
+      );
 
   if(
-    !lines.length
+    !text.trim()
   ){
     return [];
   }
 
-  const delimiter =
-    (
-      lines[0]
-        ?.split(";")
-        .length ||
-      0
-    ) >=
-    (
-      lines[0]
-        ?.split(",")
-        .length ||
-      0
-    )
-      ? ";"
-      : ",";
+  /*
+    Hitta automatiskt vilken avgränsare CSV-filen använder:
+    ;
+    ,
+    tab
+  */
+  const firstLine =
+    text
+      .split(
+        /\r?\n/,
+        1
+      )[0] ||
+    "";
 
-  const splitLine =
-    line => {
+  const delimiters =
+    [
+      ";",
+      ",",
+      "\t"
+    ];
 
-      const output = [];
+  let delimiter = ";";
+  let bestCount = -1;
 
-      let current = "";
+  delimiters.forEach(
+    candidate => {
+
+      let count = 0;
       let quoted = false;
 
       for(
         let index = 0;
-        index < line.length;
+        index < firstLine.length;
         index++
       ){
 
         const character =
-          line[index];
+          firstLine[index];
 
         if(
           character ===
@@ -5156,11 +5159,10 @@ function parseCSV(
 
           if(
             quoted &&
-            line[index + 1] ===
+            firstLine[index + 1] ===
             '"'
           ){
 
-            current += '"';
             index++;
 
           }else{
@@ -5171,40 +5173,183 @@ function parseCSV(
 
         }else if(
           character ===
-          delimiter &&
+            candidate &&
           !quoted
         ){
 
-          output.push(
-            current
-          );
-
-          current = "";
-
-        }else{
-
-          current +=
-            character;
+          count++;
         }
       }
 
-      output.push(
-        current
+      if(
+        count >
+        bestCount
+      ){
+
+        bestCount =
+          count;
+
+        delimiter =
+          candidate;
+      }
+    }
+  );
+
+
+  /*
+    Läs hela CSV-filen tecken för tecken.
+    Detta gör att citattecken fungerar korrekt
+    även om ett fält innehåller komma/semikolon.
+  */
+  const table = [];
+
+  let row = [];
+  let current = "";
+  let quoted = false;
+
+  for(
+    let index = 0;
+    index < text.length;
+    index++
+  ){
+
+    const character =
+      text[index];
+
+    if(
+      character ===
+      '"'
+    ){
+
+      /*
+        Två citattecken inne i ett citerat
+        CSV-fält betyder ett riktigt citattecken.
+      */
+      if(
+        quoted &&
+        text[index + 1] ===
+        '"'
+      ){
+
+        current += '"';
+
+        index++;
+
+      }else{
+
+        quoted =
+          !quoted;
+      }
+
+    }else if(
+      character ===
+        delimiter &&
+      !quoted
+    ){
+
+      row.push(
+        current.trim()
       );
 
-      return output.map(
-        value =>
-          value.trim()
-      );
-    };
+      current = "";
 
-  const headers =
-    splitLine(
-      lines.shift()
+    }else if(
+      (
+        character === "\n" ||
+        character === "\r"
+      ) &&
+      !quoted
+    ){
+
+      /*
+        Windows använder \r\n.
+        Hoppa över \n efter \r så samma rad
+        inte avslutas två gånger.
+      */
+      if(
+        character === "\r" &&
+        text[index + 1] === "\n"
+      ){
+
+        index++;
+      }
+
+      row.push(
+        current.trim()
+      );
+
+      current = "";
+
+      /*
+        Ignorera helt tomma rader.
+      */
+      if(
+        row.some(
+          value =>
+            value !== ""
+        )
+      ){
+
+        table.push(
+          row
+        );
+      }
+
+      row = [];
+
+    }else{
+
+      current +=
+        character;
+    }
+  }
+
+
+  /*
+    Lägg till sista raden om filen inte
+    avslutas med radbrytning.
+  */
+  row.push(
+    current.trim()
+  );
+
+  if(
+    row.some(
+      value =>
+        value !== ""
     )
+  ){
+
+    table.push(
+      row
+    );
+  }
+
+
+  if(
+    !table.length
+  ){
+    return [];
+  }
+
+
+  /*
+    Samma normalisering av kolumnnamnen
+    som din gamla kod hade.
+
+    Exempel:
+    "Namn 1" -> "namn1"
+    "Tävlingsklass" -> "tävlingsklass"
+  */
+  const headers =
+    table
+      .shift()
       .map(
         header =>
-          header
+          String(
+            header ||
+            ""
+          )
             .toLowerCase()
             .replace(
               /[^a-z0-9åäö]/g,
@@ -5212,24 +5357,32 @@ function parseCSV(
             )
       );
 
-  return lines.map(
-    line => {
 
-      const values =
-        splitLine(line);
+  /*
+    Gör varje CSV-rad till samma typ av objekt
+    som resten av din befintliga kod redan använder.
+  */
+  return table.map(
+    values => {
 
-      const row = {};
+      const result = {};
 
       headers.forEach(
-        (header,index) => {
+        (
+          header,
+          index
+        ) => {
 
-          row[header] =
-            values[index] ||
-            "";
+          result[header] =
+            String(
+              values[index] ??
+              ""
+            )
+              .trim();
         }
       );
 
-      return row;
+      return result;
     }
   );
 }
