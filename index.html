@@ -1043,7 +1043,10 @@ main{
   <div class="sectionTitle">
     <div>
       <h1>Poäng & regler</h1>
-      <p>Belönar både toppresultat och smart scouting.</p>
+      <p>
+        Poängen bygger på placering, storleken på startfältet
+        och tävlingens nivå.
+      </p>
     </div>
   </div>
 
@@ -1053,35 +1056,69 @@ main{
 
       <h2>Placering</h2>
 
+      <p>
+        Poängen räknas procentuellt utifrån hur stor del
+        av startfältet paret placerar sig före.
+      </p>
+
       <table class="pointsTable">
-        <tr><td>1:a</td><td>100 p</td></tr>
-        <tr><td>2:a</td><td>85 p</td></tr>
-        <tr><td>3:a</td><td>75 p</td></tr>
-        <tr><td>4:a</td><td>65 p</td></tr>
-        <tr><td>5:a</td><td>60 p</td></tr>
-        <tr><td>6–10</td><td>50 p</td></tr>
-        <tr><td>11–20</td><td>35 p</td></tr>
-        <tr><td>21–40</td><td>20 p</td></tr>
-        <tr><td>Övriga</td><td>10 p</td></tr>
+        <tr>
+          <td>1:a</td>
+          <td>Högst poäng</td>
+        </tr>
+
+        <tr>
+          <td>Mitten av klassen</td>
+          <td>Ca 45–50 p</td>
+        </tr>
+
+        <tr>
+          <td>Sista plats</td>
+          <td>Ca 20–25 p</td>
+        </tr>
       </table>
 
+      <p class="meta">
+        Skillnaden mellan exempelvis 1:a, 3:a och 5:a
+        är relativt liten för att skapa ett jämnare fantasyspel.
+      </p>
+
     </div>
+
 
     <div class="panel">
 
-      <h2>Bonus</h2>
+      <h2>Startfältets storlek</h2>
+
+      <p>
+        Större klasser ger lite mer poäng än små klasser.
+      </p>
 
       <table class="pointsTable">
-        <tr><td>Varje besegrat par</td><td>+1</td></tr>
-        <tr><td>Final</td><td>+15</td></tr>
-        <tr><td>Topp 3</td><td>+10</td></tr>
-        <tr><td>Seger</td><td>+15</td></tr>
-        <tr><td>Kapten</td><td>×1,5</td></tr>
-        <tr><td>DNS</td><td>−8</td></tr>
-        <tr><td>Extra byte</td><td>−35</td></tr>
+        <tr>
+          <td>Liten klass</td>
+          <td>Lägre faktor</td>
+        </tr>
+
+        <tr>
+          <td>20 par</td>
+          <td>Mellanfaktor</td>
+        </tr>
+
+        <tr>
+          <td>40+ par</td>
+          <td>Full faktor</td>
+        </tr>
       </table>
 
+      <p class="meta">
+        Det gör att exempelvis en seger i en mycket liten klass
+        inte automatiskt blir mer värd än en stark placering
+        i en stor klass.
+      </p>
+
     </div>
+
 
     <div class="panel">
 
@@ -1097,9 +1134,50 @@ main{
 
     </div>
 
+
     <div class="panel">
 
-      <h2>Värdebonus topp 20</h2>
+      <h2>Övriga regler</h2>
+
+      <table class="pointsTable">
+
+        <tr>
+          <td>Kapten</td>
+          <td>×1,5</td>
+        </tr>
+
+        <tr>
+          <td>Deltar inte</td>
+          <td>−50 p</td>
+        </tr>
+
+        <tr>
+          <td>Första fria bytet</td>
+          <td>0 p</td>
+        </tr>
+
+        <tr>
+          <td>Extra byte</td>
+          <td>−100 p</td>
+        </tr>
+
+      </table>
+
+      <p class="meta">
+        Ett par som tävlar ofta kan därför samla mycket poäng
+        över säsongen även utan att alltid vara i final.
+      </p>
+
+    </div>
+
+
+    <div class="panel">
+
+      <h2>Värdebonus</h2>
+
+      <p>
+        Billigare par kan få en mindre värdebonus vid bra resultat.
+      </p>
 
       <table class="pointsTable">
         <tr><td>6 M</td><td>+16%</td></tr>
@@ -1112,7 +1190,7 @@ main{
       </table>
 
       <p class="meta">
-        Max 30 råpoäng före tävlingsmultiplikatorn.
+        Värdebonusen är begränsad till maximalt 15 extra poäng.
       </p>
 
     </div>
