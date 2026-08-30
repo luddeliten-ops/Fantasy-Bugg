@@ -5413,15 +5413,27 @@ for(
     );
 
 
-  const cls =
-    fantasyClass(
-      className
-    );
+  const cleanClass =
+  String(className || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
 
+let cls = "";
 
-  if(!cls){
-    continue;
-  }
+if(/^bugg junior(?:\s|$)/.test(cleanClass)){
+  cls = "Junior";
+}
+else if(/^bugg vuxen(?:\s|$)/.test(cleanClass)){
+  cls = "Vuxen";
+}
+else if(/^bugg senior(?:\s|$)/.test(cleanClass)){
+  cls = "Senior";
+}
+
+if(!cls){
+  continue;
+}
 
 
   /*
@@ -5461,6 +5473,7 @@ for(
       parseInt(
         pick(
           row,
+          "place"
           "placering",
           "place",
           "placement",
