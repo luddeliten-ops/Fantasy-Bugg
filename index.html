@@ -4066,8 +4066,23 @@ async function deleteCompetitionResults(competitionId){
       resultDelete.error.message
     );
     return;
+    
   }
+  
+const competitionReset =
+  await sb
+    .from("competitions")
+    .update({
+      results_imported_at: null
+    })
+    .eq("id", competitionId);
 
+if(competitionReset.error){
+  console.warn(
+    "Kunde inte återställa tävlingsstatus:",
+    competitionReset.error.message
+  );
+}
 
   alert(
     `Resultaten för "${competition.name}" är borttagna.`
