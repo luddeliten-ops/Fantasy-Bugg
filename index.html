@@ -973,7 +973,20 @@ main{
     </div>
 
   </div>
+  
+<div class="kpis" style="margin-bottom:16px">
 
+  <div class="kpi">
+    <small>Platser kvar</small>
+    <strong id="marketSlotsLeft">5</strong>
+  </div>
+
+  <div class="kpi">
+    <small>Budget kvar</small>
+    <strong id="marketBudgetLeft">100 M</strong>
+  </div>
+
+</div>
   <div class="toolbar">
 
     <input
@@ -2335,6 +2348,13 @@ function renderTeam(){
 
                 <div class="teamActions">
 
+                <button
+  class="btn soft"
+  data-team-info="${index}"
+>
+  Info
+</button>
+
                   <button
                     class="btn soft"
                     data-captain="${index}"
@@ -2365,6 +2385,27 @@ function renderTeam(){
           }
         )
         .join("");
+
+    document
+  .querySelectorAll(
+    "[data-team-info]"
+  )
+  .forEach(
+    button => {
+
+      button.onclick =
+        async () => {
+
+          await openTeamPairInfo(
+            Number(
+              button.dataset.teamInfo
+            )
+          );
+
+        };
+
+    }
+  );
 
     document
       .querySelectorAll(
@@ -2566,7 +2607,33 @@ function filteredPairs(){
 }
 
 function renderMarket(){
+  
+const slotsLeft =
+  Math.max(
+    0,
+    TEAM_SIZE - selectedPairs.length
+  );
 
+$("marketSlotsLeft").textContent =
+  pendingTransferOut !== null
+    ? "Byte"
+    : slotsLeft;
+
+const marketAvailableBudget =
+  pendingTransferOut !== null
+    ? bank +
+      (
+        getPair(
+          pendingTransferOut
+        )?.price || 0
+      )
+    : bank;
+
+$("marketBudgetLeft").textContent =
+  money(
+    marketAvailableBudget
+  );
+  
   const list =
     filteredPairs();
 
@@ -2889,6 +2956,234 @@ pendingTransferOut =
   renderMarket();
 }
 
+async function openTeamPairInfo(index){
+
+  const pair =
+    getPair(index);
+
+  if(!pair){
+    return;
+  }
+
+  $("pairModalTitle").textContent =
+    pair.name;
+
+  $("pairModalBody").innerHTML = `
+    <div class="empty">
+      Hämtar poänghistorik...
+    </div>
+  `;
+
+  openModal(
+    "pairModal"
+  );
+
+  if(!currentUser){
+
+    $("pairModalBody").innerHTML = `
+      <div class="empty">
+        Logga in för att se poängen
+        paret har samlat i ditt lag.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await sb.rpc(
+      "get_my_pair_point_history",
+      {
+        p_pair_index:index
+      }
+    );
+
+
+  if(error){
+
+    $("pairModalBody").innerHTML = `
+      <div class="err">
+        ${esc(error.message)}
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const history =
+    data || [];
+
+
+  const inTeam =
+    history.filter(
+      row => row.in_team
+    );
+
+
+  const outsideTeam =
+    history.filter(
+      row => !row.in_team
+    );
+
+
+  const inTeamPoints =
+    inTeam.reduce(
+      (sum,row) =>
+        sum +
+        Number(
+          row.counted_points || 0
+        ),
+      0
+    );
+
+
+  const outsideTeamPoints =
+    outsideTeam.reduce(
+      (sum,row) =>
+        sum +
+        Number(
+          row.raw_points || 0
+        ),
+      0
+    );
+
+
+  $("pairModalBody").innerHTML = `
+
+    <p class="meta">
+      Bugg ${esc(pair.cls)}
+    </p>
+
+
+    <div class="kpis">
+
+      <div class="kpi">
+        <small>Poäng i ditt lag</small>
+        <strong>
+          ${Math.round(inTeamPoints)} p
+        </strong>
+      </div>
+
+      <div class="kpi">
+        <small>Poäng utanför ditt lag</small>
+        <strong>
+          ${Math.round(outsideTeamPoints)} p
+        </strong>
+      </div>
+
+    </div>
+
+
+    <h3 style="margin-top:18px">
+      När paret låg i ditt lag
+    </h3>
+
+    ${
+      inTeam.length
+        ? inTeam
+            .map(
+              result => `
+                <div class="scoreRow">
+
+                  <div>
+                    ${esc(
+                      result.competition_name ||
+                      result.competition_id ||
+                      "Tävling"
+                    )}
+                  </div>
+
+                  <div>
+                    ${
+                      result.placement
+                        ? result.placement + ":a"
+                        : "Deltog ej"
+                    }
+                  </div>
+
+                  <div>
+                    <b>
+                      ${
+                        Math.round(
+                          Number(
+                            result.counted_points || 0
+                          )
+                        )
+                      } p
+                    </b>
+                  </div>
+
+                </div>
+              `
+            )
+            .join("")
+        : `
+          <div class="empty">
+            Inga färdiga tävlingar med
+            paret i ditt lag ännu.
+          </div>
+        `
+    }
+
+
+    <h3 style="margin-top:22px">
+      När paret inte låg i ditt lag
+    </h3>
+
+    ${
+      outsideTeam.length
+        ? outsideTeam
+            .map(
+              result => `
+                <div class="scoreRow">
+
+                  <div>
+                    ${esc(
+                      result.competition_name ||
+                      result.competition_id ||
+                      "Tävling"
+                    )}
+                  </div>
+
+                  <div>
+                    ${
+                      result.placement
+                        ? result.placement + ":a"
+                        : "–"
+                    }
+                  </div>
+
+                  <div>
+                    <b>
+                      ${
+                        Math.round(
+                          Number(
+                            result.raw_points || 0
+                          )
+                        )
+                      } p
+                    </b>
+                  </div>
+
+                </div>
+              `
+            )
+            .join("")
+        : `
+          <div class="empty">
+            Inga resultat utanför ditt lag.
+          </div>
+        `
+    }
+
+  `;
+}
+  
 function openPairModal(index){
 
   const pair =
