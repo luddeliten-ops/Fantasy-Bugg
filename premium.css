@@ -101,7 +101,7 @@ main{
   background:
     linear-gradient(90deg,rgba(2,6,15,.98) 0%,rgba(2,6,15,.92) 27%,rgba(2,6,15,.55) 47%,rgba(2,6,15,.08) 73%),
     linear-gradient(0deg,rgba(2,6,15,.82) 0%,transparent 35%),
-    url("hero.jpg") center 41% / cover no-repeat!important;
+    url("hero.jpg.png") center 41% / cover no-repeat!important;
   border:1px solid rgba(255,255,255,.06);
   box-shadow:var(--fb-shadow)!important;
 }
