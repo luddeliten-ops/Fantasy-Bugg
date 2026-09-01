@@ -13,6 +13,23 @@
     link.href='team-arena.css?v=10';
   }
 
+  function ensureModalTheme(){
+    if(document.getElementById('fb-modal-fix')) return;
+    const style=document.createElement('style');
+    style.id='fb-modal-fix';
+    style.textContent=`
+      .modalBackdrop{background:rgba(1,4,12,.82)!important;backdrop-filter:blur(8px)!important}
+      .modalBackdrop .modal{background:linear-gradient(145deg,#0d1324,#070c18)!important;color:#f7f8fc!important;border:1px solid rgba(255,76,177,.28)!important;box-shadow:0 28px 80px rgba(0,0,0,.62)!important}
+      .modalBackdrop .modal h1,.modalBackdrop .modal h2,.modalBackdrop .modal h3,.modalBackdrop .modal b,.modalBackdrop .modal strong{color:#fff!important}
+      .modalBackdrop .modal .meta,.modalBackdrop .modal .empty,.modalBackdrop .modal small{color:#a8afbf!important}
+      .modalBackdrop .modal .kpi,.modalBackdrop .modal .teamCard{background:linear-gradient(145deg,#11182b,#090f1d)!important;color:#fff!important;border:1px solid rgba(255,255,255,.09)!important}
+      .modalBackdrop .modal .scoreRow{color:#eef1f7!important;border-color:rgba(255,255,255,.09)!important}
+      .modalBackdrop .modalClose{background:#171e30!important;color:#fff!important;border:1px solid rgba(255,255,255,.12)!important}
+      #pairModalBody,#publicTeamBody,#resultModalBody{color:#eef1f7!important}
+    `;
+    document.head.appendChild(style);
+  }
+
   function esc(value){
     return String(value ?? '')
       .replaceAll('&','&amp;')
@@ -22,7 +39,6 @@
       .replaceAll("'",'&#039;');
   }
 
-  /* Klickdelegation i samma fil som redan laddas på sajten. */
   function ensureInteractions(){
     if(document.documentElement.dataset.fbRobustClicks==='2') return;
     document.documentElement.dataset.fbRobustClicks='2';
@@ -143,6 +159,7 @@
 
   async function load(){
     ensureTeamArenaAssets();
+    ensureModalTheme();
     ensureInteractions();
     if(!ensureDashboard() || typeof sb==='undefined') return;
     try{
@@ -163,6 +180,7 @@
   }
 
   ensureTeamArenaAssets();
+  ensureModalTheme();
   ensureInteractions();
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',load,{once:true});
   else load();
