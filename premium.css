@@ -101,7 +101,8 @@ main{
   background:
     linear-gradient(90deg,rgba(2,6,15,.98) 0%,rgba(2,6,15,.92) 27%,rgba(2,6,15,.55) 47%,rgba(2,6,15,.08) 73%),
     linear-gradient(0deg,rgba(2,6,15,.82) 0%,transparent 35%),
-    url("hero.jpg.png") center 41% / cover no-repeat!important;
+    url("hero.jpg.png") center center / 100% auto no-repeat!important;
+  background-color:#02060f!important;
   border:1px solid rgba(255,255,255,.06);
   box-shadow:var(--fb-shadow)!important;
 }
@@ -412,7 +413,8 @@ textarea{
     align-items:flex-end!important;
     background:
       linear-gradient(0deg,rgba(2,6,15,.99) 0%,rgba(2,6,15,.92) 37%,rgba(2,6,15,.38) 67%,rgba(2,6,15,.08) 100%),
-      url("hero.jpg.png") 58% center / cover no-repeat!important;
+      url("hero.jpg.png") center 15% / 100% auto no-repeat!important;
+    background-color:#02060f!important;
   }
 
   #home .homeHeroCopy{
