@@ -35,32 +35,23 @@
         : '0';
     }
 
-    const [teamsResponse, competitionsResponse, managersResponse] = await Promise.all([
-      sb.from('fantasy_teams').select('user_id',{count:'exact',head:true}),
-      sb.from('competitions').select('id',{count:'exact',head:true}),
-      sb.from('profiles').select('id',{count:'exact',head:true})
-    ]);
-
     const teamEl = document.getElementById('homeTeamCount');
     const competitionEl = document.getElementById('homeCompetitionCount');
     const managerEl = document.getElementById('homeManagerCount');
 
-    if(teamEl){
-      teamEl.textContent = teamsResponse.error
-        ? '–'
-        : Number(teamsResponse.count || 0).toLocaleString('sv-SE');
-    }
+    try{
+      const response = await sb.rpc('get_public_fantasy_stats');
+      if(response.error) throw response.error;
 
-    if(competitionEl){
-      competitionEl.textContent = competitionsResponse.error
-        ? '–'
-        : Number(competitionsResponse.count || 0).toLocaleString('sv-SE');
-    }
-
-    if(managerEl){
-      managerEl.textContent = managersResponse.error
-        ? '–'
-        : Number(managersResponse.count || 0).toLocaleString('sv-SE');
+      const data = response.data || {};
+      if(teamEl) teamEl.textContent = Number(data.teams || 0).toLocaleString('sv-SE');
+      if(competitionEl) competitionEl.textContent = Number(data.competitions || 0).toLocaleString('sv-SE');
+      if(managerEl) managerEl.textContent = Number(data.managers || 0).toLocaleString('sv-SE');
+    }catch(error){
+      console.error('Kunde inte hämta publik Fantasy Bugg-statistik:',error);
+      if(teamEl) teamEl.textContent = '–';
+      if(competitionEl) competitionEl.textContent = '–';
+      if(managerEl) managerEl.textContent = '–';
     }
   }
 
