@@ -55,4 +55,12 @@
     script.dataset.interactionFix='1';
     document.head.appendChild(script);
   }
+
+  if(!document.querySelector('script[data-competition-fix]')){
+    const script=document.createElement('script');
+    script.src='competition-fix.js?v=1';
+    script.defer=true;
+    script.dataset.competitionFix='1';
+    document.head.appendChild(script);
+  }
 })();
