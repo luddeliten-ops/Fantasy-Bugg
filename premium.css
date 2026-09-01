@@ -1,0 +1,199 @@
+/* Fantasy Bugg – premium visual layer. Cosmetic only. */
+
+:root{
+  --fb-deep:#03101f;
+  --fb-navy:#07182f;
+  --fb-card:#0b203d;
+  --fb-pink:#ff3cbe;
+  --fb-purple:#8d50ff;
+  --fb-text:#f7f9ff;
+  --fb-muted:#93a6c2;
+}
+
+/* Startsida */
+#home{
+  background:
+    radial-gradient(circle at 82% 0%,rgba(255,60,190,.16),transparent 32%),
+    radial-gradient(circle at 8% 44%,rgba(141,80,255,.14),transparent 34%),
+    var(--fb-deep);
+  color:var(--fb-text);
+  border-radius:28px;
+  padding:18px;
+}
+
+#home .homeHero{
+  position:relative;
+  display:flex;
+  align-items:center;
+  min-height:500px;
+  overflow:hidden;
+  border-radius:26px;
+  background:
+    linear-gradient(90deg,rgba(3,13,31,.98) 0%,rgba(3,13,31,.90) 42%,rgba(3,13,31,.35) 72%,rgba(3,13,31,.12) 100%),
+    url("https://www.worlddancesport.org/media/10a44fe7-11d2-4eeb-9657-b3e9009a4ad8/930x540/landscape/default.jpg");
+  background-size:cover;
+  background-position:center;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 28px 70px rgba(0,0,0,.34);
+}
+
+#home .homeHeroCopy{
+  position:relative;
+  z-index:2;
+  width:min(630px,100%);
+  padding:52px 46px;
+}
+
+#home .eyebrow{
+  color:#ff62cf;
+  font-size:12px;
+  letter-spacing:2px;
+}
+
+#home .homeHero h1{
+  color:white;
+  font-size:clamp(44px,7vw,76px);
+  line-height:.95;
+  letter-spacing:-3.5px;
+  text-shadow:0 8px 30px rgba(0,0,0,.38);
+}
+
+#home .homeHero h1 span{
+  background:linear-gradient(90deg,var(--fb-pink),#a86cff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+#home .homeHero p{
+  max-width:550px;
+  color:#d8e0ee;
+  font-size:17px;
+}
+
+#home .danceArt{display:none}
+
+#home .heroButtons .gold,
+#home .homeFeed .btn{
+  background:linear-gradient(135deg,var(--fb-pink),var(--fb-purple));
+  color:white;
+  box-shadow:0 10px 28px rgba(222,52,189,.23);
+}
+
+#home .heroButtons .white{
+  background:rgba(6,20,43,.72);
+  border:1px solid rgba(255,255,255,.2);
+  color:white;
+  backdrop-filter:blur(10px);
+}
+
+#home .homeStats{
+  background:var(--fb-navy);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  overflow:hidden;
+  gap:0;
+  margin-top:18px!important;
+}
+
+#home .homeStat{
+  background:transparent;
+  border:0;
+  border-right:1px solid rgba(255,255,255,.07);
+  border-radius:0;
+  padding:20px 22px;
+}
+
+#home .homeStat:last-child{border-right:0}
+#home .homeStat small{color:var(--fb-muted)}
+#home .homeStat strong{color:white;font-size:28px}
+
+#home .homeFeed{gap:18px}
+
+#home .panel{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(145deg,rgba(13,31,58,.98),rgba(5,19,39,.98));
+  border:1px solid rgba(255,255,255,.08);
+  color:white;
+  box-shadow:0 18px 48px rgba(0,0,0,.20);
+}
+
+#home .panel h2{color:white}
+#home .panel .meta,
+#home .empty{color:var(--fb-muted)}
+#home .competition{border-color:rgba(255,255,255,.08)}
+#home .badge{
+  background:linear-gradient(135deg,var(--fb-pink),var(--fb-purple));
+  color:white;
+}
+
+/* Marknad – mer sportkortskänsla utan att ändra funktionalitet */
+#pairs .market{gap:16px}
+#pairs .pair{
+  border:1px solid #d7e3f4;
+  border-radius:20px;
+  padding:17px;
+  background:linear-gradient(180deg,#fff 0%,#f8fbff 100%);
+  box-shadow:0 12px 32px rgba(8,28,62,.08);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+
+#pairs .pair:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 38px rgba(8,28,62,.13);
+}
+
+#pairs .price{
+  color:#5d37d6;
+  font-size:18px;
+}
+
+#pairs .pairFoot .btn.blue{
+  background:linear-gradient(135deg,#1b66df,#784cff);
+}
+
+@media(max-width:620px){
+  #home{padding:8px;border-radius:20px}
+  #home .homeHero{
+    min-height:500px;
+    background-position:60% center;
+  }
+  #home .homeHero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(0deg,#03101f 0%,rgba(3,16,31,.90) 48%,rgba(3,16,31,.25) 100%);
+  }
+  #home .homeHeroCopy{
+    align-self:flex-end;
+    padding:32px 22px;
+  }
+  #home .homeHero h1{
+    font-size:46px;
+    letter-spacing:-3px;
+  }
+  #home .homeStats{
+    grid-template-columns:repeat(2,1fr)!important;
+  }
+  #home .homeStat{
+    border-bottom:1px solid rgba(255,255,255,.07);
+  }
+  #pairs .market{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+  }
+  #pairs .pair{
+    padding:12px;
+    border-radius:16px;
+  }
+  #pairs .pairHead{
+    display:block;
+  }
+  #pairs .price{
+    margin-top:8px;
+  }
+  #pairs .pairFoot{
+    flex-direction:column;
+  }
+}
