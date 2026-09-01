@@ -21,6 +21,11 @@
         <small>Managers</small>
         <strong id="homeManagerCount">–</strong>
       </div>
+
+      <!-- Behåll gamla ID:n så befintlig JS fortsätter fungera -->
+      <span id="homePoints" hidden>0</span>
+      <span id="homeValue" hidden>100 M</span>
+      <span id="homeRank" hidden>–</span>
     `;
 
     const pairEl = document.getElementById('homePairCount');
