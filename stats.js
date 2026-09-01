@@ -34,7 +34,7 @@
 
   if(!document.querySelector('script[data-home-dashboard]')){
     const script=document.createElement('script');
-    script.src='home-dashboard.js';
+    script.src='home-dashboard.js?v=8';
     script.defer=true;
     script.dataset.homeDashboard='1';
     document.head.appendChild(script);
