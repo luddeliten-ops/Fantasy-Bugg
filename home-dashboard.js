@@ -2,6 +2,30 @@
 (function(){
   const $ = id => document.getElementById(id);
 
+  function ensureTeamArenaAssets(){
+    if(!document.querySelector('link[data-team-arena]')){
+      const link=document.createElement('link');
+      link.rel='stylesheet';
+      link.href='team-arena.css?v=4';
+      link.dataset.teamArena='1';
+      document.head.appendChild(link);
+    }
+
+    if(!document.documentElement.dataset.teamInfoCapture){
+      document.documentElement.dataset.teamInfoCapture='1';
+      document.addEventListener('click',function(event){
+        const button=event.target.closest('[data-team-info]');
+        if(!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const index=Number(button.dataset.teamInfo);
+        if(Number.isFinite(index) && typeof openTeamPairInfo==='function'){
+          openTeamPairInfo(index);
+        }
+      },true);
+    }
+  }
+
   function esc(value){
     return String(value ?? '')
       .replaceAll('&','&amp;')
@@ -103,6 +127,7 @@
   }
 
   async function load(){
+    ensureTeamArenaAssets();
     if(!ensureDashboard() || typeof sb==='undefined') return;
     try{
       const response = await sb.from('competitions').select('*');
@@ -127,6 +152,7 @@
     }
   }
 
+  ensureTeamArenaAssets();
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',load,{once:true});
   else load();
 })();
