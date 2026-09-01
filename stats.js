@@ -42,7 +42,7 @@
 
   if(!document.querySelector('script[data-interaction-fix]')){
     const script=document.createElement('script');
-    script.src='interaction-fix.js?v=1';
+    script.src='interaction-fix.js?v=2';
     script.defer=true;
     script.dataset.interactionFix='1';
     document.head.appendChild(script);
