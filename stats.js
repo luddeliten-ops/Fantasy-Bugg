@@ -29,6 +29,14 @@
     }
   }
 
+  if(!document.querySelector('link[data-page-heroes]')){
+    const style=document.createElement('link');
+    style.rel='stylesheet';
+    style.href='page-heroes.css?v=1';
+    style.dataset.pageHeroes='1';
+    document.head.appendChild(style);
+  }
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadPublicHomeStats,{once:true});
   else await loadPublicHomeStats();
 
