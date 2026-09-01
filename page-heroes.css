@@ -1,0 +1,115 @@
+/* Fantasy Bugg – bildrubriker för de fem första menysidorna efter Hem */
+#team > .sectionTitle,
+#pairs > .sectionTitle,
+#competitions > .sectionTitle,
+#points > .sectionTitle,
+#leagues > .sectionTitle{
+  position:relative;
+  min-height:300px;
+  overflow:hidden;
+  border-radius:0 0 22px 22px;
+  padding:38px 42px;
+  margin:0 0 22px!important;
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between;
+  isolation:isolate;
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:0 22px 60px rgba(0,0,0,.38);
+  background-position:center 38%!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+}
+
+#team > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("1.png")!important}
+#pairs > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("2.png")!important}
+#competitions > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("3.png")!important}
+#points > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("4.png")!important}
+#leagues > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("5.png")!important}
+
+#team > .sectionTitle::after,
+#pairs > .sectionTitle::after,
+#competitions > .sectionTitle::after,
+#points > .sectionTitle::after,
+#leagues > .sectionTitle::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:radial-gradient(circle at 78% 32%,rgba(255,47,145,.14),transparent 28%),linear-gradient(90deg,transparent 60%,rgba(139,61,255,.10));
+  pointer-events:none;
+}
+
+#team > .sectionTitle h1,
+#pairs > .sectionTitle h1,
+#competitions > .sectionTitle h1,
+#points > .sectionTitle h1,
+#leagues > .sectionTitle h1{
+  margin:0 0 9px!important;
+  color:#fff!important;
+  font-size:clamp(38px,5vw,62px)!important;
+  line-height:.96!important;
+  letter-spacing:-2.5px!important;
+  text-transform:uppercase;
+  text-shadow:0 8px 30px rgba(0,0,0,.55);
+}
+
+#team > .sectionTitle p,
+#pairs > .sectionTitle p,
+#competitions > .sectionTitle p,
+#points > .sectionTitle p,
+#leagues > .sectionTitle p{
+  max-width:600px;
+  margin:0!important;
+  color:#e6e9f1!important;
+  font-size:15px;
+  line-height:1.55;
+  text-shadow:0 3px 15px rgba(0,0,0,.75);
+}
+
+#team > .sectionTitle .btn,
+#leagues > .sectionTitle .btn{
+  position:relative;
+  z-index:2;
+  background:linear-gradient(135deg,#ff2f91,#8b3dff)!important;
+  color:white!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.28)!important;
+}
+
+#pairs > .sectionTitle > div:last-child{
+  padding:10px 14px;
+  border-radius:10px;
+  background:rgba(3,8,20,.72);
+  border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(8px);
+}
+#pairs > .sectionTitle > div:last-child strong{color:#fff!important;font-size:20px}
+#pairs > .sectionTitle > div:last-child .meta{color:#d9deea!important}
+
+@media(max-width:720px){
+  #team > .sectionTitle,
+  #pairs > .sectionTitle,
+  #competitions > .sectionTitle,
+  #points > .sectionTitle,
+  #leagues > .sectionTitle{
+    min-height:245px;
+    padding:28px 20px;
+    border-radius:0 0 18px 18px;
+    align-items:flex-start!important;
+    justify-content:flex-end!important;
+    flex-direction:column!important;
+    background-position:center center!important;
+  }
+  #team > .sectionTitle h1,
+  #pairs > .sectionTitle h1,
+  #competitions > .sectionTitle h1,
+  #points > .sectionTitle h1,
+  #leagues > .sectionTitle h1{
+    font-size:38px!important;
+    letter-spacing:-1.7px!important;
+  }
+  #team > .sectionTitle .btn,
+  #leagues > .sectionTitle .btn,
+  #pairs > .sectionTitle > div:last-child{margin-top:14px}
+}
