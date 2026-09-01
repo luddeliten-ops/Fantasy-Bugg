@@ -412,7 +412,7 @@ textarea{
     align-items:flex-end!important;
     background:
       linear-gradient(0deg,rgba(2,6,15,.99) 0%,rgba(2,6,15,.92) 37%,rgba(2,6,15,.38) 67%,rgba(2,6,15,.08) 100%),
-      url("hero.jpg") 58% center / cover no-repeat!important;
+      url("hero.jpg.png") 58% center / cover no-repeat!important;
   }
 
   #home .homeHeroCopy{
