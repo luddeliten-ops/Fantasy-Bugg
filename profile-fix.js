@@ -43,7 +43,6 @@
       if(status) status.innerHTML='<span class="err">Fyll i e-post och lösenord.</span>';
       return;
     }
-
     if(typeof sb==='undefined' || !sb.auth){
       if(status) status.innerHTML='<span class="err">Inloggningen kunde inte startas.</span>';
       return;
@@ -64,24 +63,19 @@
   function ensureLoginButton(){
     const overlay=document.querySelector('.authOverlay');
     if(!overlay) return;
-
     const forms=overlay.querySelectorAll('.authForm');
     if(!forms.length) return;
 
     const loginForm=forms[0];
     if(loginForm.querySelector('[data-login-submit]')) return;
-
-    const existingButtons=[...loginForm.querySelectorAll('button')];
-    const hasLoginButton=existingButtons.some(btn=>/logga\s*in/i.test(btn.textContent));
-    if(hasLoginButton) return;
+    if([...loginForm.querySelectorAll('button')].some(btn=>/logga\s*in/i.test(btn.textContent))) return;
 
     const button=document.createElement('button');
     button.type='button';
     button.className='btn blue';
     button.dataset.loginSubmit='1';
-    button.style.width='100%';
-    button.style.marginTop='8px';
     button.textContent='Logga in';
+    button.style.cssText='width:100%;margin-top:8px;background:#1264d8;color:#fff;border:0;border-radius:12px;padding:12px 14px;font-weight:900;opacity:1;';
     button.addEventListener('click',loginFromButton);
     loginForm.appendChild(button);
   }
@@ -95,9 +89,10 @@
 
     ensureLoginButton();
 
+    /* Observera bara om formulärets innehåll byts ut. Inga style/class-observationer. */
     const overlay=document.querySelector('.authOverlay');
     if(overlay){
-      new MutationObserver(ensureLoginButton).observe(overlay,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
+      new MutationObserver(ensureLoginButton).observe(overlay,{childList:true,subtree:true});
     }
 
     const wallet=document.querySelector('.wallet');
