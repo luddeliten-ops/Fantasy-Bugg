@@ -18,8 +18,10 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           p=Path('index.html')
           text=p.read_text(encoding='utf-8')
+
           duplicate='''<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">\n\n<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">'''
           single='''<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">'''
           text=text.replace(duplicate,single,1)
@@ -27,6 +29,17 @@ jobs:
           text=text.replace('Extra byten kostar −35 p.','Extra byten kostar −100 p.')
           text=text.replace('Byte nummer 2 och framåt = −35 poäng.','Byte nummer 2 och framåt = −100 poäng.')
           text=text.replace('<div class="panel" style="margin-top:16px">\n<div class="panel" style="margin-top:16px">','<div class="panel" style="margin-top:16px">',1)
+
+          # fantasy_wallets gav 404 och behövs inte: bank = startbudget - aktuellt lagvärde.
+          text=re.sub(
+            r'\n  try\{\s*\n\s*await sb\s*\n\s*\.from\(\s*\n\s*"fantasy_wallets"\s*\n\s*\)[\s\S]*?\n  \}catch\(error\)\{\}\n',
+            '\n',text,count=1
+          )
+          text=re.sub(
+            r'\n    try\{\s*\n\s*const wallet\s*=\s*\n\s*await sb\s*\n\s*\.from\(\s*\n\s*"fantasy_wallets"\s*\n\s*\)[\s\S]*?\n    \}catch\(error\)\{\}\n',
+            '\n',text,count=1
+          )
+
           p.write_text(text,encoding='utf-8')
           PY
       - name: Commit cleanup
@@ -38,5 +51,5 @@ jobs:
             echo "Nothing to clean"
             exit 0
           fi
-          git commit -m "Clean malformed HTML source"
+          git commit -m "Clean launch source dependencies"
           git push
