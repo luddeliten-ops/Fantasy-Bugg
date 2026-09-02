@@ -16,7 +16,7 @@
           <p>De tre bästa i Fantasy Bugg belönas med presentkort hos vår sponsor Dansskor.se.</p>
         </div>
         <a class="leagueSponsorLogo" href="https://dansskor.se/" target="_blank" rel="noopener" aria-label="Besök Dansskor.se">
-          <span class="leagueSponsorLogoMark">DANS</span><span>SKOR.SE</span>
+          <img src="AF3B7A49-6737-4379-9D56-70449F9CFBA5.png" alt="Dansskor.se" style="display:block;max-width:220px;width:100%;height:auto;object-fit:contain;">
         </a>
       </div>
       <div class="leagueSponsorPrizes">
