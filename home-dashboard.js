@@ -1,4 +1,4 @@
-/* Fantasy Bugg – dynamisk startsida + robusta interaktioner */
+/* Fantasy Bugg – dynamisk startsida utan dubbla globala klicksystem */
 (function(){
   const $ = id => document.getElementById(id);
 
@@ -39,72 +39,17 @@
       .replaceAll("'",'&#039;');
   }
 
-  function ensureInteractions(){
-    if(document.documentElement.dataset.fbRobustClicks==='2') return;
-    document.documentElement.dataset.fbRobustClicks='2';
-
-    document.addEventListener('click', async function(event){
-      const target=event.target instanceof Element ? event.target : event.target?.parentElement;
+  /* Endast startsidans dynamiskt skapade sidlänkar delegeras här.
+     Info/lag/ligor hanteras enbart av interaction-fix.js. */
+  function ensureDynamicPageJumps(){
+    if(document.documentElement.dataset.fbHomePageJumps==='1') return;
+    document.documentElement.dataset.fbHomePageJumps='1';
+    document.addEventListener('click',event=>{
+      const target=event.target instanceof Element ? event.target.closest('#home [data-page-jump]') : null;
       if(!target) return;
-
-      const teamInfo=target.closest('[data-team-info]');
-      if(teamInfo){
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        const index=Number(teamInfo.getAttribute('data-team-info'));
-        if(typeof window.openTeamPairInfo==='function') await window.openTeamPairInfo(index);
-        else if(typeof openTeamPairInfo==='function') await openTeamPairInfo(index);
-        return;
-      }
-
-      const marketInfo=target.closest('[data-info]');
-      if(marketInfo){
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        const index=Number(marketInfo.getAttribute('data-info'));
-        if(typeof window.openPairModal==='function') window.openPairModal(index);
-        else if(typeof openPairModal==='function') openPairModal(index);
-        return;
-      }
-
-      const publicTeam=target.closest('[data-public-team],[data-league-public-team]');
-      if(publicTeam){
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        const userId=publicTeam.getAttribute('data-public-team') || publicTeam.getAttribute('data-league-public-team');
-        if(userId){
-          if(typeof window.openPublicTeam==='function') await window.openPublicTeam(userId);
-          else if(typeof openPublicTeam==='function') await openPublicTeam(userId);
-        }
-        return;
-      }
-
-      const leagueButton=target.closest('[data-league]');
-      if(leagueButton){
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        await openLeagueWithTeams(leagueButton.getAttribute('data-league'));
-      }
-    },true);
-  }
-
-  async function openLeagueWithTeams(id){
-    if(typeof sb==='undefined') return;
-    const panel=$('leagueStandingPanel'), title=$('leagueStandingTitle'), box=$('leagueStanding');
-    if(panel) panel.style.display='block';
-    if(title) title.textContent='Ligatabell';
-    if(!box) return;
-    box.innerHTML='<div class="empty">Hämtar ligan…</div>';
-
-    const response=await sb.rpc('get_league_standings',{p_league_id:id});
-    if(response.error){ box.innerHTML='<div class="err">'+esc(response.error.message)+'</div>'; return; }
-    const rows=response.data||[];
-    box.innerHTML=rows.map((row,index)=>{
-      const userId=row.user_id ?? row.id ?? row.member_user_id ?? row.profile_user_id ?? '';
-      const name=row.fantasy_name ?? row.name ?? 'Fantasyspelare';
-      const points=Number(row.total_points ?? row.points ?? 0).toFixed(1).replace('.0','');
-      return `<div class="leagueRow"><div class="rank">${index+1}</div><div><b>${esc(name)}</b></div>${userId ? `<button class="btn soft" data-league-public-team="${esc(userId)}">${points} p · Visa lag</button>` : `<div><b>${points} p</b></div>`}</div>`;
-    }).join('') || '<div class="empty">Ligan är tom.</div>';
+      event.preventDefault();
+      if(typeof showPage==='function') showPage(target.dataset.pageJump);
+    });
   }
 
   function getDate(c){
@@ -160,7 +105,7 @@
   async function load(){
     ensureTeamArenaAssets();
     ensureModalTheme();
-    ensureInteractions();
+    ensureDynamicPageJumps();
     if(!ensureDashboard() || typeof sb==='undefined') return;
     try{
       const response = await sb.from('competitions').select('*');
@@ -181,7 +126,7 @@
 
   ensureTeamArenaAssets();
   ensureModalTheme();
-  ensureInteractions();
+  ensureDynamicPageJumps();
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',load,{once:true});
   else load();
 })();
