@@ -22,7 +22,7 @@
 }
 
 #team > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("1.png")!important}
-#pairs > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("2.png")!important;background-position:center 43%!important}
+#pairs > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("2.png")!important;background-position:center 58%!important;background-size:contain!important;background-color:#050914!important}
 #competitions > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("3.png")!important;background-position:center 28%!important}
 #points > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("4.png")!important}
 #leagues > .sectionTitle{background-image:linear-gradient(90deg,rgba(2,6,15,.95) 0%,rgba(2,6,15,.68) 43%,rgba(2,6,15,.15) 75%),linear-gradient(0deg,rgba(2,6,15,.86),transparent 62%),url("5.png")!important}
@@ -101,7 +101,7 @@
     flex-direction:column!important;
     background-position:center center!important;
   }
-  #pairs > .sectionTitle{background-position:center 43%!important}
+  #pairs > .sectionTitle{background-position:center 58%!important;background-size:contain!important}
   #competitions > .sectionTitle{background-position:center 28%!important}
   #team > .sectionTitle h1,
   #pairs > .sectionTitle h1,
