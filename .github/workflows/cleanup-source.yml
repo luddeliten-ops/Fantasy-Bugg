@@ -22,8 +22,8 @@ jobs:
           p=Path('index.html')
           text=p.read_text(encoding='utf-8')
 
-          duplicate='''<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">\n\n<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">'''
-          single='''<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">'''
+          duplicate='''<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.\">\n\n<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.\">'''
+          single='''<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.\">'''
           text=text.replace(duplicate,single,1)
           text=text.replace('<style>\n  \n<style>','<style>',1)
           text=text.replace('Extra byten kostar −35 p.','Extra byten kostar −100 p.')
@@ -41,6 +41,13 @@ jobs:
             '\n',text,count=1
           )
 
+          # En enskild publik dataladdning ska inte krascha hela appstarten.
+          text=text.replace('''  await Promise.all([\n    loadCompetitions(),\n    loadStreams(),\n    loadHomeContent(),\n    loadPairHistory()\n  ]);''','''  const startupLoads = await Promise.allSettled([\n    loadCompetitions(),\n    loadStreams(),\n    loadHomeContent(),\n    loadPairHistory()\n  ]);\n\n  startupLoads.forEach(result => {\n    if(result.status === "rejected"){\n      console.warn("En startladdning misslyckades:", result.reason);\n    }\n  });''',1)
+
+          text=text.replace('''  await handleSession(\n    data?.session ||\n    null\n  );''','''  try{\n    await handleSession(\n      data?.session ||\n      null\n    );\n  }catch(error){\n    console.error("Kunde inte läsa inloggad session:", error);\n  }''',1)
+
+          text=text.replace('''start().catch(\n  error => {\n\n    console.error(\n      "Fantasy Bugg startfel:",\n      error\n    );\n\n    alert(\n      "Fantasy Bugg kunde inte starta. Öppna webbkonsolen för mer information."\n    );\n  }\n);''','''start().catch(\n  error => {\n    console.error(\n      "Fantasy Bugg startfel:",\n      error\n    );\n  }\n);''',1)
+
           # Alla separata launch-fixar laddas via stats.js.
           if 'src="stats.js' not in text:
             text=text.replace('</body>','<script src="stats.js?v=10"></script>\n</body>',1)
@@ -56,5 +63,5 @@ jobs:
             echo "Nothing to clean"
             exit 0
           fi
-          git commit -m "Clean launch source dependencies"
+          git commit -m "Make Fantasy Bugg startup resilient"
           git push
