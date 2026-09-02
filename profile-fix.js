@@ -1,7 +1,7 @@
 /* Fantasy Bugg – stabil profilfix utan ändringar i stora index.html */
 (function(){
   function escLocal(value){
-    return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+    return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
   async function fixedLoadProfile(){
@@ -70,11 +70,13 @@
   }
 
   function clearLoggedOutTeam(){
+    try{ localStorage.removeItem('fb_team'); }catch(e){}
     try{ currentUser=null; }catch(e){}
     try{ profile=null; }catch(e){}
-    try{ team=[]; }catch(e){}
-    try{ captain=null; }catch(e){}
     try{ selectedPairs=[]; }catch(e){}
+    try{ captainIndex=null; }catch(e){}
+    try{ bank=typeof START_BUDGET!=='undefined'?START_BUDGET:100; }catch(e){}
+    try{ pendingTransferOut=null; }catch(e){}
     try{ if(typeof renderTeam==='function') renderTeam(); }catch(e){}
     try{ if(typeof renderProfile==='function') renderProfile(); }catch(e){}
   }
@@ -90,13 +92,9 @@
     const wallet=document.querySelector('.wallet');
     if(wallet && /undefined|null|NaN/i.test(wallet.textContent)) wallet.style.display='none';
 
-    /* Supabase berättar när användaren loggar ut. Töm då den gamla privata lagvyn. */
     if(typeof sb!=='undefined' && sb.auth && typeof sb.auth.onAuthStateChange==='function'){
-      sb.auth.onAuthStateChange((event,session)=>{
-        if(event==='SIGNED_OUT' || !session){
-          clearLoggedOutTeam();
-          setTimeout(()=>location.reload(),0);
-        }
+      sb.auth.onAuthStateChange((event)=>{
+        if(event==='SIGNED_OUT') clearLoggedOutTeam();
       });
     }
   }
