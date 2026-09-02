@@ -1,0 +1,55 @@
+name: Optimize Fantasy Bugg images
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "optimize-images.trigger"
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install WebP tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y webp
+      - name: Convert large PNG images
+        run: |
+          set -e
+          for f in 1.png 2.png 3.png 4.png 5.png hero.jpg.png; do
+            [ -f "$f" ] || continue
+            out="${f%.png}.webp"
+            cwebp -quiet -q 82 -m 6 "$f" -o "$out"
+          done
+      - name: Replace image references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          replacements={
+            '1.png':'1.webp','2.png':'2.webp','3.png':'3.webp','4.png':'4.webp','5.png':'5.webp',
+            'hero.jpg.png':'hero.jpg.webp'
+          }
+          for p in [Path('index.html'),Path('premium.css'),Path('page-heroes.css'),Path('team-arena.css')]:
+            if not p.exists():
+              continue
+            text=p.read_text(encoding='utf-8')
+            for old,new in replacements.items():
+              text=text.replace(old,new)
+            p.write_text(text,encoding='utf-8')
+          PY
+      - name: Commit optimized images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 1.webp 2.webp 3.webp 4.webp 5.webp hero.jpg.webp index.html premium.css page-heroes.css team-arena.css || true
+          if git diff --cached --quiet; then
+            echo "Nothing to optimize"
+            exit 0
+          fi
+          git commit -m "Optimize large site images to WebP"
+          git push
