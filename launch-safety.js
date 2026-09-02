@@ -60,7 +60,7 @@
     enforceTeamLockUi();
   }
 
-  /* 8: registrering ska skriva profiles.user_id, samma schema som resten av sidan. */
+  /* Registrering: Auth skapar användaren och DB-triggern skapar profilen. */
   function installRegistrationFix(){
     const form=byId('authForm');
     if(!form || typeof sb==='undefined') return;
@@ -85,15 +85,6 @@
         return;
       }
 
-      const uid=response.data?.user?.id;
-      if(uid){
-        const profileWrite=await sb.from('profiles').upsert({user_id:uid,fantasy_name:fantasyName},{onConflict:'user_id'});
-        if(profileWrite.error){
-          if(errorBox) errorBox.textContent='Kontot skapades men profilen kunde inte sparas: '+profileWrite.error.message;
-          if(button) button.disabled=false;
-          return;
-        }
-      }
       if(button) button.disabled=false;
       if(typeof hideAuth==='function') hideAuth();
       location.reload();
