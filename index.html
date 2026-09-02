@@ -7089,12 +7089,18 @@ async function start(){
   renderTeam();
   renderStats();
 
-  await Promise.all([
+  const startupLoads = await Promise.allSettled([
     loadCompetitions(),
     loadStreams(),
     loadHomeContent(),
     loadPairHistory()
   ]);
+
+  startupLoads.forEach(result => {
+    if(result.status === "rejected"){
+      console.warn("En startladdning misslyckades:", result.reason);
+    }
+  });
 
   const {
     data
@@ -7102,10 +7108,14 @@ async function start(){
     await sb.auth
       .getSession();
 
-  await handleSession(
-    data?.session ||
-    null
-  );
+  try{
+    await handleSession(
+      data?.session ||
+      null
+    );
+  }catch(error){
+    console.error("Kunde inte läsa inloggad session:", error);
+  }
 
   sb.auth
     .onAuthStateChange(
@@ -7130,14 +7140,9 @@ async function start(){
 
 start().catch(
   error => {
-
     console.error(
       "Fantasy Bugg startfel:",
       error
-    );
-
-    alert(
-      "Fantasy Bugg kunde inte starta. Öppna webbkonsolen för mer information."
     );
   }
 );
