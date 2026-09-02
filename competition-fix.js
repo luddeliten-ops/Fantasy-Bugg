@@ -11,9 +11,24 @@
     document.body.appendChild(el);
   }
 
+  function shortenNationalLevel(){
+    const section=document.getElementById('competitions');
+    if(!section) return;
+
+    section.querySelectorAll('.badge').forEach(badge=>{
+      if(badge.textContent.trim()==='Nationell') badge.textContent='N';
+    });
+  }
+
   function install(){
     ensureTarget('competitionList');
     ensureTarget('homeLatestCompetition');
+    shortenNationalLevel();
+
+    const section=document.getElementById('competitions');
+    if(section){
+      new MutationObserver(shortenNationalLevel).observe(section,{childList:true,subtree:true});
+    }
   }
 
   if(document.readyState==='loading'){
