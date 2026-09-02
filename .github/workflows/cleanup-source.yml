@@ -1,0 +1,42 @@
+name: Cleanup Fantasy Bugg source
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "cleanup-source.trigger"
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clean malformed HTML source
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          duplicate='''<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">\n\n<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">'''
+          single='''<title>Fantasy Bugg</title>\n<meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">'''
+          text=text.replace(duplicate,single,1)
+          text=text.replace('<style>\n  \n<style>','<style>',1)
+          text=text.replace('Extra byten kostar −35 p.','Extra byten kostar −100 p.')
+          text=text.replace('Byte nummer 2 och framåt = −35 poäng.','Byte nummer 2 och framåt = −100 poäng.')
+          text=text.replace('<div class="panel" style="margin-top:16px">\n<div class="panel" style="margin-top:16px">','<div class="panel" style="margin-top:16px">',1)
+          p.write_text(text,encoding='utf-8')
+          PY
+      - name: Commit cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Nothing to clean"
+            exit 0
+          fi
+          git commit -m "Clean malformed HTML source"
+          git push
