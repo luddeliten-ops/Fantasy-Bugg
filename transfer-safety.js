@@ -4,7 +4,6 @@
 
   if(typeof registerTransfer!=='function' || typeof saveTeam!=='function') return;
 
-  const originalRegisterTransfer=registerTransfer;
   const originalSaveTeam=saveTeam;
 
   registerTransfer=async function(fromIndex,toIndex,penalty){
@@ -39,11 +38,8 @@
     const stage=stagedTransfer;
     stagedTransfer=null;
 
-    try{
-      localStorage.setItem('fb_team',JSON.stringify({selectedPairs,captainIndex,bank}));
-    }catch(e){}
-
-    if(!currentUser) return;
+    try{ localStorage.setItem('fb_team',JSON.stringify({selectedPairs,captainIndex,bank})); }catch(e){}
+    if(!currentUser) return true;
 
     const teamWrite=await sb.from('fantasy_teams').upsert({
       user_id:currentUser.id,
@@ -53,9 +49,7 @@
     },{onConflict:'user_id'});
 
     if(teamWrite.error){
-      selectedPairs=[...stage.previousPairs];
-      captainIndex=stage.previousCaptain;
-      bank=stage.previousBank;
+      selectedPairs=[...stage.previousPairs]; captainIndex=stage.previousCaptain; bank=stage.previousBank;
       try{ localStorage.setItem('fb_team',JSON.stringify({selectedPairs,captainIndex,bank})); }catch(e){}
       alert('Bytet kunde inte sparas. Inga ändringar genomfördes.');
       if(typeof renderTeam==='function') renderTeam();
@@ -65,26 +59,14 @@
 
     const logWrite=await sb.from('fantasy_transfer_log').insert(stage.payload);
     if(logWrite.error){
-      await sb.from('fantasy_teams').upsert({
-        user_id:currentUser.id,
-        pair_indices:stage.previousPairs,
-        captain_index:stage.previousCaptain,
-        updated_at:new Date().toISOString()
-      },{onConflict:'user_id'});
-
-      selectedPairs=[...stage.previousPairs];
-      captainIndex=stage.previousCaptain;
-      bank=stage.previousBank;
+      await sb.from('fantasy_teams').upsert({user_id:currentUser.id,pair_indices:stage.previousPairs,captain_index:stage.previousCaptain,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      selectedPairs=[...stage.previousPairs]; captainIndex=stage.previousCaptain; bank=stage.previousBank;
       try{ localStorage.setItem('fb_team',JSON.stringify({selectedPairs,captainIndex,bank})); }catch(e){}
       alert('Bytet kunde inte registreras och har återställts. Försök igen.');
       if(typeof renderTeam==='function') renderTeam();
       if(typeof renderMarket==='function') renderMarket();
       return false;
     }
-
-    try{
-      await sb.from('fantasy_wallets').upsert({user_id:currentUser.id,bank},{onConflict:'user_id'});
-    }catch(e){}
 
     return true;
   };
