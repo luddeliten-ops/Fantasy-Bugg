@@ -50,7 +50,7 @@
 
   if(!document.querySelector('script[data-profile-fix]')){
     const script=document.createElement('script');
-    script.src='profile-fix.js?v=1';
+    script.src='profile-fix.js?v=3';
     script.defer=true;
     script.dataset.profileFix='1';
     document.head.appendChild(script);
