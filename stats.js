@@ -10,6 +10,6 @@
   }
   if(!document.querySelector('link[data-page-heroes]')){const style=document.createElement('link');style.rel='stylesheet';style.href='page-heroes.css?v=2';style.dataset.pageHeroes='1';document.head.appendChild(style);}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadPublicHomeStats,{once:true});else await loadPublicHomeStats();
-  const scripts=[['head-cleanup.js?v=1','headCleanup'],['profile-fix.js?v=3','profileFix'],['home-dashboard.js?v=8','homeDashboard'],['interaction-fix.js?v=2','interactionFix'],['competition-fix.js?v=1','competitionFix'],['league-sponsor.js?v=1','leagueSponsor']];
+  const scripts=[['head-cleanup.js?v=1','headCleanup'],['profile-fix.js?v=3','profileFix'],['home-dashboard.js?v=8','homeDashboard'],['interaction-fix.js?v=2','interactionFix'],['competition-fix.js?v=1','competitionFix'],['league-sponsor.js?v=2','leagueSponsor']];
   scripts.forEach(([src,key])=>{const attr='data-'+key.replace(/[A-Z]/g,m=>'-'+m.toLowerCase());if(document.querySelector('script['+attr+']')) return;const script=document.createElement('script');script.src=src;script.defer=true;script.setAttribute(attr,'1');document.head.appendChild(script);});
 })();
