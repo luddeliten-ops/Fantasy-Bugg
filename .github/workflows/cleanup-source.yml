@@ -31,6 +31,9 @@ jobs:
           text=text.replace('<div class="panel" style="margin-top:16px">\n<div class="panel" style="margin-top:16px">','<div class="panel" style="margin-top:16px">',1)
           text=text.replace('<link rel="stylesheet" href="premium.css">','<link rel="stylesheet" href="premium.css?v=2">',1)
 
+          # Flytta adminbehörigheten till det återskapade adminkontot.
+          text=text.replace('48adbd60-4c66-4949-8490-8d78236d234d','7408ec3a-29d1-4b48-8cd0-30d20b9155d7')
+
           # fantasy_wallets gav 404 och behövs inte: bank = startbudget - aktuellt lagvärde.
           text=re.sub(
             r'\n  try\{\s*\n\s*await sb\s*\n\s*\.from\(\s*\n\s*"fantasy_wallets"\s*\n\s*\)[\s\S]*?\n  \}catch\(error\)\{\}\n',
@@ -63,5 +66,5 @@ jobs:
             echo "Nothing to clean"
             exit 0
           fi
-          git commit -m "Make Fantasy Bugg startup resilient"
+          git commit -m "Move admin access to recreated account"
           git push
