@@ -40,6 +40,14 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadPublicHomeStats,{once:true});
   else await loadPublicHomeStats();
 
+  if(!document.querySelector('script[data-head-cleanup]')){
+    const script=document.createElement('script');
+    script.src='head-cleanup.js?v=1';
+    script.defer=true;
+    script.dataset.headCleanup='1';
+    document.head.appendChild(script);
+  }
+
   if(!document.querySelector('script[data-home-dashboard]')){
     const script=document.createElement('script');
     script.src='home-dashboard.js?v=8';
