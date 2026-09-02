@@ -40,6 +40,15 @@
   pointer-events:none;
 }
 
+/* Mjuk fade i högerkanten där contain-bilderna slutar */
+#pairs > .sectionTitle::after,
+#competitions > .sectionTitle::after{
+  background:
+    linear-gradient(90deg,transparent 68%,rgba(5,9,20,.28) 82%,#050914 100%),
+    radial-gradient(circle at 78% 32%,rgba(255,47,145,.14),transparent 28%),
+    linear-gradient(90deg,transparent 60%,rgba(139,61,255,.10));
+}
+
 #team > .sectionTitle h1,
 #pairs > .sectionTitle h1,
 #competitions > .sectionTitle h1,
@@ -103,6 +112,13 @@
   }
   #pairs > .sectionTitle{background-position:center 58%!important;background-size:contain!important}
   #competitions > .sectionTitle{background-position:center center!important;background-size:contain!important}
+  #pairs > .sectionTitle::after,
+  #competitions > .sectionTitle::after{
+    background:
+      linear-gradient(90deg,transparent 62%,rgba(5,9,20,.34) 80%,#050914 100%),
+      radial-gradient(circle at 78% 32%,rgba(255,47,145,.14),transparent 28%),
+      linear-gradient(90deg,transparent 60%,rgba(139,61,255,.10));
+  }
   #team > .sectionTitle h1,
   #pairs > .sectionTitle h1,
   #competitions > .sectionTitle h1,
