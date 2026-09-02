@@ -57,9 +57,7 @@
     if(!forms.length) return;
     const loginForm=forms[0];
     let button=loginForm.querySelector('[data-login-submit]');
-    if(!button){
-      button=[...loginForm.querySelectorAll('button')].find(btn=>/logga\s*in/i.test(btn.textContent));
-    }
+    if(!button) button=[...loginForm.querySelectorAll('button')].find(btn=>/logga\s*in/i.test(btn.textContent));
     if(!button){
       button=document.createElement('button');
       button.type='button';
@@ -69,6 +67,16 @@
     }
     button.dataset.loginSubmit='1';
     paintButton(button);
+  }
+
+  function clearLoggedOutTeam(){
+    try{ currentUser=null; }catch(e){}
+    try{ profile=null; }catch(e){}
+    try{ team=[]; }catch(e){}
+    try{ captain=null; }catch(e){}
+    try{ selectedPairs=[]; }catch(e){}
+    try{ if(typeof renderTeam==='function') renderTeam(); }catch(e){}
+    try{ if(typeof renderProfile==='function') renderProfile(); }catch(e){}
   }
 
   function install(){
@@ -81,6 +89,16 @@
     if(overlay) new MutationObserver(ensureLoginButton).observe(overlay,{childList:true,subtree:true});
     const wallet=document.querySelector('.wallet');
     if(wallet && /undefined|null|NaN/i.test(wallet.textContent)) wallet.style.display='none';
+
+    /* Supabase berättar när användaren loggar ut. Töm då den gamla privata lagvyn. */
+    if(typeof sb!=='undefined' && sb.auth && typeof sb.auth.onAuthStateChange==='function'){
+      sb.auth.onAuthStateChange((event,session)=>{
+        if(event==='SIGNED_OUT' || !session){
+          clearLoggedOutTeam();
+          setTimeout(()=>location.reload(),0);
+        }
+      });
+    }
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install,{once:true}); else install();
