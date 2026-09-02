@@ -29,6 +29,7 @@ jobs:
           text=text.replace('Extra byten kostar −35 p.','Extra byten kostar −100 p.')
           text=text.replace('Byte nummer 2 och framåt = −35 poäng.','Byte nummer 2 och framåt = −100 poäng.')
           text=text.replace('<div class="panel" style="margin-top:16px">\n<div class="panel" style="margin-top:16px">','<div class="panel" style="margin-top:16px">',1)
+          text=text.replace('<link rel="stylesheet" href="premium.css">','<link rel="stylesheet" href="premium.css?v=2">',1)
 
           # fantasy_wallets gav 404 och behövs inte: bank = startbudget - aktuellt lagvärde.
           text=re.sub(
@@ -39,6 +40,10 @@ jobs:
             r'\n    try\{\s*\n\s*const wallet\s*=\s*\n\s*await sb\s*\n\s*\.from\(\s*\n\s*"fantasy_wallets"\s*\n\s*\)[\s\S]*?\n    \}catch\(error\)\{\}\n',
             '\n',text,count=1
           )
+
+          # Alla separata launch-fixar laddas via stats.js.
+          if 'src="stats.js' not in text:
+            text=text.replace('</body>','<script src="stats.js?v=10"></script>\n</body>',1)
 
           p.write_text(text,encoding='utf-8')
           PY
