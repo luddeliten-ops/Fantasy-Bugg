@@ -3344,25 +3344,6 @@ async function saveTeam(){
     );
   }
 
-  try{
-
-    await sb
-      .from(
-        "fantasy_wallets"
-      )
-      .upsert(
-        {
-          user_id:
-            currentUser.id,
-          bank
-        },
-        {
-          onConflict:
-            "user_id"
-        }
-      );
-
-  }catch(error){}
 }
 
 async function loadTeam(){
@@ -3480,38 +3461,6 @@ async function loadTeam(){
       START_BUDGET -
       teamCurrentValue();
 
-    try{
-
-      const wallet =
-        await sb
-          .from(
-            "fantasy_wallets"
-          )
-          .select(
-            "bank"
-          )
-          .eq(
-            "user_id",
-            currentUser.id
-          )
-          .maybeSingle();
-
-      if(
-        wallet.data &&
-        Number.isFinite(
-          Number(
-            wallet.data.bank
-          )
-        )
-      ){
-
-        bank =
-          Number(
-            wallet.data.bank
-          );
-      }
-
-    }catch(error){}
   }
 
   renderTeam();
