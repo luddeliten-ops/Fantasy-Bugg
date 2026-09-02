@@ -96,6 +96,16 @@
 #pairs > .sectionTitle > div:last-child strong{color:#fff!important;font-size:20px}
 #pairs > .sectionTitle > div:last-child .meta{color:#d9deea!important}
 
+/* Fotokreditering */
+.footer::after{
+  content:"Foto: @angelicasfotografier";
+  display:block;
+  margin-top:8px;
+  font-size:12px;
+  opacity:.72;
+  letter-spacing:.2px;
+}
+
 @media(max-width:720px){
   #team > .sectionTitle,
   #pairs > .sectionTitle,
