@@ -86,8 +86,14 @@
       }
 
       if(button) button.disabled=false;
-      if(typeof hideAuth==='function') hideAuth();
-      location.reload();
+      if(errorBox){
+        errorBox.textContent='Kontot är skapat – du är nu inloggad';
+        errorBox.classList.add('ok');
+      }
+      setTimeout(()=>{
+        if(typeof hideAuth==='function') hideAuth();
+        location.reload();
+      },1200);
     },true);
   }
 
