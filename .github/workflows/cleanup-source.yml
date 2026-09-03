@@ -30,30 +30,20 @@ jobs:
           text=text.replace('Byte nummer 2 och framåt = −35 poäng.','Byte nummer 2 och framåt = −100 poäng.')
           text=text.replace('<div class="panel" style="margin-top:16px">\n<div class="panel" style="margin-top:16px">','<div class="panel" style="margin-top:16px">',1)
           text=text.replace('<link rel="stylesheet" href="premium.css">','<link rel="stylesheet" href="premium.css?v=2">',1)
-
-          # Flytta adminbehörigheten till det återskapade adminkontot.
           text=text.replace('48adbd60-4c66-4949-8490-8d78236d234d','7408ec3a-29d1-4b48-8cd0-30d20b9155d7')
+          text=text.replace('src="stats.js?v=10"','src="stats.js?v=11"')
 
-          # fantasy_wallets gav 404 och behövs inte: bank = startbudget - aktuellt lagvärde.
-          text=re.sub(
-            r'\n  try\{\s*\n\s*await sb\s*\n\s*\.from\(\s*\n\s*"fantasy_wallets"\s*\n\s*\)[\s\S]*?\n  \}catch\(error\)\{\}\n',
-            '\n',text,count=1
-          )
-          text=re.sub(
-            r'\n    try\{\s*\n\s*const wallet\s*=\s*\n\s*await sb\s*\n\s*\.from\(\s*\n\s*"fantasy_wallets"\s*\n\s*\)[\s\S]*?\n    \}catch\(error\)\{\}\n',
-            '\n',text,count=1
-          )
+          text=re.sub(r'\n  try\{\s*\n\s*await sb\s*\n\s*\.from\(\s*\n\s*"fantasy_wallets"\s*\n\s*\)[\s\S]*?\n  \}catch\(error\)\{\}\n','\n',text,count=1)
+          text=re.sub(r'\n    try\{\s*\n\s*const wallet\s*=\s*\n\s*await sb\s*\n\s*\.from\(\s*\n\s*"fantasy_wallets"\s*\n\s*\)[\s\S]*?\n    \}catch\(error\)\{\}\n','\n',text,count=1)
 
-          # En enskild publik dataladdning ska inte krascha hela appstarten.
           text=text.replace('''  await Promise.all([\n    loadCompetitions(),\n    loadStreams(),\n    loadHomeContent(),\n    loadPairHistory()\n  ]);''','''  const startupLoads = await Promise.allSettled([\n    loadCompetitions(),\n    loadStreams(),\n    loadHomeContent(),\n    loadPairHistory()\n  ]);\n\n  startupLoads.forEach(result => {\n    if(result.status === "rejected"){\n      console.warn("En startladdning misslyckades:", result.reason);\n    }\n  });''',1)
 
           text=text.replace('''  await handleSession(\n    data?.session ||\n    null\n  );''','''  try{\n    await handleSession(\n      data?.session ||\n      null\n    );\n  }catch(error){\n    console.error("Kunde inte läsa inloggad session:", error);\n  }''',1)
 
           text=text.replace('''start().catch(\n  error => {\n\n    console.error(\n      "Fantasy Bugg startfel:",\n      error\n    );\n\n    alert(\n      "Fantasy Bugg kunde inte starta. Öppna webbkonsolen för mer information."\n    );\n  }\n);''','''start().catch(\n  error => {\n    console.error(\n      "Fantasy Bugg startfel:",\n      error\n    );\n  }\n);''',1)
 
-          # Alla separata launch-fixar laddas via stats.js.
           if 'src="stats.js' not in text:
-            text=text.replace('</body>','<script src="stats.js?v=10"></script>\n</body>',1)
+            text=text.replace('</body>','<script src="stats.js?v=11"></script>\n</body>',1)
 
           p.write_text(text,encoding='utf-8')
           PY
@@ -66,5 +56,5 @@ jobs:
             echo "Nothing to clean"
             exit 0
           fi
-          git commit -m "Move admin access to recreated account"
+          git commit -m "Refresh safe frontend bundle"
           git push
