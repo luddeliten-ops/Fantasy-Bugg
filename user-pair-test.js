@@ -59,8 +59,20 @@
   function install(){
     if(typeof pairs==='undefined') return;
     loadSaved();
-    const toolbar=document.querySelector('#pairs .toolbar'); if(!toolbar||document.getElementById('newPairOpen')) return;
-    const btn=document.createElement('button');btn.id='newPairOpen';btn.className='btn gold';btn.textContent='+ Lägg till nytt par';toolbar.appendChild(btn);
+    const section=document.getElementById('pairs');
+    if(!section||document.getElementById('newPairOpen')) return;
+
+    const btn=document.createElement('button');
+    btn.id='newPairOpen';
+    btn.className='btn gold';
+    btn.textContent='+ Lägg till nytt par';
+
+    const actionRow=document.createElement('div');
+    actionRow.className='newPairActionRow';
+    actionRow.appendChild(btn);
+    const market=document.getElementById('pairMarket');
+    if(market) section.insertBefore(actionRow,market); else section.appendChild(actionRow);
+
     const modal=document.createElement('div');modal.className='modalBackdrop';modal.id='newPairModal';modal.innerHTML=`<div class="modal"><div class="modalHead"><div><small class="meta">TESTFUNKTION</small><h2 style="margin:2px 0 0">Lägg till nytt par</h2></div><button class="modalClose" id="newPairClose">×</button></div><p class="meta">Skriv dansarnas fullständiga namn. Systemet söker efter samma individer i befintliga parkonstellationer och använder det högsta kända värdet.</p><div class="newPairGrid"><label>Dansare 1<input class="search" id="newPairA" placeholder="Förnamn Efternamn"></label><label>Dansare 2<input class="search" id="newPairB" placeholder="Förnamn Efternamn"></label><label>Åldersklass<select class="search" id="newPairAge"><option>Junior</option><option selected>Vuxen</option><option>Senior</option></select></label></div><div id="newPairMatch" class="newPairMatch"></div><button class="btn gold" id="newPairSave" style="width:100%;margin-top:14px" disabled>Lägg till paret på marknaden</button><p class="meta" style="margin-bottom:0">I den här testversionen sparas nya par bara i din webbläsare. Inget skickas till den riktiga databasen.</p></div>`;
     document.body.appendChild(modal);
     btn.onclick=open;document.getElementById('newPairClose').onclick=close;modal.onclick=e=>{if(e.target===modal)close()};
