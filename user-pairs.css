@@ -1,0 +1,20 @@
+/* Fantasy Bugg – användarförslag på nya parkonstellationer */
+.newPairActionRow{display:flex;justify-content:flex-end;margin:14px 0 16px}
+#newPairOpen{white-space:nowrap;display:inline-flex!important;align-items:center;justify-content:center}
+#newPairModal.show{display:flex}
+.newPairGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.newPairGrid label{font-size:12px;font-weight:850;color:var(--navy)}
+.newPairGrid .search{display:block;width:100%;margin-top:6px}
+.newPairMatch{margin-top:16px;padding:14px;border-radius:14px;background:#f6f7fb;border:1px solid #e3e6ef;display:grid;gap:12px}
+.newPairPrice{display:flex;flex-direction:column;padding:13px;border-radius:12px;background:#fff;border:1px solid #e3e6ef}
+.newPairPrice span{font-size:12px;font-weight:800;color:#6b7280}
+.newPairPrice strong{font-size:28px;line-height:1.15;margin:2px 0}
+.newPairPrice small{color:#6b7280}
+.pairRequestCard{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;background:#fff}
+.pairRequestActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pairRequestActions .btn{flex:1}
+@media(max-width:650px){
+  .newPairGrid{grid-template-columns:1fr}
+  .newPairActionRow{display:block!important;width:100%;margin:12px 0 16px}
+  #newPairOpen{display:flex!important;width:100%!important;min-height:48px;font-size:16px}
+}
