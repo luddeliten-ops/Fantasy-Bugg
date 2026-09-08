@@ -11,7 +11,7 @@
   document.addEventListener('click',event=>{
     const target=event.target instanceof Element ? event.target.closest('button') : null;
     if(!target) return;
-    const adminAction=ADMIN_ACTION_IDS.has(target.id) || target.matches('[data-clear-results],[data-delete-competition]');
+    const adminAction=ADMIN_ACTION_IDS.has(target.id) || target.matches('[data-clear-results],[data-delete-competition],[data-pair-approve],[data-pair-reject]');
     if(!adminAction) return;
     if(isAdmin()) return;
     event.preventDefault();
