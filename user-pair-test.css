@@ -1,6 +1,7 @@
 /* Fantasy Bugg – TEST: användarskapade par */
 #pairs .toolbar{flex-wrap:wrap}
-#newPairOpen{white-space:nowrap}
+.newPairActionRow{display:flex;justify-content:flex-end;margin:14px 0 16px}
+#newPairOpen{white-space:nowrap;display:inline-flex!important;align-items:center;justify-content:center;visibility:visible!important;opacity:1!important}
 #newPairModal.show{display:flex}
 .newPairGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
 .newPairGrid label{font-size:12px;font-weight:850;color:var(--navy)}
@@ -10,4 +11,8 @@
 .newPairPrice span{font-size:12px;font-weight:800;color:#6b7280}
 .newPairPrice strong{font-size:28px;line-height:1.15;margin:2px 0}
 .newPairPrice small{color:#6b7280}
-@media(max-width:650px){.newPairGrid{grid-template-columns:1fr}#newPairOpen{width:100%}}
+@media(max-width:650px){
+  .newPairGrid{grid-template-columns:1fr}
+  .newPairActionRow{display:block!important;width:100%;margin:12px 0 16px}
+  #newPairOpen{display:flex!important;width:100%!important;min-height:48px;font-size:16px;position:relative;z-index:20}
+}
