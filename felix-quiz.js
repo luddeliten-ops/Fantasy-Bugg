@@ -4,7 +4,7 @@
     ['Hur många av personerna i årets SM-final har tidigare vunnit ett SM-guld i någon form?', ['9','10','14','11']],
     ['Vilken låt har spelats flest gånger i en SM-final någonsin?', ['Farväl Goodbye – Lasse Stefanz','Yea Yea Yea – Fernandoz','Våga Stuffa – Stefan Borsch','Dra dit pepparn växer – Sten & Stanley']],
     ['Hur många tävlingar anordnades under 2024 av förbundet?', ['38','46','44','53']],
-    ['Hur många SM-finaler i Bugg har Benjamin Österlund och Angelica Källström inte vunnit sedan 2004?', ['0','3','1','2']],
+    ['Hur många SM-finaler i slow har Benjamin Österlund och Angelica Källström inte vunnit sedan 2004?', ['0','3','1','2']],
     ['När var det senaste året dueller utfördes i juniorklassen?', ['2019','2021','2017','2018']],
     ['Vilket år bytte man från 2-minutersheat till 90-sekundersheat i Bugg?', ['2012','2008','2014','2002']],
     ['Var var SM 2008 i Bugg och Rock’n’Roll?', ['Enköping','Varberg','Karlstad','Örnsköldsvik']],
