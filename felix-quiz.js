@@ -1,4 +1,4 @@
-/* Felix Bugg Quiz: mount in existing #quiz section. Requires quiz_submit and quiz_admin_results RPCs. */
+/* Felix Bugg Quiz. Mounts inside the existing #quiz page. Requires quiz-schema.sql. */
 (() => {
   const questions = [
     ['Hur många av personerna i årets SM-final har tidigare vunnit ett SM-guld i någon form?', ['9','10','14','11']],
@@ -14,43 +14,46 @@
   ];
   const pairs = [['E','Henric Stillman & Joanna Stillman'],['C','Johan Haag & Hanna Kuplijen'],['I','Benjamin Österlund & Angelica Källström'],['G','Karl Letternström & Elizabeth Lindström'],['B','Jacob Berggren & Natalie Albrigtsen'],['F','Jesper Boberg & Sara Victorin'],['H','Andreas Larsson & Elizabeth Lindström']];
   const years = ['2005','2012','2013','2019','2025'];
-  const escape = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const getClient = () => window.sb || window.supabaseClient || window.supabase?.client || null;
-  let started = 0, timer = null, submitted = false;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&quot;'}[c]));
+  const client = () => typeof sb !== 'undefined' ? sb : null;
+  let started = 0, timer, submitting = false;
+  const duration = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2,'0')}`;
   function mount() {
     const root = document.getElementById('quiz');
     if (!root || root.dataset.felixMounted) return;
     root.dataset.felixMounted = '1';
-    root.innerHTML = `<div class="panel" style="max-width:850px;margin:auto"><h1>💃 Felix Bugg Quiz</h1><p>10 frågor om tävling, SM och buggens historia. Flest rätt vinner, snabbast tid avgör vid lika poäng.</p><div id="felixWelcome"><button class="btn gold" id="felixStart">Starta quiz</button></div><div id="felixPlay" hidden><p id="felixClock" aria-live="off">Tid: 0:00</p><form id="felixForm"></form></div><div id="felixResult" role="status"></div></div>`;
-    root.querySelector('#felixStart').addEventListener('click', () => {
-      if (started) return;
+    root.innerHTML = '<div class="panel" style="max-width:850px;margin:auto"><h1>💃 Felix Bugg Quiz</h1><p>10 frågor om tävling, SM och buggens historia. Flest rätt vinner, snabbast tid avgör vid lika poäng.</p><div id="felixWelcome"><button class="btn gold" id="felixStart">Starta quiz</button></div><div id="felixPlay" hidden><p id="felixClock">Tid: 0:00</p><form id="felixForm"></form></div><div id="felixResult" role="status"></div></div>';
+    const status = root.querySelector('#felixResult');
+    root.querySelector('#felixStart').addEventListener('click', async () => {
+      const db = client();
+      if (!db) { status.textContent = 'Databasanslutningen saknas.'; return; }
+      const {data, error} = await db.rpc('quiz_start');
+      if (error) { status.textContent = 'Kunde inte starta quizet: ' + error.message; return; }
+      if (data.submitted) { status.textContent = `Du har redan deltagit. ${data.score} av 10 rätt. Tid: ${duration(data.elapsed_ms)}.`; return; }
+      status.textContent = '';
       started = Date.now();
       root.querySelector('#felixWelcome').hidden = true;
       root.querySelector('#felixPlay').hidden = false;
       const form = root.querySelector('#felixForm');
       form.innerHTML = questions.map(([question, choices], index) => {
         const n = index + 1;
-        const controls = n === 8 ? years.map((year, j) => `<label style="display:block;margin:10px 0">${year} <select name="q8${'abcde'[j]}" required><option value="">Välj par</option>${pairs.map(([key, name]) => `<option value="${key}">${escape(name)}</option>`).join('')}</select></label>`).join('') : choices.map((choice, j) => `<label style="display:block;margin:9px 0"><input type="radio" name="q${n}" value="${'ABCD'[j]}" required> ${'ABCD'[j]}. ${escape(choice)}</label>`).join('');
-        return `<fieldset style="border:1px solid #dbe4f0;border-radius:12px;margin:14px 0;padding:16px"><legend><strong>${n}. ${escape(question)}</strong></legend>${controls}</fieldset>`;
+        const controls = n === 8 ? years.map((year, j) => `<label style="display:block;margin:10px 0">${year} <select name="q8${'abcde'[j]}" required><option value="">Välj par</option>${pairs.map(([key, name]) => `<option value="${key}">${esc(name)}</option>`).join('')}</select></label>`).join('') : choices.map((choice, j) => `<label style="display:block;margin:9px 0"><input type="radio" name="q${n}" value="${'ABCD'[j]}" required> ${'ABCD'[j]}. ${esc(choice)}</label>`).join('');
+        return `<fieldset style="border:1px solid #dbe4f0;border-radius:12px;margin:14px 0;padding:16px"><legend><strong>${n}. ${esc(question)}</strong></legend>${controls}</fieldset>`;
       }).join('') + '<button class="btn gold" type="submit">Skicka in svar</button>';
-      timer = setInterval(() => { const s = Math.floor((Date.now() - started) / 1000); root.querySelector('#felixClock').textContent = `Tid: ${Math.floor(s / 60)}:${String(s % 60).padStart(2,'0')}`; }, 250);
+      timer = setInterval(() => root.querySelector('#felixClock').textContent = `Tid: ${duration(Date.now() - started)}`, 250);
       form.addEventListener('submit', async event => {
         event.preventDefault();
-        if (submitted) return;
-        const client = getClient();
-        if (!client?.rpc) { root.querySelector('#felixResult').textContent = 'Quizet kan inte skickas in förrän databasanslutningen är klar.'; return; }
-        submitted = true;
-        const elapsed = Date.now() - started;
+        if (submitting) return;
+        submitting = true;
         const answers = Object.fromEntries(new FormData(form).entries());
-        const { data, error } = await client.rpc('quiz_submit', { p_answers: answers, p_elapsed_ms: elapsed });
-        if (error) { submitted = false; root.querySelector('#felixResult').textContent = 'Kunde inte spara resultatet: ' + error.message; return; }
+        const {data: result, error: submitError} = await db.rpc('quiz_submit', {p_answers: answers, p_elapsed_ms: Date.now() - started});
+        if (submitError) { submitting = false; status.textContent = 'Kunde inte spara resultatet: ' + submitError.message; return; }
         clearInterval(timer);
-        form.hidden = true;
-        const result = Array.isArray(data) ? data[0] : data;
-        root.querySelector('#felixResult').textContent = `Du fick ${result.score} av 10 rätt! Tid: ${(result.elapsed_ms / 1000).toFixed(1)} sekunder.`;
+        root.querySelector('#felixPlay').hidden = true;
+        status.textContent = `Du fick ${result.score} av 10 rätt! Tid: ${duration(result.elapsed_ms)}.`;
       });
     });
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
   window.mountFelixQuiz = mount;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
 })();
