@@ -1,11 +1,11 @@
-/* Felix Bugg Quiz admin panel. Load after the existing Supabase client is initialized. */
+/* Felix Bugg Quiz admin panel. Uses the existing Supabase client. */
 (() => {
   const ADMIN_UID = '7408ec3a-29d1-4b48-8cd0-30d20b9155d7';
   const fields = ['q1','q2','q3','q4','q5','q6','q7','q8a','q8b','q8c','q8d','q8e','q9','q10'];
   const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const formatTime = ms => (Number(ms) / 1000).toFixed(1) + ' s';
   async function mountFelixQuizAdmin() {
-    const client = window.sb || window.supabaseClient;
+    const client = typeof sb !== 'undefined' ? sb : null;
     const root = document.getElementById('admin');
     if (!root || !client || root.querySelector('#felixQuizAdmin')) return;
     const { data: { user }, error: authError } = await client.auth.getUser();
