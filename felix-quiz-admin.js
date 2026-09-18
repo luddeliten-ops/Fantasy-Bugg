@@ -23,9 +23,11 @@
       const { data, error } = await client.rpc('quiz_admin_results');
       if (error) { status.textContent = 'Kunde inte läsa resultat: ' + error.message; output.replaceChildren(); return; }
       const attempts = Array.isArray(data) ? data : [];
-      status.textContent = attempts.length + ' inskickade quiz.';
+      const { data: leaderboard, error: namesError } = await client.rpc('get_global_leaderboard');
+      const names = new Map((Array.isArray(leaderboard) ? leaderboard : []).map(row => [String(row.user_id ?? row.id), row.fantasy_name || row.display_name || row.name || '']));
+      status.textContent = attempts.length + ' inskickade quiz.' + (namesError ? ' Kunde inte hämta användarnamn.' : '');
       if (!attempts.length) { output.textContent = 'Inga resultat ännu.'; return; }
-      output.innerHTML = '<table class="pointsTable"><thead><tr><th>Placering</th><th>Deltagare (användar-ID)</th><th>Poäng</th><th>Tid</th><th>Svar</th></tr></thead><tbody>' + attempts.map((attempt, index) => '<tr><td>' + (index + 1) + '</td><td>' + escapeHTML(attempt.user_id) + '</td><td>' + escapeHTML(attempt.score) + '/10</td><td>' + formatTime(attempt.elapsed_ms) + '</td><td><details><summary>Visa svar</summary>' + fields.map(field => '<div><strong>' + field.toUpperCase() + ':</strong> ' + escapeHTML(attempt.answers?.[field] || 'Ej besvarad') + '</div>').join('') + '</details></td></tr>').join('') + '</tbody></table>';
+      output.innerHTML = '<table class="pointsTable"><thead><tr><th>Placering</th><th>Deltagare</th><th>Poäng</th><th>Tid</th><th>Svar</th></tr></thead><tbody>' + attempts.map((attempt, index) => '<tr><td>' + (index + 1) + '</td><td>' + escapeHTML(names.get(String(attempt.user_id)) || 'Användarnamn saknas') + '</td><td>' + escapeHTML(attempt.score) + '/10</td><td>' + formatTime(attempt.elapsed_ms) + '</td><td><details><summary>Visa svar</summary>' + fields.map(field => '<div><strong>' + field.toUpperCase() + ':</strong> ' + escapeHTML(attempt.answers?.[field] || 'Ej besvarad') + '</div>').join('') + '</details></td></tr>').join('') + '</tbody></table>';
     }
     panel.querySelector('#felixQuizRefresh').addEventListener('click', refresh);
     await refresh();
