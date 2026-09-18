@@ -10,7 +10,9 @@
 .newPairPrice span{font-size:12px;font-weight:800;color:#6b7280}
 .newPairPrice strong{font-size:28px;line-height:1.15;margin:2px 0}
 .newPairPrice small{color:#6b7280}
-.pairRequestCard{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;background:#fff}
+.pairRequestCard{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;background:#fff;color:#0c1930}
+.pairRequestCard > b{display:block;color:#0c1930!important;font-size:17px;font-weight:900;line-height:1.4;overflow-wrap:anywhere}
+.pairRequestCard .meta{color:#6d7b91}
 .pairRequestActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .pairRequestActions .btn{flex:1}
 @media(max-width:650px){
