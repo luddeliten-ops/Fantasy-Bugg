@@ -1,0 +1,2022 @@
+{
+  "schemaVersion": 1,
+  "reviewStatus": "needs_manual_review",
+  "source": {
+    "gallery": "https://www.peppelinosbar.com/",
+    "imageBaseUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art",
+    "repository": "luddeliten-ops/Fantasy-Bugg",
+    "repositoryPairSource": "Marker.js",
+    "fetchedAt": "2026-09-21"
+  },
+  "notes": [
+    "Filen är endast ett granskningsunderlag och är inte inkopplad i den publicerade hemsidan.",
+    "primaryImageUrl prioriterar ett kort i motsvarande Bugg-klass när flera bilder finns.",
+    "Alla fuzzy_name-poster har uncertain=true och måste kontrolleras manuellt."
+  ],
+  "summary": {
+    "repositoryPairs": 268,
+    "galleryPairCards": 201,
+    "mappedRepositoryPairs": 96,
+    "exactMatches": 93,
+    "uncertainMatches": 3,
+    "repositoryPairsWithoutGalleryMatch": 172,
+    "galleryPairCardsNotUsedByMappings": 70
+  },
+  "mappings": [
+    {
+      "repositoryIndex": 0,
+      "ageClass": "Vuxen",
+      "repositoryName": "Jacob Berggren & Nathalie Albrigtsen",
+      "galleryName": "Jacob Berggren & Nathalie Albrigtsen",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-012.webp",
+      "images": [
+        {
+          "cardId": "sm26-12",
+          "designKey": "ID-012",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-012.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 1,
+      "ageClass": "Vuxen",
+      "repositoryName": "Benjamin Österlund & Angelica Källström",
+      "galleryName": "Benjamin Österlund & Angelica Källström",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-243.webp",
+      "images": [
+        {
+          "cardId": "sm26-243",
+          "designKey": "ID-243",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-243.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 2,
+      "ageClass": "Vuxen",
+      "repositoryName": "Viktor Edlund & Wilma Edlund",
+      "galleryName": "Viktor Edlund & Wilma Edlund",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-252.webp",
+      "images": [
+        {
+          "cardId": "sm26-252",
+          "designKey": "ID-252",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-252.webp"
+        },
+        {
+          "cardId": "sm26-182",
+          "designKey": "ID-182",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-182.webp"
+        },
+        {
+          "cardId": "sm26-11",
+          "designKey": "ID-011",
+          "danceStyle": "Lindy Hop Strictly Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-011.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 3,
+      "ageClass": "Vuxen",
+      "repositoryName": "Conrad Lindström & Cajsa Weinemo",
+      "galleryName": "Conrad Lindström & Cajsa Weinemo",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-001.webp",
+      "images": [
+        {
+          "cardId": "sm26-1",
+          "designKey": "ID-001",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-001.webp"
+        },
+        {
+          "cardId": "sm26-184",
+          "designKey": "ID-184",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-184.webp"
+        },
+        {
+          "cardId": "sm26-212",
+          "designKey": "ID-212",
+          "danceStyle": "Lindy Hop Showcase Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-212.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 4,
+      "ageClass": "Vuxen",
+      "repositoryName": "Hampus Falk & Fanny Ellström",
+      "galleryName": "Hampus Falk & Fanny Ellström",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-226.webp",
+      "images": [
+        {
+          "cardId": "sm26-226",
+          "designKey": "ID-226",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-226.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 5,
+      "ageClass": "Vuxen",
+      "repositoryName": "André Sandström & Fanny Elfving",
+      "galleryName": "André Sandström & Fanny Elfving",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-256.webp",
+      "images": [
+        {
+          "cardId": "sm26-256",
+          "designKey": "ID-256",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-256.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 6,
+      "ageClass": "Vuxen",
+      "repositoryName": "Oscar Ågren & Sofia Ärleskog",
+      "galleryName": "Oscar Ågren & Sofia Ärleskog",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-241.webp",
+      "images": [
+        {
+          "cardId": "sm26-241",
+          "designKey": "ID-241",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-241.webp"
+        },
+        {
+          "cardId": "sm26-183",
+          "designKey": "ID-183",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-183.webp"
+        },
+        {
+          "cardId": "sm26-302",
+          "designKey": "ID-302",
+          "danceStyle": "Lindy Hop Strictly Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-302.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 7,
+      "ageClass": "Vuxen",
+      "repositoryName": "Valdemar Selgeryd & Amanda Berglind",
+      "galleryName": "Valdemar Selgeryd & Amanda Berglind",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-254.webp",
+      "images": [
+        {
+          "cardId": "sm26-254",
+          "designKey": "ID-254",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-254.webp"
+        },
+        {
+          "cardId": "sm26-185",
+          "designKey": "ID-185",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-185.webp"
+        },
+        {
+          "cardId": "sm26-303",
+          "designKey": "ID-303",
+          "danceStyle": "Lindy Hop Strictly Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-303.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 8,
+      "ageClass": "Vuxen",
+      "repositoryName": "Andreas Sundbom & Viktoria Björnsson-Spets",
+      "galleryName": "Andreas Sundbom & Viktoria Björnsson-Spets",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-255.webp",
+      "images": [
+        {
+          "cardId": "sm26-255",
+          "designKey": "ID-255",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-255.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 10,
+      "ageClass": "Vuxen",
+      "repositoryName": "Fabian Rosell & Zarah Rosell",
+      "galleryName": "Fabian Rosell & Zarah Rosell",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-015.webp",
+      "images": [
+        {
+          "cardId": "sm26-15",
+          "designKey": "ID-015",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-015.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 11,
+      "ageClass": "Vuxen",
+      "repositoryName": "Simon Jansson & Madelene Andersson",
+      "galleryName": "Simon Jansson & Madelene Andersson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-236.webp",
+      "images": [
+        {
+          "cardId": "sm26-236",
+          "designKey": "ID-236",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-236.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 12,
+      "ageClass": "Vuxen",
+      "repositoryName": "David Eriksson & Linnea Holm",
+      "galleryName": "David Eriksson & Linnéa Holm",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-221.webp",
+      "images": [
+        {
+          "cardId": "sm26-221",
+          "designKey": "ID-221",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-221.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 14,
+      "ageClass": "Vuxen",
+      "repositoryName": "Tobias Ramberg & Lena Magnusson",
+      "galleryName": "Tobias Ramberg & Lena Magnusson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-253.webp",
+      "images": [
+        {
+          "cardId": "sm26-253",
+          "designKey": "ID-253",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-253.webp"
+        },
+        {
+          "cardId": "sm26-3",
+          "designKey": "ID-003",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-003.webp"
+        },
+        {
+          "cardId": "sm26-304",
+          "designKey": "ID-304",
+          "danceStyle": "Lindy Hop Strictly Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-304.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 15,
+      "ageClass": "Vuxen",
+      "repositoryName": "Joel Lundberg & Pia Andersson",
+      "galleryName": "Joel Lundberg & Pia Andersson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-247.webp",
+      "images": [
+        {
+          "cardId": "sm26-247",
+          "designKey": "ID-247",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-247.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 16,
+      "ageClass": "Vuxen",
+      "repositoryName": "Amanda Stenman & Lina Stenman",
+      "galleryName": "Amanda Stenman & Lina Stenman",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-181.webp",
+      "images": [
+        {
+          "cardId": "sm26-181",
+          "designKey": "ID-181",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-181.webp"
+        },
+        {
+          "cardId": "sm26-300",
+          "designKey": "ID-300",
+          "danceStyle": "Lindy Hop Strictly Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-300.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 17,
+      "ageClass": "Vuxen",
+      "repositoryName": "Robert Svensson & Sara Wilsborn",
+      "galleryName": "Robert Svensson & Sara Wilsborn",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-231.webp",
+      "images": [
+        {
+          "cardId": "sm26-231",
+          "designKey": "ID-231",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-231.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 18,
+      "ageClass": "Vuxen",
+      "repositoryName": "Linus Dunér Axelsson & Lisa Lundström",
+      "galleryName": "Linus Dunér Axelsson & Lisa Lundström",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-227.webp",
+      "images": [
+        {
+          "cardId": "sm26-227",
+          "designKey": "ID-227",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-227.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 19,
+      "ageClass": "Vuxen",
+      "repositoryName": "Patrik Ziebell & Jessica Fältman",
+      "galleryName": "Patrik Ziebell & Jessica Fältman",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-242.webp",
+      "images": [
+        {
+          "cardId": "sm26-242",
+          "designKey": "ID-242",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-242.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 20,
+      "ageClass": "Vuxen",
+      "repositoryName": "Mikael Svensson & Janni Söderberg",
+      "galleryName": "Mikael Svensson & Janni Söderberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-251.webp",
+      "images": [
+        {
+          "cardId": "sm26-251",
+          "designKey": "ID-251",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-251.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 21,
+      "ageClass": "Vuxen",
+      "repositoryName": "Elias Corlin & Emma Corlin",
+      "galleryName": "Elias Corlin & Emma Corlin",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-222.webp",
+      "images": [
+        {
+          "cardId": "sm26-222",
+          "designKey": "ID-222",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-222.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 22,
+      "ageClass": "Vuxen",
+      "repositoryName": "Viktor Torstensson & Julia Lauri",
+      "galleryName": "Viktor Torstensson & Julia Lauri",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-244.webp",
+      "images": [
+        {
+          "cardId": "sm26-244",
+          "designKey": "ID-244",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-244.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 24,
+      "ageClass": "Vuxen",
+      "repositoryName": "Freddy Sandberg & Hanna Nylander Strömberg",
+      "galleryName": "Freddy Sandberg & Hanna Nylander",
+      "matchType": "fuzzy_name",
+      "confidence": 0.75,
+      "uncertain": true,
+      "reviewNote": "Namnen skiljer sig mellan källorna. Kontrollera personerna manuellt innan kopplingen används.",
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-232.webp",
+      "images": [
+        {
+          "cardId": "sm26-232",
+          "designKey": "ID-232",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-232.webp"
+        }
+      ],
+      "alternativeCandidates": [
+        {
+          "galleryName": "Mattias Sandberg & Annelie Damberg",
+          "confidence": 0.5,
+          "cardId": "sm26-210",
+          "designKey": "ID-210",
+          "danceStyle": "Lindy Hop Showcase Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-210.webp"
+        },
+        {
+          "galleryName": "Erik Lindberg & Pia Lindberg",
+          "confidence": 0.45,
+          "cardId": "sm26-38",
+          "designKey": "ID-038",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-038.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 25,
+      "ageClass": "Vuxen",
+      "repositoryName": "Arvid Jönsson & Elin Löfgren",
+      "galleryName": "Arvid Jönsson & Elin Löfgren",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-249.webp",
+      "images": [
+        {
+          "cardId": "sm26-249",
+          "designKey": "ID-249",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-249.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 26,
+      "ageClass": "Vuxen",
+      "repositoryName": "Alma Forsberg & Maja Forsberg",
+      "galleryName": "Alma Forsberg & Maja Forsberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-229.webp",
+      "images": [
+        {
+          "cardId": "sm26-229",
+          "designKey": "ID-229",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-229.webp"
+        },
+        {
+          "cardId": "sm26-179",
+          "designKey": "ID-179",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-179.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 27,
+      "ageClass": "Vuxen",
+      "repositoryName": "Viktor Sjösten & Debbie Lewinter",
+      "galleryName": "Viktor Sjösten & Debbie Lewinter",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-223.webp",
+      "images": [
+        {
+          "cardId": "sm26-223",
+          "designKey": "ID-223",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-223.webp"
+        },
+        {
+          "cardId": "sm26-187",
+          "designKey": "ID-187",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-187.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 31,
+      "ageClass": "Vuxen",
+      "repositoryName": "Filip Söderqvist & Sofie Bewernick",
+      "galleryName": "Filip Söderqvist & Sofie Bewernick",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-233.webp",
+      "images": [
+        {
+          "cardId": "sm26-233",
+          "designKey": "ID-233",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-233.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 32,
+      "ageClass": "Vuxen",
+      "repositoryName": "Gustav Lundberg & Emelie Fasth",
+      "galleryName": "Gustav Lundberg & Emelie Fasth",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-228.webp",
+      "images": [
+        {
+          "cardId": "sm26-228",
+          "designKey": "ID-228",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-228.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 33,
+      "ageClass": "Vuxen",
+      "repositoryName": "Fredrik Frenning & Anna Engstrand",
+      "galleryName": "Fredrik Frenning & Anna Engstrand",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-240.webp",
+      "images": [
+        {
+          "cardId": "sm26-240",
+          "designKey": "ID-240",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-240.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 34,
+      "ageClass": "Vuxen",
+      "repositoryName": "Rasmus Liljekrans & Rebecka Liljekrans",
+      "galleryName": "Rasmus Liljekrans & Rebecka Liljekrans",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-220.webp",
+      "images": [
+        {
+          "cardId": "sm26-220",
+          "designKey": "ID-220",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-220.webp"
+        },
+        {
+          "cardId": "sm26-186",
+          "designKey": "ID-186",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-186.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 36,
+      "ageClass": "Vuxen",
+      "repositoryName": "Marcus Bergqvist & Hanna Markusson",
+      "galleryName": "Marcus Bergqvist & Hanna Markusson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-237.webp",
+      "images": [
+        {
+          "cardId": "sm26-237",
+          "designKey": "ID-237",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-237.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 38,
+      "ageClass": "Vuxen",
+      "repositoryName": "Isak Gerre & Olivia Dahlgren",
+      "galleryName": "Isak Gerre & Olivia Dahlgren",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-225.webp",
+      "images": [
+        {
+          "cardId": "sm26-225",
+          "designKey": "ID-225",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-225.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 39,
+      "ageClass": "Vuxen",
+      "repositoryName": "Daniel Johansson & Sofia Lundberg",
+      "galleryName": "Daniel Johansson & Sofia Lundberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-248.webp",
+      "images": [
+        {
+          "cardId": "sm26-248",
+          "designKey": "ID-248",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-248.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 40,
+      "ageClass": "Vuxen",
+      "repositoryName": "Erik Gelotte & Sofia Söderberg",
+      "galleryName": "Erik Gelotte & Sofia Söderberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-246.webp",
+      "images": [
+        {
+          "cardId": "sm26-246",
+          "designKey": "ID-246",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-246.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 41,
+      "ageClass": "Vuxen",
+      "repositoryName": "Ragnar Oskarsson & Nathalie Andersson",
+      "galleryName": "Ragnar Oskarsson & Nathalie Andersson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-250.webp",
+      "images": [
+        {
+          "cardId": "sm26-250",
+          "designKey": "ID-250",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-250.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 42,
+      "ageClass": "Vuxen",
+      "repositoryName": "Hugo Hardestam & Matilda Lindgren",
+      "galleryName": "Hugo Hardestam & Matilda Lindgren",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-245.webp",
+      "images": [
+        {
+          "cardId": "sm26-245",
+          "designKey": "ID-245",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-245.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 43,
+      "ageClass": "Vuxen",
+      "repositoryName": "Johan Åberg & Mariola Karlsson",
+      "galleryName": "Johan Åberg & Mariola Karlsson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-257.webp",
+      "images": [
+        {
+          "cardId": "sm26-257",
+          "designKey": "ID-257",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-257.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 44,
+      "ageClass": "Vuxen",
+      "repositoryName": "John Engström & Gabriella Claeson",
+      "galleryName": "John Engström & Gabriella Claeson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-235.webp",
+      "images": [
+        {
+          "cardId": "sm26-235",
+          "designKey": "ID-235",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-235.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 45,
+      "ageClass": "Vuxen",
+      "repositoryName": "Ludwig Wilhelmsson & Felicia Strömstedt",
+      "galleryName": "Ludwig Wilhelmsson & Felicia Strömstedt",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-230.webp",
+      "images": [
+        {
+          "cardId": "sm26-230",
+          "designKey": "ID-230",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-230.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 47,
+      "ageClass": "Vuxen",
+      "repositoryName": "August Selgeryd & Malin Svensson",
+      "galleryName": "August Selgeryd & Malin Svensson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-239.webp",
+      "images": [
+        {
+          "cardId": "sm26-239",
+          "designKey": "ID-239",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-239.webp"
+        },
+        {
+          "cardId": "sm26-180",
+          "designKey": "ID-180",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-180.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 48,
+      "ageClass": "Vuxen",
+      "repositoryName": "Joel Jansson & Alice Johansson",
+      "galleryName": "Joel Jansson & Alice Johansson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-224.webp",
+      "images": [
+        {
+          "cardId": "sm26-224",
+          "designKey": "ID-224",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-224.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 50,
+      "ageClass": "Vuxen",
+      "repositoryName": "Filip Lindqvist & Sofie Lindqvist",
+      "galleryName": "Filip Lindqvist & Sofie Lindqvist",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-238.webp",
+      "images": [
+        {
+          "cardId": "sm26-238",
+          "designKey": "ID-238",
+          "danceStyle": "Bugg Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-238.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 127,
+      "ageClass": "Senior",
+      "repositoryName": "Henric Stillman & Joanna Stillman",
+      "galleryName": "Henric Stillman & Joanna Stillman",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-007.webp",
+      "images": [
+        {
+          "cardId": "sm26-7",
+          "designKey": "ID-007",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-007.webp"
+        },
+        {
+          "cardId": "sm26-190",
+          "designKey": "ID-190",
+          "danceStyle": "Boogie Woogie Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-190.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 128,
+      "ageClass": "Senior",
+      "repositoryName": "David Widell & Sara Holmberg",
+      "galleryName": "David Widell & Sara Holmberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-045.webp",
+      "images": [
+        {
+          "cardId": "sm26-45",
+          "designKey": "ID-045",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-045.webp"
+        },
+        {
+          "cardId": "sm26-189",
+          "designKey": "ID-189",
+          "danceStyle": "Boogie Woogie Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-189.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 129,
+      "ageClass": "Senior",
+      "repositoryName": "Linus Isaksson & Anette Schultzberg Isaksson",
+      "galleryName": "Linus Isaksson & Anette Schultzberg Isaksson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-043.webp",
+      "images": [
+        {
+          "cardId": "sm26-43",
+          "designKey": "ID-043",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-043.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 130,
+      "ageClass": "Senior",
+      "repositoryName": "Pontus Nordin & Anna Morgansdotter",
+      "galleryName": "Pontus Nordin & Anna Morgansdotter",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-042.webp",
+      "images": [
+        {
+          "cardId": "sm26-42",
+          "designKey": "ID-042",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-042.webp"
+        },
+        {
+          "cardId": "sm26-193",
+          "designKey": "ID-193",
+          "danceStyle": "Boogie Woogie Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-193.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 131,
+      "ageClass": "Senior",
+      "repositoryName": "Jonathan Ehrlund & Emma Danielsson",
+      "galleryName": "Jonathan Ehrlund & Emma Danielsson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-058.webp",
+      "images": [
+        {
+          "cardId": "sm26-58",
+          "designKey": "ID-058",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-058.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 132,
+      "ageClass": "Senior",
+      "repositoryName": "Martin Månsson & Elin Lindström",
+      "galleryName": "Martin Månsson & Elin Lindström",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-056.webp",
+      "images": [
+        {
+          "cardId": "sm26-56",
+          "designKey": "ID-056",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-056.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 133,
+      "ageClass": "Senior",
+      "repositoryName": "Daniel Everborn & Jennie Johansson",
+      "galleryName": "Daniel Everborn & Jennie Johansson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-053.webp",
+      "images": [
+        {
+          "cardId": "sm26-53",
+          "designKey": "ID-053",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-053.webp"
+        },
+        {
+          "cardId": "sm26-197",
+          "designKey": "ID-197",
+          "danceStyle": "Boogie Woogie Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-197.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 135,
+      "ageClass": "Senior",
+      "repositoryName": "Björn Lindman & Susanna Everborn",
+      "galleryName": "Björn Lindman & Susanna Everborn",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-044.webp",
+      "images": [
+        {
+          "cardId": "sm26-44",
+          "designKey": "ID-044",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-044.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 136,
+      "ageClass": "Senior",
+      "repositoryName": "Karl Lettenström & Elizabeth Lindström",
+      "galleryName": "Karl Lettenström & Elizabeth Lindström",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-002.webp",
+      "images": [
+        {
+          "cardId": "sm26-2",
+          "designKey": "ID-002",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-002.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 137,
+      "ageClass": "Senior",
+      "repositoryName": "Pontus Johqvist & Caroline Bengtsson",
+      "galleryName": "Pontus Johqvist & Caroline Bengtsson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-052.webp",
+      "images": [
+        {
+          "cardId": "sm26-52",
+          "designKey": "ID-052",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-052.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 138,
+      "ageClass": "Senior",
+      "repositoryName": "Robin Ivarsson & Martina Nilsson",
+      "galleryName": "Robin Ivarsson & Martina Nilsson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-054.webp",
+      "images": [
+        {
+          "cardId": "sm26-54",
+          "designKey": "ID-054",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-054.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 139,
+      "ageClass": "Senior",
+      "repositoryName": "Tommy Ogfelt & Linda Göransson",
+      "galleryName": "Tommy Ogfelt & Linda Göransson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-036.webp",
+      "images": [
+        {
+          "cardId": "sm26-36",
+          "designKey": "ID-036",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-036.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 140,
+      "ageClass": "Senior",
+      "repositoryName": "Johan Haag & Hanna Kupljen",
+      "galleryName": "Johan Haag & Hanna Kupljen",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-008.webp",
+      "images": [
+        {
+          "cardId": "sm26-8",
+          "designKey": "ID-008",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-008.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 141,
+      "ageClass": "Senior",
+      "repositoryName": "Jonas Fågelström & Hanna Nilsson",
+      "galleryName": "Jonas Fågelström & Hanna Nilsson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-033.webp",
+      "images": [
+        {
+          "cardId": "sm26-33",
+          "designKey": "ID-033",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-033.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 143,
+      "ageClass": "Senior",
+      "repositoryName": "Mats Andersson & Emilie Sörholm",
+      "galleryName": "Mats Andersson & Emilie Sörholm",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-032.webp",
+      "images": [
+        {
+          "cardId": "sm26-32",
+          "designKey": "ID-032",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-032.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 145,
+      "ageClass": "Senior",
+      "repositoryName": "Axel Engstrand & Emma Linnman",
+      "galleryName": "Axel Engstrand & Emma Linnman",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-037.webp",
+      "images": [
+        {
+          "cardId": "sm26-37",
+          "designKey": "ID-037",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-037.webp"
+        },
+        {
+          "cardId": "sm26-192",
+          "designKey": "ID-192",
+          "danceStyle": "Boogie Woogie Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-192.webp"
+        },
+        {
+          "cardId": "sm26-209",
+          "designKey": "ID-209",
+          "danceStyle": "Lindy Hop Showcase Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-209.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 146,
+      "ageClass": "Senior",
+      "repositoryName": "Mikael Karlsson & Annika Åslund",
+      "galleryName": "Mikael Karlsson & Annika Åslund",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-048.webp",
+      "images": [
+        {
+          "cardId": "sm26-48",
+          "designKey": "ID-048",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-048.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 147,
+      "ageClass": "Senior",
+      "repositoryName": "Pierre Larsson & Madelene Zackrisson",
+      "galleryName": "Pierre Larsson & Madelene Zackrisson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-034.webp",
+      "images": [
+        {
+          "cardId": "sm26-34",
+          "designKey": "ID-034",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-034.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 148,
+      "ageClass": "Senior",
+      "repositoryName": "Urban Haglund & Linda Stridkvist",
+      "galleryName": "Urban Haglund & Linda Stridkvist",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-061.webp",
+      "images": [
+        {
+          "cardId": "sm26-61",
+          "designKey": "ID-061",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-061.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 149,
+      "ageClass": "Senior",
+      "repositoryName": "Mikael Säfström & Gabriella Säfström",
+      "galleryName": "Mikael Säfström & Gabriella Säfström",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-025.webp",
+      "images": [
+        {
+          "cardId": "sm26-25",
+          "designKey": "ID-025",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-025.webp"
+        },
+        {
+          "cardId": "sm26-194",
+          "designKey": "ID-194",
+          "danceStyle": "Boogie Woogie Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-194.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 150,
+      "ageClass": "Senior",
+      "repositoryName": "Peter Mårtensson & Ida Mårtensson",
+      "galleryName": "Peter Mårtensson & Ida Mårtensson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-026.webp",
+      "images": [
+        {
+          "cardId": "sm26-26",
+          "designKey": "ID-026",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-026.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 151,
+      "ageClass": "Senior",
+      "repositoryName": "Anton Johansson & Mimmi Larsson Markebo",
+      "galleryName": "Anton Johansson & Mimmi Larsson Markebo",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-035.webp",
+      "images": [
+        {
+          "cardId": "sm26-35",
+          "designKey": "ID-035",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-035.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 152,
+      "ageClass": "Senior",
+      "repositoryName": "Petter Adolfsson & Malin Isaksson",
+      "galleryName": "Petter Adolfsson & Malin Isaksson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-050.webp",
+      "images": [
+        {
+          "cardId": "sm26-50",
+          "designKey": "ID-050",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-050.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 153,
+      "ageClass": "Senior",
+      "repositoryName": "Johan Olsson & Sanna Theodorsson",
+      "galleryName": "Johan Olsson & Sanna Theodorsson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-041.webp",
+      "images": [
+        {
+          "cardId": "sm26-41",
+          "designKey": "ID-041",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-041.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 154,
+      "ageClass": "Senior",
+      "repositoryName": "Patrik Hjerteblom & Cecilia Zimmerman",
+      "galleryName": "Patrik Hjerteblom & Cecilia Zimmerman",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-047.webp",
+      "images": [
+        {
+          "cardId": "sm26-47",
+          "designKey": "ID-047",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-047.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 155,
+      "ageClass": "Senior",
+      "repositoryName": "Tobbe Sellberg & Victoria Ros",
+      "galleryName": "Tobbe Sellberg & Victoria Ros",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-046.webp",
+      "images": [
+        {
+          "cardId": "sm26-46",
+          "designKey": "ID-046",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-046.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 156,
+      "ageClass": "Senior",
+      "repositoryName": "Andreas Janliden & Kristina Hellberg",
+      "galleryName": "Andreas Janliden & Kristina Hellberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-040.webp",
+      "images": [
+        {
+          "cardId": "sm26-40",
+          "designKey": "ID-040",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-040.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 157,
+      "ageClass": "Senior",
+      "repositoryName": "Herman Hedlund & Elin Zakrisson",
+      "galleryName": "Herman Hedlund & Elin Zakrisson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-049.webp",
+      "images": [
+        {
+          "cardId": "sm26-49",
+          "designKey": "ID-049",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-049.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 159,
+      "ageClass": "Senior",
+      "repositoryName": "Henrik Jönsson & Therese Söderberg",
+      "galleryName": "Henrik Jönsson & Therese Söderberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-031.webp",
+      "images": [
+        {
+          "cardId": "sm26-31",
+          "designKey": "ID-031",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-031.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 160,
+      "ageClass": "Senior",
+      "repositoryName": "Thomas Modin & Sara Blomdin",
+      "galleryName": "Thomas Modin & Sara Blomdin",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-057.webp",
+      "images": [
+        {
+          "cardId": "sm26-57",
+          "designKey": "ID-057",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-057.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 161,
+      "ageClass": "Senior",
+      "repositoryName": "Anders Tell & Elna Gunnarsson",
+      "galleryName": "Anders Tell & Elna Gunnarsson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-024.webp",
+      "images": [
+        {
+          "cardId": "sm26-24",
+          "designKey": "ID-024",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-024.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 162,
+      "ageClass": "Senior",
+      "repositoryName": "Christian Tillman & Linda Tillman",
+      "galleryName": "Christian Tillman & Linda Tillman",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-195.webp",
+      "images": [
+        {
+          "cardId": "sm26-195",
+          "designKey": "ID-195",
+          "danceStyle": "Boogie Woogie Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-195.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 163,
+      "ageClass": "Senior",
+      "repositoryName": "Fredrik Olausson & Lina Olausson",
+      "galleryName": "Fredrik Olausson & Lina Olausson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-039.webp",
+      "images": [
+        {
+          "cardId": "sm26-39",
+          "designKey": "ID-039",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-039.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 165,
+      "ageClass": "Senior",
+      "repositoryName": "Thomas Modin & Linn Gustafsson",
+      "galleryName": "Thomas Modin & Linn Carlsson",
+      "matchType": "fuzzy_name",
+      "confidence": 0.786,
+      "uncertain": true,
+      "reviewNote": "Namnen skiljer sig mellan källorna. Kontrollera personerna manuellt innan kopplingen används.",
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-028.webp",
+      "images": [
+        {
+          "cardId": "sm26-28",
+          "designKey": "ID-028",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-028.webp"
+        }
+      ],
+      "alternativeCandidates": [
+        {
+          "galleryName": "Thomas Modin & Sara Blomdin",
+          "confidence": 0.536,
+          "cardId": "sm26-57",
+          "designKey": "ID-057",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-057.webp"
+        },
+        {
+          "galleryName": "Tommy Ogfelt & Linda Göransson",
+          "confidence": 0.464,
+          "cardId": "sm26-36",
+          "designKey": "ID-036",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-036.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 167,
+      "ageClass": "Senior",
+      "repositoryName": "Stefan Tärnström & Caroline Grute",
+      "galleryName": "Stefan Tärnström & Caroline Grute",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-060.webp",
+      "images": [
+        {
+          "cardId": "sm26-60",
+          "designKey": "ID-060",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-060.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 168,
+      "ageClass": "Senior",
+      "repositoryName": "Patric Karlsson & Sandra Larsson",
+      "galleryName": "Patric Karlsson & Sandra Larsson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-027.webp",
+      "images": [
+        {
+          "cardId": "sm26-27",
+          "designKey": "ID-027",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-027.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 169,
+      "ageClass": "Senior",
+      "repositoryName": "Per Andersson & Ellen Hansson",
+      "galleryName": "Per Andersson & Ellen Hansson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-062.webp",
+      "images": [
+        {
+          "cardId": "sm26-62",
+          "designKey": "ID-062",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-062.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 171,
+      "ageClass": "Senior",
+      "repositoryName": "Mikael Åberg & Zandra Lundmark",
+      "galleryName": "Mikael Åberg & Zandra Lundmark",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-059.webp",
+      "images": [
+        {
+          "cardId": "sm26-59",
+          "designKey": "ID-059",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-059.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 172,
+      "ageClass": "Senior",
+      "repositoryName": "Erik Lindberg & Pia Lindberg",
+      "galleryName": "Erik Lindberg & Pia Lindberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-038.webp",
+      "images": [
+        {
+          "cardId": "sm26-38",
+          "designKey": "ID-038",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-038.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 173,
+      "ageClass": "Senior",
+      "repositoryName": "Precious Kamboma & Anna Bäärnheilm",
+      "galleryName": "Precious Kamboma & Anna Bäärnhielm",
+      "matchType": "fuzzy_name",
+      "confidence": 0.938,
+      "uncertain": true,
+      "reviewNote": "Namnen skiljer sig mellan källorna. Kontrollera personerna manuellt innan kopplingen används.",
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-055.webp",
+      "images": [
+        {
+          "cardId": "sm26-55",
+          "designKey": "ID-055",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-055.webp"
+        }
+      ],
+      "alternativeCandidates": [
+        {
+          "galleryName": "Tobias Ramberg & Lena Magnusson",
+          "confidence": 0.375,
+          "cardId": "sm26-3",
+          "designKey": "ID-003",
+          "danceStyle": "Boogie Woogie Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-003.webp"
+        },
+        {
+          "galleryName": "Tobias Ramberg & Lena Magnusson",
+          "confidence": 0.375,
+          "cardId": "sm26-304",
+          "designKey": "ID-304",
+          "danceStyle": "Lindy Hop Strictly Vuxen",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-304.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 174,
+      "ageClass": "Senior",
+      "repositoryName": "Johan Stillman & Annika Westin",
+      "galleryName": "Johan Stillman & Annika Westin",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-030.webp",
+      "images": [
+        {
+          "cardId": "sm26-30",
+          "designKey": "ID-030",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-030.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 176,
+      "ageClass": "Senior",
+      "repositoryName": "Emil Johansson & Rebecka Hallberg",
+      "galleryName": "Emil Johansson & Rebecka Hallberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-029.webp",
+      "images": [
+        {
+          "cardId": "sm26-29",
+          "designKey": "ID-029",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-029.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 185,
+      "ageClass": "Senior",
+      "repositoryName": "Malin Klerén & Sofie Asker",
+      "galleryName": "Malin Klerén & Sofie Asker",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-051.webp",
+      "images": [
+        {
+          "cardId": "sm26-51",
+          "designKey": "ID-051",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-051.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 186,
+      "ageClass": "Senior",
+      "repositoryName": "Martin Ringkvist & Carin Miehling",
+      "galleryName": "Martin Ringkvist & Carin Miehling",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-023.webp",
+      "images": [
+        {
+          "cardId": "sm26-23",
+          "designKey": "ID-023",
+          "danceStyle": "Bugg Senior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-023.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 244,
+      "ageClass": "Junior",
+      "repositoryName": "Oliver Odenius & Emelie Nordeberg",
+      "galleryName": "Oliver Odenius & Emelie Nordeberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-152.webp",
+      "images": [
+        {
+          "cardId": "sm26-152",
+          "designKey": "ID-152",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-152.webp"
+        },
+        {
+          "cardId": "sm26-13",
+          "designKey": "ID-013",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-013.webp"
+        },
+        {
+          "cardId": "sm26-207",
+          "designKey": "ID-207",
+          "danceStyle": "Lindy Hop Strictly Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-207.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 245,
+      "ageClass": "Junior",
+      "repositoryName": "Axel Törnblad & Maja Kvist",
+      "galleryName": "Axel Törnblad & Maja Kvist",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-154.webp",
+      "images": [
+        {
+          "cardId": "sm26-154",
+          "designKey": "ID-154",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-154.webp"
+        },
+        {
+          "cardId": "sm26-178",
+          "designKey": "ID-178",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-178.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 246,
+      "ageClass": "Junior",
+      "repositoryName": "Felix Freidmann & Emilia Hedlund",
+      "galleryName": "Felix Freidmann & Emilia Hedlund",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-009.webp",
+      "images": [
+        {
+          "cardId": "sm26-9",
+          "designKey": "ID-009",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-009.webp"
+        },
+        {
+          "cardId": "sm26-173",
+          "designKey": "ID-173",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-173.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 247,
+      "ageClass": "Junior",
+      "repositoryName": "Simon Jonsson & Astrid Eriksson",
+      "galleryName": "Simon Jonsson & Astrid Eriksson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-157.webp",
+      "images": [
+        {
+          "cardId": "sm26-157",
+          "designKey": "ID-157",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-157.webp"
+        },
+        {
+          "cardId": "sm26-17",
+          "designKey": "ID-017",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-017.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 249,
+      "ageClass": "Junior",
+      "repositoryName": "Hannes Ardbäck & Selma Lundin",
+      "galleryName": "Hannes Ardbäck & Selma Lundin",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-150.webp",
+      "images": [
+        {
+          "cardId": "sm26-150",
+          "designKey": "ID-150",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-150.webp"
+        },
+        {
+          "cardId": "sm26-177",
+          "designKey": "ID-177",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-177.webp"
+        },
+        {
+          "cardId": "sm26-205",
+          "designKey": "ID-205",
+          "danceStyle": "Lindy Hop Strictly Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-205.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 250,
+      "ageClass": "Junior",
+      "repositoryName": "William Johansson & Rebecka Ärlestig",
+      "galleryName": "William Johansson & Rebecka Ärlestig",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-171.webp",
+      "images": [
+        {
+          "cardId": "sm26-171",
+          "designKey": "ID-171",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-171.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 251,
+      "ageClass": "Junior",
+      "repositoryName": "Hannes Store Malefors & Clara Store Malefors",
+      "galleryName": "Hannes Store Malefors & Clara Store Malefors",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-151.webp",
+      "images": [
+        {
+          "cardId": "sm26-151",
+          "designKey": "ID-151",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-151.webp"
+        },
+        {
+          "cardId": "sm26-172",
+          "designKey": "ID-172",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-172.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 252,
+      "ageClass": "Junior",
+      "repositoryName": "Leo Holmström & Hilda Rosell",
+      "galleryName": "Leo Holmström & Hilda Rosell",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-155.webp",
+      "images": [
+        {
+          "cardId": "sm26-155",
+          "designKey": "ID-155",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-155.webp"
+        },
+        {
+          "cardId": "sm26-215",
+          "designKey": "ID-215",
+          "danceStyle": "Rock'n'Roll med akro",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-215.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 254,
+      "ageClass": "Junior",
+      "repositoryName": "Hjalmar Törnkvist & Stina Eriksson",
+      "galleryName": "Hjalmar Törnkvist & Stina Eriksson",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-153.webp",
+      "images": [
+        {
+          "cardId": "sm26-153",
+          "designKey": "ID-153",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-153.webp"
+        },
+        {
+          "cardId": "sm26-175",
+          "designKey": "ID-175",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-175.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 255,
+      "ageClass": "Junior",
+      "repositoryName": "Sixten Gauffin & Lisa Vesterberg",
+      "galleryName": "Sixten Gauffin & Lisa Vesterberg",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-156.webp",
+      "images": [
+        {
+          "cardId": "sm26-156",
+          "designKey": "ID-156",
+          "danceStyle": "Bugg Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-156.webp"
+        },
+        {
+          "cardId": "sm26-176",
+          "designKey": "ID-176",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-176.webp"
+        },
+        {
+          "cardId": "sm26-206",
+          "designKey": "ID-206",
+          "danceStyle": "Lindy Hop Strictly Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-206.webp"
+        }
+      ]
+    },
+    {
+      "repositoryIndex": 259,
+      "ageClass": "Junior",
+      "repositoryName": "Gustav Svensén & Lovisa Svensén",
+      "galleryName": "Gustav Svensén & Lovisa Svensén",
+      "matchType": "exact_normalized",
+      "confidence": 1,
+      "uncertain": false,
+      "primaryImageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-174.webp",
+      "images": [
+        {
+          "cardId": "sm26-174",
+          "designKey": "ID-174",
+          "danceStyle": "Boogie Woogie Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-174.webp"
+        },
+        {
+          "cardId": "sm26-208",
+          "designKey": "ID-208",
+          "danceStyle": "Lindy Hop Strictly Junior",
+          "imageUrl": "https://pub-eb944b534c3c43e59b8c5c61118b61b1.r2.dev/card-art/sm2026/ID-208.webp"
+        }
+      ]
+    }
+  ]
+}
