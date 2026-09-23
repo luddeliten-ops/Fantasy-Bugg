@@ -1400,18 +1400,23 @@ main{
     <h3>Profilbild</h3>
 
     <input
-      class="search"
-      id="avatarUrl"
-      placeholder="https://..."
+      id="avatarFile"
+      type="file"
+      accept="image/*"
+      style="display:none"
     >
 
     <button
       class="btn blue"
-      id="saveAvatarBtn"
-      style="margin-top:9px"
+      id="chooseAvatarBtn"
+      type="button"
     >
-      Spara profilbild
+      Välj bild från biblioteket
     </button>
+
+    <div class="meta" style="margin-top:8px">
+      JPG, PNG eller WebP. Max 5 MB.
+    </div>
 
     <div class="status" id="avatarStatus"></div>
 
@@ -5104,9 +5109,6 @@ function renderProfile(){
       ?.avatar_url ||
     "";
 
-  $("avatarUrl").value =
-    avatar;
-
   if(avatar){
 
     $("profileAvatar").innerHTML = `
@@ -5133,35 +5135,88 @@ function renderProfile(){
 }
 
 
-async function saveAvatar(){
+async function saveAvatarFile(file){
 
-  if(
-    !currentUser
-  ){
-
+  if(!currentUser){
     showAuth();
-
     return;
   }
 
-  const avatarUrl =
-    $("avatarUrl")
-      .value
-      .trim();
+  if(!file){
+    return;
+  }
 
-  const {
-    error
-  } =
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if(!allowedTypes.includes(file.type)){
+    $("avatarStatus").innerHTML =
+      '<span class="err">Välj en JPG-, PNG- eller WebP-bild.</span>';
+    return;
+  }
+
+  if(file.size > 5 * 1024 * 1024){
+    $("avatarStatus").innerHTML =
+      '<span class="err">Bilden får vara högst 5 MB.</span>';
+    return;
+  }
+
+  $("avatarStatus").innerHTML =
+    '<span class="warn">Laddar upp bilden…</span>';
+
+  const extension =
+    file.type === "image/png"
+      ? "png"
+      : file.type === "image/webp"
+        ? "webp"
+        : "jpg";
+
+  const path =
+    currentUser.id + "/avatar-" + Date.now() + "." + extension;
+
+  const upload =
+    await sb.storage
+      .from("avatars")
+      .upload(
+        path,
+        file,
+        {
+          cacheControl:"3600",
+          upsert:true,
+          contentType:file.type
+        }
+      );
+
+  if(upload.error){
+    $("avatarStatus").innerHTML =
+      '<span class="err">' + esc(upload.error.message) + '</span>';
+    return;
+  }
+
+  const publicResult =
+    sb.storage
+      .from("avatars")
+      .getPublicUrl(path);
+
+  const avatarUrl =
+    publicResult.data?.publicUrl || "";
+
+  if(!avatarUrl){
+    $("avatarStatus").innerHTML =
+      '<span class="err">Kunde inte skapa bildadressen.</span>';
+    return;
+  }
+
+  const { error } =
     await sb
-      .from(
-        "profiles"
-      )
+      .from("profiles")
       .upsert(
         {
-          id:
-            currentUser.id,
-          avatar_url:
-            avatarUrl
+          id:currentUser.id,
+          avatar_url:avatarUrl
         },
         {
           onConflict:"id"
@@ -5169,24 +5224,18 @@ async function saveAvatar(){
       );
 
   if(error){
-
-    $("avatarStatus").innerHTML = `
-      <span class="err">
-        ${esc(error.message)}
-      </span>
-    `;
-
+    $("avatarStatus").innerHTML =
+      '<span class="err">' + esc(error.message) + '</span>';
     return;
   }
 
-  $("avatarStatus").innerHTML = `
-    <span class="ok">
-      Sparat.
-    </span>
-  `;
+  $("avatarStatus").innerHTML =
+    '<span class="ok">Profilbilden är sparad.</span>';
 
-  loadProfile();
+  $("avatarFile").value = "";
+  await loadProfile();
 }
+
   function setAuthMode(
   mode
 ){
@@ -6998,8 +7047,23 @@ function bind(){
   $("logoutBtn").onclick =
     logout;
 
-  $("saveAvatarBtn").onclick =
-    saveAvatar;
+  $("chooseAvatarBtn").onclick =
+    () => {
+      if(!currentUser){
+        showAuth();
+        return;
+      }
+      $("avatarFile").click();
+    };
+
+  $("avatarFile").onchange =
+    event => {
+      const file =
+        event.target.files?.[0];
+      if(file){
+        saveAvatarFile(file);
+      }
+    };
 
   $("refreshLeagues").onclick =
     () =>
