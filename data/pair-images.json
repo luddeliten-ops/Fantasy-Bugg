@@ -18,7 +18,8 @@
       "sourceName": "Jacob Berggren & Nathalie Albrigtsen",
       "sourceCardId": "sm26-12",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-012_Jacob-Berggren-Nathalie-Albrigtsen_original.jpg"
     },
     {
       "pairIndex": 1,
@@ -29,7 +30,8 @@
       "sourceName": "Benjamin Österlund & Angelica Källström",
       "sourceCardId": "sm26-243",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-243_Benjamin-Osterlund-Angelica-Kallstrom_original.jpg"
     },
     {
       "pairIndex": 2,
@@ -40,7 +42,8 @@
       "sourceName": "Viktor Edlund & Wilma Edlund",
       "sourceCardId": "sm26-252",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-252_Viktor-Edlund-Wilma-Edlund_original.jpg"
     },
     {
       "pairIndex": 3,
@@ -51,7 +54,8 @@
       "sourceName": "Conrad Lindström & Cajsa Weinemo",
       "sourceCardId": "sm26-1",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-001_Conrad-Lindstrom-Cajsa-Weinemo_original.jpg"
     },
     {
       "pairIndex": 4,
@@ -62,7 +66,8 @@
       "sourceName": "Hampus Falk & Fanny Ellström",
       "sourceCardId": "sm26-226",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-226_Hampus-Falk-Fanny-Ellstrom_original.jpg"
     },
     {
       "pairIndex": 5,
@@ -73,7 +78,8 @@
       "sourceName": "André Sandström & Fanny Elfving",
       "sourceCardId": "sm26-256",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-256_Andre-Sandstrom-Fanny-Elfving_original.jpg"
     },
     {
       "pairIndex": 6,
@@ -84,7 +90,8 @@
       "sourceName": "Oscar Ågren & Sofia Ärleskog",
       "sourceCardId": "sm26-241",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-241_Oscar-Agren-Sofia-Arleskog_original.jpg"
     },
     {
       "pairIndex": 7,
@@ -95,7 +102,8 @@
       "sourceName": "Valdemar Selgeryd & Amanda Berglind",
       "sourceCardId": "sm26-254",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-254_Valdemar-Selgeryd-Amanda-Berglind_original.jpg"
     },
     {
       "pairIndex": 8,
@@ -106,7 +114,8 @@
       "sourceName": "Andreas Sundbom & Viktoria Björnsson-Spets",
       "sourceCardId": "sm26-255",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-255_Andreas-Sundbom-Viktoria-Bjornsson-Spets_original.jpg"
     },
     {
       "pairIndex": 10,
@@ -117,7 +126,8 @@
       "sourceName": "Fabian Rosell & Zarah Rosell",
       "sourceCardId": "sm26-15",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-015_Fabian-Rosell-Zarah-Rosell_original.jpg"
     },
     {
       "pairIndex": 11,
@@ -128,7 +138,8 @@
       "sourceName": "Simon Jansson & Madelene Andersson",
       "sourceCardId": "sm26-236",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-236_Simon-Jansson-Madelene-Andersson_original.jpg"
     },
     {
       "pairIndex": 12,
@@ -139,7 +150,8 @@
       "sourceName": "David Eriksson & Linnéa Holm",
       "sourceCardId": "sm26-221",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-221_David-Eriksson-Linnea-Holm_original.jpg"
     },
     {
       "pairIndex": 14,
@@ -150,7 +162,8 @@
       "sourceName": "Tobias Ramberg & Lena Magnusson",
       "sourceCardId": "sm26-253",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-253_Tobias-Ramberg-Lena-Magnusson_original.jpg"
     },
     {
       "pairIndex": 15,
@@ -161,7 +174,8 @@
       "sourceName": "Joel Lundberg & Pia Andersson",
       "sourceCardId": "sm26-247",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-247_Joel-Lundberg-Pia-Andersson_original.jpg"
     },
     {
       "pairIndex": 16,
@@ -183,7 +197,8 @@
       "sourceName": "Robert Svensson & Sara Wilsborn",
       "sourceCardId": "sm26-231",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-231_Robert-Svensson-Sara-Wilsborn_original.jpg"
     },
     {
       "pairIndex": 18,
@@ -194,7 +209,8 @@
       "sourceName": "Linus Dunér Axelsson & Lisa Lundström",
       "sourceCardId": "sm26-227",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-227_Linus-Duner-Axelsson-Lisa-Lundstrom_original.jpg"
     },
     {
       "pairIndex": 19,
@@ -205,7 +221,8 @@
       "sourceName": "Patrik Ziebell & Jessica Fältman",
       "sourceCardId": "sm26-242",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-242_Patrik-Ziebell-Jessica-Faltman_original.jpg"
     },
     {
       "pairIndex": 20,
@@ -216,7 +233,8 @@
       "sourceName": "Mikael Svensson & Janni Söderberg",
       "sourceCardId": "sm26-251",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-251_Mikael-Svensson-Janni-Soderberg_original.jpg"
     },
     {
       "pairIndex": 21,
@@ -227,7 +245,8 @@
       "sourceName": "Elias Corlin & Emma Corlin",
       "sourceCardId": "sm26-222",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-222_Elias-Corlin-Emma-Corlin_original.jpg"
     },
     {
       "pairIndex": 22,
@@ -238,7 +257,8 @@
       "sourceName": "Viktor Torstensson & Julia Lauri",
       "sourceCardId": "sm26-244",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-244_Viktor-Torstensson-Julia-Lauri_original.jpg"
     },
     {
       "pairIndex": 24,
@@ -260,7 +280,8 @@
       "sourceName": "Arvid Jönsson & Elin Löfgren",
       "sourceCardId": "sm26-249",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-249_Arvid-Jonsson-Elin-Lofgren_original.jpg"
     },
     {
       "pairIndex": 26,
@@ -271,7 +292,8 @@
       "sourceName": "Alma Forsberg & Maja Forsberg",
       "sourceCardId": "sm26-229",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-229_Alma-Forsberg-Maja-Forsberg_original.jpg"
     },
     {
       "pairIndex": 27,
@@ -282,7 +304,8 @@
       "sourceName": "Viktor Sjösten & Debbie Lewinter",
       "sourceCardId": "sm26-223",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-223_Viktor-Sjosten-Debbie-Lewinter_original.jpg"
     },
     {
       "pairIndex": 31,
@@ -293,7 +316,8 @@
       "sourceName": "Filip Söderqvist & Sofie Bewernick",
       "sourceCardId": "sm26-233",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-233_Filip-Soderqvist-Sofie-Bewernick_original.jpg"
     },
     {
       "pairIndex": 32,
@@ -304,7 +328,8 @@
       "sourceName": "Gustav Lundberg & Emelie Fasth",
       "sourceCardId": "sm26-228",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-228_Gustav-Lundberg-Emelie-Fasth_original.jpg"
     },
     {
       "pairIndex": 33,
@@ -315,7 +340,8 @@
       "sourceName": "Fredrik Frenning & Anna Engstrand",
       "sourceCardId": "sm26-240",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-240_Fredrik-Frenning-Anna-Engstrand_original.jpg"
     },
     {
       "pairIndex": 34,
@@ -326,7 +352,8 @@
       "sourceName": "Rasmus Liljekrans & Rebecka Liljekrans",
       "sourceCardId": "sm26-220",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-220_Rasmus-Liljekrans-Rebecka-Liljekrans_original.jpg"
     },
     {
       "pairIndex": 36,
@@ -337,7 +364,8 @@
       "sourceName": "Marcus Bergqvist & Hanna Markusson",
       "sourceCardId": "sm26-237",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-237_Marcus-Bergqvist-Hanna-Markusson_original.jpg"
     },
     {
       "pairIndex": 38,
@@ -348,7 +376,8 @@
       "sourceName": "Isak Gerre & Olivia Dahlgren",
       "sourceCardId": "sm26-225",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-225_Isak-Gerre-Olivia-Dahlgren_original.jpg"
     },
     {
       "pairIndex": 39,
@@ -359,7 +388,8 @@
       "sourceName": "Daniel Johansson & Sofia Lundberg",
       "sourceCardId": "sm26-248",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-248_Daniel-Johansson-Sofia-Lundberg_original.jpg"
     },
     {
       "pairIndex": 40,
@@ -370,7 +400,8 @@
       "sourceName": "Erik Gelotte & Sofia Söderberg",
       "sourceCardId": "sm26-246",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-246_Erik-Gelotte-Sofia-Soderberg_original.jpg"
     },
     {
       "pairIndex": 41,
@@ -381,7 +412,8 @@
       "sourceName": "Ragnar Oskarsson & Nathalie Andersson",
       "sourceCardId": "sm26-250",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-250_Ragnar-Oskarsson-Nathalie-Andersson_original.jpg"
     },
     {
       "pairIndex": 42,
@@ -392,7 +424,8 @@
       "sourceName": "Hugo Hardestam & Matilda Lindgren",
       "sourceCardId": "sm26-245",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-245_Hugo-Hardestam-Matilda-Lindgren_original.jpg"
     },
     {
       "pairIndex": 43,
@@ -403,7 +436,8 @@
       "sourceName": "Johan Åberg & Mariola Karlsson",
       "sourceCardId": "sm26-257",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-257_Johan-Aberg-Mariola-Karlsson_original.jpg"
     },
     {
       "pairIndex": 44,
@@ -414,7 +448,8 @@
       "sourceName": "John Engström & Gabriella Claeson",
       "sourceCardId": "sm26-235",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-235_John-Engstrom-Gabriella-Claeson_original.jpg"
     },
     {
       "pairIndex": 45,
@@ -425,7 +460,8 @@
       "sourceName": "Ludwig Wilhelmsson & Felicia Strömstedt",
       "sourceCardId": "sm26-230",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-230_Ludwig-Wilhelmsson-Felicia-Stromstedt_original.jpg"
     },
     {
       "pairIndex": 47,
@@ -436,7 +472,8 @@
       "sourceName": "August Selgeryd & Malin Svensson",
       "sourceCardId": "sm26-239",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-239_August-Selgeryd-Malin-Svensson_original.jpg"
     },
     {
       "pairIndex": 48,
@@ -447,7 +484,8 @@
       "sourceName": "Joel Jansson & Alice Johansson",
       "sourceCardId": "sm26-224",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-224_Joel-Jansson-Alice-Johansson_original.jpg"
     },
     {
       "pairIndex": 50,
@@ -458,7 +496,8 @@
       "sourceName": "Filip Lindqvist & Sofie Lindqvist",
       "sourceCardId": "sm26-238",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-238_Filip-Lindqvist-Sofie-Lindqvist_original.jpg"
     },
     {
       "pairIndex": 127,
@@ -469,7 +508,8 @@
       "sourceName": "Henric Stillman & Joanna Stillman",
       "sourceCardId": "sm26-7",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-007_Henric-Stillman-Joanna-Stillman_original.jpg"
     },
     {
       "pairIndex": 128,
@@ -480,7 +520,8 @@
       "sourceName": "David Widell & Sara Holmberg",
       "sourceCardId": "sm26-45",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-045_David-Widell-Sara-Holmberg_original.jpg"
     },
     {
       "pairIndex": 129,
@@ -491,7 +532,8 @@
       "sourceName": "Linus Isaksson & Anette Schultzberg Isaksson",
       "sourceCardId": "sm26-43",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-043_Linus-Isaksson-Anette-Schultzberg-Isaksson_original.jpg"
     },
     {
       "pairIndex": 130,
@@ -502,7 +544,8 @@
       "sourceName": "Pontus Nordin & Anna Morgansdotter",
       "sourceCardId": "sm26-42",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-042_Pontus-Nordin-Anna-Morgansdotter_original.jpg"
     },
     {
       "pairIndex": 131,
@@ -513,7 +556,8 @@
       "sourceName": "Jonathan Ehrlund & Emma Danielsson",
       "sourceCardId": "sm26-58",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-058_Jonathan-Ehrlund-Emma-Danielsson_original.jpg"
     },
     {
       "pairIndex": 132,
@@ -524,7 +568,8 @@
       "sourceName": "Martin Månsson & Elin Lindström",
       "sourceCardId": "sm26-56",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-056_Martin-Mansson-Elin-Lindstrom_original.jpg"
     },
     {
       "pairIndex": 133,
@@ -535,7 +580,8 @@
       "sourceName": "Daniel Everborn & Jennie Johansson",
       "sourceCardId": "sm26-53",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-053_Daniel-Everborn-Jennie-Johansson_original.jpg"
     },
     {
       "pairIndex": 135,
@@ -546,7 +592,8 @@
       "sourceName": "Björn Lindman & Susanna Everborn",
       "sourceCardId": "sm26-44",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-044_Bjorn-Lindman-Susanna-Everborn_original.jpg"
     },
     {
       "pairIndex": 136,
@@ -557,7 +604,8 @@
       "sourceName": "Karl Lettenström & Elizabeth Lindström",
       "sourceCardId": "sm26-2",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-002_Karl-Lettenstrom-Elizabeth-Lindstrom_original.jpg"
     },
     {
       "pairIndex": 137,
@@ -568,7 +616,8 @@
       "sourceName": "Pontus Johqvist & Caroline Bengtsson",
       "sourceCardId": "sm26-52",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-052_Pontus-Johqvist-Caroline-Bengtsson_original.jpg"
     },
     {
       "pairIndex": 138,
@@ -579,7 +628,8 @@
       "sourceName": "Robin Ivarsson & Martina Nilsson",
       "sourceCardId": "sm26-54",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-054_Robin-Ivarsson-Martina-Nilsson_original.jpg"
     },
     {
       "pairIndex": 139,
@@ -590,7 +640,8 @@
       "sourceName": "Tommy Ogfelt & Linda Göransson",
       "sourceCardId": "sm26-36",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-036_Tommy-Ogfelt-Linda-Goransson_original.jpg"
     },
     {
       "pairIndex": 140,
@@ -601,7 +652,8 @@
       "sourceName": "Johan Haag & Hanna Kupljen",
       "sourceCardId": "sm26-8",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-008_Johan-Haag-Hanna-Kupljen_original.jpg"
     },
     {
       "pairIndex": 141,
@@ -612,7 +664,8 @@
       "sourceName": "Jonas Fågelström & Hanna Nilsson",
       "sourceCardId": "sm26-33",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-033_Jonas-Fagelstrom-Hanna-Nilsson_original.jpg"
     },
     {
       "pairIndex": 143,
@@ -623,7 +676,8 @@
       "sourceName": "Mats Andersson & Emilie Sörholm",
       "sourceCardId": "sm26-32",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-032_Mats-Andersson-Emilie-Sorholm_original.jpg"
     },
     {
       "pairIndex": 145,
@@ -634,7 +688,8 @@
       "sourceName": "Axel Engstrand & Emma Linnman",
       "sourceCardId": "sm26-37",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-037_Axel-Engstrand-Emma-Linnman_original.jpg"
     },
     {
       "pairIndex": 146,
@@ -645,7 +700,8 @@
       "sourceName": "Mikael Karlsson & Annika Åslund",
       "sourceCardId": "sm26-48",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-048_Mikael-Karlsson-Annika-Aslund_original.jpg"
     },
     {
       "pairIndex": 147,
@@ -656,7 +712,8 @@
       "sourceName": "Pierre Larsson & Madelene Zackrisson",
       "sourceCardId": "sm26-34",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-034_Pierre-Larsson-Madelene-Zackrisson_original.jpg"
     },
     {
       "pairIndex": 148,
@@ -667,7 +724,8 @@
       "sourceName": "Urban Haglund & Linda Stridkvist",
       "sourceCardId": "sm26-61",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-061_Urban-Haglund-Linda-Stridkvist_original.jpg"
     },
     {
       "pairIndex": 149,
@@ -678,7 +736,8 @@
       "sourceName": "Mikael Säfström & Gabriella Säfström",
       "sourceCardId": "sm26-25",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-025_Mikael-Safstrom-Gabriella-Safstrom_original.jpg"
     },
     {
       "pairIndex": 150,
@@ -689,7 +748,8 @@
       "sourceName": "Peter Mårtensson & Ida Mårtensson",
       "sourceCardId": "sm26-26",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-026_Peter-Martensson-Ida-Martensson_original.jpg"
     },
     {
       "pairIndex": 151,
@@ -700,7 +760,8 @@
       "sourceName": "Anton Johansson & Mimmi Larsson Markebo",
       "sourceCardId": "sm26-35",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-035_Anton-Johansson-Mimmi-Larsson-Markebo_original.jpg"
     },
     {
       "pairIndex": 152,
@@ -711,7 +772,8 @@
       "sourceName": "Petter Adolfsson & Malin Isaksson",
       "sourceCardId": "sm26-50",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-050_Petter-Adolfsson-Malin-Isaksson_original.jpg"
     },
     {
       "pairIndex": 153,
@@ -722,7 +784,8 @@
       "sourceName": "Johan Olsson & Sanna Theodorsson",
       "sourceCardId": "sm26-41",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-041_Johan-Olsson-Sanna-Theodorsson_original.jpg"
     },
     {
       "pairIndex": 154,
@@ -733,7 +796,8 @@
       "sourceName": "Patrik Hjerteblom & Cecilia Zimmerman",
       "sourceCardId": "sm26-47",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-047_Patrik-Hjerteblom-Cecilia-Zimmerman_original.jpg"
     },
     {
       "pairIndex": 155,
@@ -744,7 +808,8 @@
       "sourceName": "Tobbe Sellberg & Victoria Ros",
       "sourceCardId": "sm26-46",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-046_Tobbe-Sellberg-Victoria-Ros_original.jpg"
     },
     {
       "pairIndex": 156,
@@ -755,7 +820,8 @@
       "sourceName": "Andreas Janliden & Kristina Hellberg",
       "sourceCardId": "sm26-40",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-040_Andreas-Janliden-Kristina-Hellberg_original.jpg"
     },
     {
       "pairIndex": 157,
@@ -766,7 +832,8 @@
       "sourceName": "Herman Hedlund & Elin Zakrisson",
       "sourceCardId": "sm26-49",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-049_Herman-Hedlund-Elin-Zakrisson_original.jpg"
     },
     {
       "pairIndex": 159,
@@ -777,7 +844,8 @@
       "sourceName": "Henrik Jönsson & Therese Söderberg",
       "sourceCardId": "sm26-31",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-031_Henrik-Jonsson-Therese-Soderberg_original.jpg"
     },
     {
       "pairIndex": 160,
@@ -788,7 +856,8 @@
       "sourceName": "Thomas Modin & Sara Blomdin",
       "sourceCardId": "sm26-57",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-057_Thomas-Modin-Sara-Blomdin_original.jpg"
     },
     {
       "pairIndex": 161,
@@ -799,7 +868,8 @@
       "sourceName": "Anders Tell & Elna Gunnarsson",
       "sourceCardId": "sm26-24",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-024_Anders-Tell-Elna-Gunnarsson_original.jpg"
     },
     {
       "pairIndex": 162,
@@ -821,7 +891,8 @@
       "sourceName": "Fredrik Olausson & Lina Olausson",
       "sourceCardId": "sm26-39",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-039_Fredrik-Olausson-Lina-Olausson_original.jpg"
     },
     {
       "pairIndex": 165,
@@ -843,7 +914,8 @@
       "sourceName": "Stefan Tärnström & Caroline Grute",
       "sourceCardId": "sm26-60",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-060_Stefan-Tarnstrom-Caroline-Grute_original.jpg"
     },
     {
       "pairIndex": 168,
@@ -854,7 +926,8 @@
       "sourceName": "Patric Karlsson & Sandra Larsson",
       "sourceCardId": "sm26-27",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-027_Patric-Karlsson-Sandra-Larsson_original.jpg"
     },
     {
       "pairIndex": 169,
@@ -865,7 +938,8 @@
       "sourceName": "Per Andersson & Ellen Hansson",
       "sourceCardId": "sm26-62",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-062_Per-Andersson-Ellen-Hansson_original.jpg"
     },
     {
       "pairIndex": 171,
@@ -876,7 +950,8 @@
       "sourceName": "Mikael Åberg & Zandra Lundmark",
       "sourceCardId": "sm26-59",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-059_Mikael-Aberg-Zandra-Lundmark_original.jpg"
     },
     {
       "pairIndex": 172,
@@ -887,7 +962,8 @@
       "sourceName": "Erik Lindberg & Pia Lindberg",
       "sourceCardId": "sm26-38",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-038_Erik-Lindberg-Pia-Lindberg_original.jpg"
     },
     {
       "pairIndex": 173,
@@ -909,7 +985,8 @@
       "sourceName": "Johan Stillman & Annika Westin",
       "sourceCardId": "sm26-30",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-030_Johan-Stillman-Annika-Westin_original.jpg"
     },
     {
       "pairIndex": 176,
@@ -920,7 +997,8 @@
       "sourceName": "Emil Johansson & Rebecka Hallberg",
       "sourceCardId": "sm26-29",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-029_Emil-Johansson-Rebecka-Hallberg_original.jpg"
     },
     {
       "pairIndex": 185,
@@ -931,7 +1009,8 @@
       "sourceName": "Malin Klerén & Sofie Asker",
       "sourceCardId": "sm26-51",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-051_Malin-Kleren-Sofie-Asker_original.jpg"
     },
     {
       "pairIndex": 186,
@@ -942,7 +1021,8 @@
       "sourceName": "Martin Ringkvist & Carin Miehling",
       "sourceCardId": "sm26-23",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-023_Martin-Ringkvist-Carin-Miehling_original.jpg"
     },
     {
       "pairIndex": 244,
@@ -953,7 +1033,8 @@
       "sourceName": "Oliver Odenius & Emelie Nordeberg",
       "sourceCardId": "sm26-152",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-152_Oliver-Odenius-Emelie-Nordeberg_original.jpg"
     },
     {
       "pairIndex": 245,
@@ -964,7 +1045,8 @@
       "sourceName": "Axel Törnblad & Maja Kvist",
       "sourceCardId": "sm26-154",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-154_Axel-Tornblad-Maja-Kvist_original.jpg"
     },
     {
       "pairIndex": 246,
@@ -975,7 +1057,8 @@
       "sourceName": "Felix Freidmann & Emilia Hedlund",
       "sourceCardId": "sm26-9",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-009_Felix-Freidmann-Emilia-Hedlund_original.jpg"
     },
     {
       "pairIndex": 247,
@@ -986,7 +1069,8 @@
       "sourceName": "Simon Jonsson & Astrid Eriksson",
       "sourceCardId": "sm26-157",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-157_Simon-Jonsson-Astrid-Eriksson_original.jpg"
     },
     {
       "pairIndex": 249,
@@ -997,7 +1081,8 @@
       "sourceName": "Hannes Ardbäck & Selma Lundin",
       "sourceCardId": "sm26-150",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-150_Hannes-Ardback-Selma-Lundin_original.jpg"
     },
     {
       "pairIndex": 250,
@@ -1019,7 +1104,8 @@
       "sourceName": "Hannes Store Malefors & Clara Store Malefors",
       "sourceCardId": "sm26-151",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-151_Hannes-Store-Malefors-Clara-Store-Malefors_original.jpg"
     },
     {
       "pairIndex": 252,
@@ -1030,7 +1116,8 @@
       "sourceName": "Leo Holmström & Hilda Rosell",
       "sourceCardId": "sm26-155",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-155_Leo-Holmstrom-Hilda-Rosell_original.jpg"
     },
     {
       "pairIndex": 254,
@@ -1041,7 +1128,8 @@
       "sourceName": "Hjalmar Törnkvist & Stina Eriksson",
       "sourceCardId": "sm26-153",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-153_Hjalmar-Tornkvist-Stina-Eriksson_original.jpg"
     },
     {
       "pairIndex": 255,
@@ -1052,7 +1140,8 @@
       "sourceName": "Sixten Gauffin & Lisa Vesterberg",
       "sourceCardId": "sm26-156",
       "confidence": "confirmed",
-      "approved": true
+      "approved": true,
+      "localImagePath": "assets/pair-originals/ID-156_Sixten-Gauffin-Lisa-Vesterberg_original.jpg"
     },
     {
       "pairIndex": 259,
