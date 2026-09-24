@@ -16,6 +16,17 @@ html,body{background:radial-gradient(circle at 82% 2%,rgba(126,42,255,.11),trans
 @media(max-width:620px){main{padding:12px 10px 60px!important}#home .homeHero{min-height:590px!important;border-radius:18px!important;align-items:flex-end!important;background:linear-gradient(0deg,rgba(2,6,15,.99) 0%,rgba(2,6,15,.92) 37%,rgba(2,6,15,.38) 67%,rgba(2,6,15,.08) 100%),url("hero.jpg.webp") center 15% / 100% auto no-repeat!important;background-color:#02060f!important}#home .homeHeroCopy{width:100%!important;padding:30px 22px!important}#home .homeHero h1{font-size:45px!important;letter-spacing:-2.7px!important}#home .homeHero p{font-size:15px!important}#home .homeStats{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin:-12px 8px 14px!important}#home .homeStat{min-height:105px;padding:16px!important}#home .homeStat strong{font-size:26px!important}#home .homeFeed{margin:0 8px 16px!important}.homePanelHead{align-items:center}.homeTextButton{font-size:11px}.homeCompCard,.homeResultCard{padding:11px;gap:10px}.homeCompDate{width:48px;min-width:48px}#pairs .market,#market .market{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}#pairs .pair,#market .pair{padding:12px!important;border-radius:15px!important}#pairs .pairHead,#market .pairHead{display:block!important}#pairs .price,#market .price{margin-top:8px}#pairs .pairFoot,#market .pairFoot{flex-direction:column}#team .pitch{padding:48px 10px 16px!important;border-radius:18px!important}#teamList{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;min-height:0}#teamList .teamCard{min-height:270px!important;padding:120px 8px 9px!important;border-radius:13px!important}#teamList .teamCard:last-child:nth-child(odd){grid-column:1/-1;width:calc(50% - 4px);justify-self:center}#teamList .teamActions{gap:5px!important}#teamList .teamActions .btn{font-size:9px!important;padding:7px 3px!important}}
 
 
+/* Show every market pair in two columns at every viewport width. */
+#pairs #pairMarket.market,
+#market .market{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:start;
+}
+#pairs #pairMarket .pair,
+#market .market .pair{
+  min-width:0;
+}
+
 /* Fantasy pair card artwork – pilot cards */
 #pairs .pair.hasFantasyCardArt,
 #market .pair.hasFantasyCardArt{
@@ -27,7 +38,14 @@ html,body{background:radial-gradient(circle at 82% 2%,rgba(126,42,255,.11),trans
 }
 #pairs .pair.hasFantasyCardArt .pairHead,
 #market .pair.hasFantasyCardArt .pairHead{
-  display:none!important;
+  display:block!important;
+  min-width:0;
+  padding:10px 12px 0;
+  overflow-wrap:anywhere;
+}
+#pairs .pair.hasFantasyCardArt .pairHead .price,
+#market .pair.hasFantasyCardArt .pairHead .price{
+  display:none;
 }
 .fbFantasyCardArt{
   position:relative;
