@@ -7,7 +7,7 @@
 <title>Fantasy Bugg</title>
 <meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">
 
-<link rel="stylesheet" href="premium.css?v=2">
+<link rel="stylesheet" href="premium.css?v=3">
 <style>
 :root{
   --navy:#071b3b;
@@ -2634,6 +2634,43 @@ function filteredPairs(){
   return list;
 }
 
+const FANTASY_CARD_ART_POSITIONS = {
+  0:["0%","0%"],
+  15:["25%","0%"],
+  45:["50%","0%"],
+  128:["75%","0%"],
+  136:["100%","0%"],
+  141:["0%","100%"],
+  155:["25%","100%"],
+  168:["50%","100%"],
+  246:["75%","100%"],
+  252:["100%","100%"]
+};
+
+function fantasyCardArt(pair){
+  const position =
+    FANTASY_CARD_ART_POSITIONS[
+      pair.index
+    ];
+
+  if(!position){
+    return "";
+  }
+
+  return `
+    <div
+      class="fbFantasyCardArt"
+      role="img"
+      aria-label="${esc(pair.name)}, Bugg ${esc(pair.cls)}, ${money(pair.price)}"
+      style="--card-x:${position[0]};--card-y:${position[1]}"
+    >
+      <span class="fbLivePrice">
+        ${money(pair.price)}
+      </span>
+    </div>
+  `;
+}
+
 function renderMarket(){
   
 const slotsLeft =
@@ -2720,7 +2757,9 @@ $("marketBudgetLeft").textContent =
             available;
 
           return `
-            <article class="pair">
+            <article class="pair ${FANTASY_CARD_ART_POSITIONS[pair.index] ? "hasFantasyCardArt" : ""}">
+
+              ${fantasyCardArt(pair)}
 
               <div class="pairHead">
 
