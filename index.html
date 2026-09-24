@@ -7,7 +7,7 @@
 <title>Fantasy Bugg</title>
 <meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">
 
-<link rel="stylesheet" href="premium.css?v=8">
+<link rel="stylesheet" href="premium.css?v=9">
 <style>
 :root{
   --navy:#071b3b;
@@ -773,6 +773,7 @@ main{
     <button data-page="team">♟ Mitt lag</button>
     <button data-page="pairs">♬ Danspar</button>
     <button data-page="competitions">🏆 Tävlingar</button>
+    <button data-page="news">📰 Nyhetsarkiv</button>
     <button data-page="points">★ Poäng & regler</button>
     <button data-page="leagues">♜ Ligor</button>
     <button data-page="quiz">Quiz</button>
@@ -1424,6 +1425,12 @@ main{
 
 </section>
 
+<section class="page" id="news">
+  <div class="sectionTitle"><div><div class="eyebrow">FANTASY BUGG</div><h1>Nyhetsarkiv</h1><p>Senaste nytt från tävlingsgolvet och Fantasy Bugg.</p></div></div>
+  <div id="newsArticle" hidden></div>
+  <div id="newsArchive"><div class="empty">Laddar nyheter …</div></div>
+</section>
+
 <section class="page" id="admin">
 
   <div class="sectionTitle">
@@ -1655,6 +1662,24 @@ main{
       </div>
     </div>
 
+  </div>
+
+  <div class="panel newsAdmin" id="adminNewsPanel" style="margin-top:16px">
+    <div class="sectionTitle"><div><h2>Nyheter</h2><p>Skriv, spara utkast och publicera i nyhetsarkivet.</p></div></div>
+    <form id="adminNewsForm">
+      <input class="search" id="adminNewsTitle" maxlength="180" placeholder="Rubrik" aria-label="Nyhetsrubrik" required>
+      <textarea class="search" id="adminNewsSummary" maxlength="500" placeholder="Kort ingress" aria-label="Kort ingress"></textarea>
+      <textarea class="search" id="adminNewsBody" maxlength="30000" placeholder="Artikeltext. Dela upp stycken med en tom rad." aria-label="Artikeltext" required></textarea>
+      <input class="search" id="adminNewsImage" type="url" placeholder="Bildadress med https:// (valfritt)" aria-label="Bildadress">
+      <label class="newsPublish"><input type="checkbox" id="adminNewsPublished"> Publicerad (synlig för alla)</label>
+      <div class="newsAdminActions">
+        <button class="btn gold" type="submit" id="adminNewsSave">Spara nyhet</button>
+        <button class="btn soft" type="button" id="adminNewsCancel" hidden>Avbryt redigering</button>
+      </div>
+      <div class="status" id="adminNewsStatus" role="status"></div>
+    </form>
+    <h3>Alla nyheter</h3>
+    <div id="adminNewsList"><div class="empty">Laddar nyheter …</div></div>
   </div>
 
   <div class="panel" id="adminMarketPanel" style="margin-top:16px">
@@ -5579,6 +5604,8 @@ async function handleSession(
       ? "block"
       : "none";
 
+  await loadNews();
+
   await Promise.all([
     loadProfile(),
     loadTeam(),
@@ -6937,6 +6964,124 @@ function closeDrawer(){
   }
 }
 
+
+let newsItems = [];
+let editingNewsId = null;
+
+function newsDate(value){
+  return value ? new Intl.DateTimeFormat("sv-SE", {day:"numeric",month:"long",year:"numeric"}).format(new Date(value)) : "";
+}
+function safeNewsImage(value){
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+function newsBody(value){
+  return esc(value).split(/\n\s*\n/).map(part => "<p>" + part.replace(/\n/g, "<br>") + "</p>").join("");
+}
+function renderNews(){
+  const published = newsItems.filter(item => item.is_published).sort((a,b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at));
+  const archive = $("newsArchive");
+  archive.innerHTML = published.length ? '<div class="newsGrid">' + published.map((item,index) => {
+    const image = safeNewsImage(item.image_url);
+    return '<button type="button" class="newsCard ' + (index === 0 ? 'newsFeatured' : '') + '" data-news-id="' + esc(item.id) + '">' +
+      (image ? '<img src="' + esc(image) + '" alt="" loading="lazy">' : '<span class="newsCardArt" aria-hidden="true">♬</span>') +
+      '<span class="newsCardCopy"><time>' + esc(newsDate(item.published_at || item.created_at)) + '</time><strong>' + esc(item.title) + '</strong>' +
+      '<span>' + esc(item.summary) + '</span><em>Läs artikeln →</em></span></button>';
+  }).join("") + '</div>' : '<div class="empty">Inga nyheter är publicerade ännu. Välkommen tillbaka snart!</div>';
+  renderAdminNews();
+}
+function openNewsArticle(id){
+  const item = newsItems.find(row => row.id === id && row.is_published);
+  if(!item) return;
+  const image = safeNewsImage(item.image_url);
+  $("newsArticle").innerHTML = '<button class="btn soft" type="button" data-news-back>← Till nyhetsarkivet</button>' +
+    '<article class="newsStory">' + (image ? '<img class="newsStoryImage" src="' + esc(image) + '" alt="">' : '') +
+    '<time>' + esc(newsDate(item.published_at || item.created_at)) + '</time><h2>' + esc(item.title) + '</h2>' +
+    (item.summary ? '<p class="newsStoryLead">' + esc(item.summary) + '</p>' : '') +
+    '<div class="newsStoryBody">' + newsBody(item.body) + '</div></article>';
+  $("newsArchive").hidden = true;
+  $("newsArticle").hidden = false;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+async function loadNews(){
+  const {data,error} = await sb.from("fantasy_news").select("id,title,summary,body,image_url,is_published,published_at,created_at").order("created_at",{ascending:false});
+  if(error){
+    $("newsArchive").innerHTML = '<div class="err">Nyheterna kunde inte laddas. Försök igen senare.</div>';
+    if(currentUser?.id === ADMIN_UID) $("adminNewsStatus").textContent = error.message;
+    return;
+  }
+  newsItems = data || [];
+  renderNews();
+}
+function renderAdminNews(){
+  if(currentUser?.id !== ADMIN_UID) return;
+  $("adminNewsList").innerHTML = newsItems.length ? newsItems.map(item =>
+    '<div class="newsAdminRow"><div><strong>' + esc(item.title) + '</strong><small>' + (item.is_published ? 'Publicerad ' + esc(newsDate(item.published_at)) : 'Utkast') + '</small></div>' +
+    '<div><button class="btn soft" type="button" data-news-action="edit" data-news-id="' + esc(item.id) + '">Redigera</button> ' +
+    '<button class="btn soft" type="button" data-news-action="delete" data-news-id="' + esc(item.id) + '">Ta bort</button></div></div>'
+  ).join("") : '<div class="empty">Inga nyheter ännu. Skriv den första ovan.</div>';
+}
+function resetNewsForm(){
+  editingNewsId = null;
+  $("adminNewsForm").reset();
+  $("adminNewsSave").textContent = "Spara nyhet";
+  $("adminNewsCancel").hidden = true;
+}
+function editNews(id){
+  const item = newsItems.find(row => row.id === id);
+  if(!item || currentUser?.id !== ADMIN_UID) return;
+  editingNewsId = id;
+  $("adminNewsTitle").value = item.title;
+  $("adminNewsSummary").value = item.summary || "";
+  $("adminNewsBody").value = item.body;
+  $("adminNewsImage").value = item.image_url || "";
+  $("adminNewsPublished").checked = item.is_published;
+  $("adminNewsSave").textContent = "Spara ändringar";
+  $("adminNewsCancel").hidden = false;
+  $("adminNewsForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function saveNews(event){
+  event.preventDefault();
+  if(currentUser?.id !== ADMIN_UID) return;
+  const status = $("adminNewsStatus");
+  const title = $("adminNewsTitle").value.trim(), body = $("adminNewsBody").value.trim();
+  const rawImage = $("adminNewsImage").value.trim();
+  if(!title || !body || (rawImage && !safeNewsImage(rawImage))){
+    status.textContent = "Fyll i rubrik och artikeltext. Bildadressen måste börja med https://.";
+    return;
+  }
+  const previous = newsItems.find(item => item.id === editingNewsId);
+  const published = $("adminNewsPublished").checked;
+  const payload = {
+    title, body,
+    summary:$("adminNewsSummary").value.trim(),
+    image_url:rawImage || null,
+    is_published:published,
+    published_at:published ? (previous?.published_at || new Date().toISOString()) : null,
+    updated_at:new Date().toISOString()
+  };
+  const button = $("adminNewsSave");
+  button.disabled = true;
+  status.textContent = "Sparar …";
+  const query = editingNewsId ? sb.from("fantasy_news").update(payload).eq("id",editingNewsId) : sb.from("fantasy_news").insert(payload);
+  const {data,error} = await query.select("id").single();
+  button.disabled = false;
+  if(error || !data){status.textContent = error?.message || "Nyheten kunde inte sparas.";return;}
+  resetNewsForm();
+  status.textContent = published ? "Nyheten är publicerad." : "Utkastet är sparat.";
+  await loadNews();
+}
+async function deleteNews(id){
+  if(currentUser?.id !== ADMIN_UID || !confirm("Ta bort nyheten permanent?")) return;
+  const {error} = await sb.from("fantasy_news").delete().eq("id",id);
+  $("adminNewsStatus").textContent = error ? error.message : "Nyheten är borttagen.";
+  if(!error){if(editingNewsId === id) resetNewsForm();await loadNews();}
+}
+
 function showPage(
   name
 ){
@@ -7017,6 +7162,8 @@ function showPage(
     loadMyLeagues();
   }
 
+  if(name === "news") loadNews();
+
   if(
     name ===
     "admin"
@@ -7025,6 +7172,7 @@ function showPage(
     renderAdminCompetitionSelects();
     renderAdminStreams();
     renderAdminMarketPairs();
+    loadNews();
   }
 }
 
@@ -7081,6 +7229,26 @@ function bind(){
 
   $("drawerBackdrop").onclick =
     closeDrawer;
+
+  $("newsArchive").onclick = event => {
+    const button = event.target.closest("[data-news-id]");
+    if(button) openNewsArticle(button.dataset.newsId);
+  };
+  $("newsArticle").onclick = event => {
+    if(event.target.closest("[data-news-back]")) {
+      $("newsArticle").hidden = true;
+      $("newsArchive").hidden = false;
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+  };
+  $("adminNewsForm").onsubmit = saveNews;
+  $("adminNewsCancel").onclick = resetNewsForm;
+  $("adminNewsList").onclick = event => {
+    const button = event.target.closest("button[data-news-action]");
+    if(!button) return;
+    if(button.dataset.newsAction === "edit") editNews(button.dataset.newsId);
+    if(button.dataset.newsAction === "delete") deleteNews(button.dataset.newsId);
+  };
 
   $("adminMarketSearch").oninput = renderAdminMarketPairs;
   $("adminMarketList").onclick = event => {
@@ -7334,6 +7502,7 @@ async function start(){
     loadCompetitions(),
     loadStreams(),
     loadHomeContent(),
+    loadNews(),
     loadPairHistory()
   ]);
 

@@ -254,3 +254,35 @@ html,body{background:radial-gradient(circle at 82% 2%,rgba(126,42,255,.11),trans
   opacity:.55;
   box-shadow:0 0 5px rgba(255,47,145,.28)!important;
 }
+
+/* News archive and editor */
+#news .sectionTitle{margin-bottom:22px}
+.newsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.newsCard{appearance:none;border:1px solid var(--fb-line);background:var(--fb-panel);color:var(--fb-text);border-radius:20px;overflow:hidden;text-align:left;padding:0;cursor:pointer;display:flex;flex-direction:column;min-width:0;transition:transform .2s,border-color .2s,box-shadow .2s}
+.newsCard:hover,.newsCard:focus-visible{transform:translateY(-3px);border-color:var(--fb-pink);box-shadow:0 15px 38px rgba(255,47,145,.15);outline:none}
+.newsCard img,.newsCardArt{width:100%;aspect-ratio:16/9;object-fit:cover;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,rgba(255,47,145,.32),transparent 55%),linear-gradient(125deg,#171327,#090f20);color:var(--fb-pink);font-size:4rem}
+.newsCardCopy{display:flex;flex-direction:column;gap:9px;padding:20px;flex:1}
+.newsCard time,.newsStory time{font-size:.79rem;font-weight:750;letter-spacing:.09em;text-transform:uppercase;color:var(--fb-pink)}
+.newsCard strong{font-size:1.35rem;line-height:1.2}
+.newsCardCopy>span{color:var(--fb-muted);line-height:1.5}
+.newsCard em{font-size:.85rem;font-style:normal;font-weight:750;color:var(--fb-pink);margin-top:auto;padding-top:9px}
+.newsFeatured{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+.newsFeatured img,.newsFeatured .newsCardArt{height:100%;min-height:250px;aspect-ratio:auto}
+.newsFeatured .newsCardCopy{justify-content:center;padding:clamp(24px,5vw,55px)}
+.newsFeatured strong{font-size:clamp(1.6rem,3vw,2.6rem)}
+.newsStory{max-width:800px;margin:22px auto;background:var(--fb-panel);border:1px solid var(--fb-line);border-radius:20px;padding:clamp(22px,5vw,52px)}
+.newsStoryImage{width:100%;max-height:420px;object-fit:cover;border-radius:12px;margin-bottom:25px}
+.newsStory h2{font-size:clamp(1.8rem,4vw,3rem);line-height:1.15;margin:12px 0}
+.newsStoryLead{font-size:1.2rem;font-weight:600;color:var(--fb-text)}
+.newsStoryBody{line-height:1.75;color:var(--fb-muted);overflow-wrap:anywhere}
+.newsStoryBody p{margin:1.15em 0}
+.newsAdmin #adminNewsForm{display:grid;gap:10px;margin:16px 0 28px}
+.newsAdmin textarea{min-height:80px;resize:vertical}
+.newsAdmin #adminNewsBody{min-height:200px}
+.newsPublish{display:flex;align-items:center;gap:10px;font-weight:650}
+.newsPublish input{accent-color:var(--fb-pink);width:18px;height:18px}
+.newsAdminActions{display:flex;gap:10px;flex-wrap:wrap}
+.newsAdminRow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--fb-line)}
+.newsAdminRow strong,.newsAdminRow small{display:block}
+.newsAdminRow small{color:var(--fb-muted);margin-top:4px}
+@media(max-width:650px){.newsGrid{grid-template-columns:1fr}.newsFeatured{display:flex;grid-column:auto}.newsFeatured img,.newsFeatured .newsCardArt{height:auto;min-height:0;aspect-ratio:16/9}.newsFeatured .newsCardCopy{padding:20px}.newsAdminRow{align-items:flex-start;flex-direction:column}}
