@@ -7,7 +7,7 @@
 <title>Fantasy Bugg</title>
 <meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">
 
-<link rel="stylesheet" href="premium.css?v=6">
+<link rel="stylesheet" href="premium.css?v=7">
 <style>
 :root{
   --navy:#071b3b;
@@ -1657,6 +1657,16 @@ main{
 
   </div>
 
+  <div class="panel" id="adminMarketPanel" style="margin-top:16px">
+    <div class="sectionTitle">
+      <div><h2>Danspar på marknaden</h2><p>Sök upp ett par och ta bort det från marknaden. Du kan återställa det senare.</p></div>
+      <button class="btn soft" id="refreshAdminMarket" type="button">Uppdatera</button>
+    </div>
+    <input class="search" id="adminMarketSearch" type="search" placeholder="Sök namn eller klass" aria-label="Sök danspar i admin">
+    <div class="meta" id="adminMarketSummary" style="margin:10px 0"></div>
+    <div id="adminMarketStatus" class="status" role="status"></div>
+    <div id="adminMarketList"></div>
+  </div>
 </section>
 
 </main>
@@ -2019,6 +2029,8 @@ let streams = [];
 
 let activeClass = "all";
 let pendingTransferOut = null;
+let hiddenMarketPairs = new Set();
+let hiddenMarketReady = false;
 
 let totalFantasyPoints = 0;
 let totalCompetitions = 0;
@@ -2565,6 +2577,65 @@ function renderTeam(){
       `;
 }
 
+const HIDDEN_MARKET_TABLE = "fantasy_market_hidden_pairs";
+
+async function loadHiddenMarketPairs(){
+  const {data,error} = await sb.from(HIDDEN_MARKET_TABLE).select("pair_index");
+  if(error){
+    console.error("Kunde inte läsa borttagna danspar:", error);
+    hiddenMarketReady = false;
+    return false;
+  }
+  hiddenMarketPairs = new Set((data || []).map(row => Number(row.pair_index)));
+  hiddenMarketReady = true;
+  return true;
+}
+
+function renderAdminMarketPairs(){
+  if(currentUser?.id !== ADMIN_UID) return;
+  const list = $("adminMarketList");
+  if(!hiddenMarketReady){
+    list.innerHTML = `<div class="err">Marknaden kunde inte laddas. Klicka på Uppdatera.</div>`;
+    return;
+  }
+  const query = $("adminMarketSearch").value.trim().toLocaleLowerCase("sv-SE");
+  const matches = pairs.filter(pair =>
+    `${pair.name} ${pair.cls}`.toLocaleLowerCase("sv-SE").includes(query)
+  ).sort((a,b) => Number(hiddenMarketPairs.has(b.index)) - Number(hiddenMarketPairs.has(a.index)) || a.name.localeCompare(b.name,"sv"));
+  $("adminMarketSummary").textContent =
+    `${pairs.filter(pair => !hiddenMarketPairs.has(pair.index)).length} på marknaden · ${pairs.filter(pair => hiddenMarketPairs.has(pair.index)).length} borttagna · visar ${Math.min(matches.length,60)} av ${matches.length} träffar`;
+  list.innerHTML = matches.slice(0,60).map(pair => {
+    const hidden = hiddenMarketPairs.has(pair.index);
+    return `<div class="adminMarketRow">
+      <div><b>${esc(pair.name)}</b><div class="meta">Bugg ${esc(pair.cls)} · ${money(pair.price)}${hidden ? " · Borttagen" : ""}</div></div>
+      <button type="button" class="btn ${hidden ? "soft" : "red"}" data-market-action="${hidden ? "restore" : "hide"}" data-market-index="${pair.index}">
+        ${hidden ? "Återställ" : "Ta bort från marknaden"}
+      </button>
+    </div>`;
+  }).join("") || `<div class="empty">Inga danspar matchar sökningen.</div>`;
+}
+
+async function changeMarketPair(button){
+  if(currentUser?.id !== ADMIN_UID || !hiddenMarketReady) return;
+  const index = Number(button.dataset.marketIndex);
+  const pair = getPair(index);
+  const restore = button.dataset.marketAction === "restore";
+  if(!pair || !Number.isInteger(index)) return;
+  if(!restore && !confirm(`Ta bort ${pair.name} från marknaden? Par som redan finns i ett lag ligger kvar där tills spelaren byter bort dem.`)) return;
+  button.disabled = true;
+  const result = restore
+    ? await sb.from(HIDDEN_MARKET_TABLE).delete().eq("pair_index",index).select("pair_index").maybeSingle()
+    : await sb.from(HIDDEN_MARKET_TABLE).insert({pair_index:index}).select("pair_index").maybeSingle();
+  if(result.error || !result.data){
+    $("adminMarketStatus").textContent = `Ändringen kunde inte sparas: ${result.error?.message || "försök uppdatera listan"}`;
+    button.disabled = false;
+    return;
+  }
+  if(restore) hiddenMarketPairs.delete(index); else hiddenMarketPairs.add(index);
+  $("adminMarketStatus").textContent = restore ? `${pair.name} är tillbaka på marknaden.` : `${pair.name} är borttaget från marknaden.`;
+  renderMarket();
+  renderAdminMarketPairs();
+}
 function filteredPairs(){
 
   const query =
@@ -2579,6 +2650,7 @@ function filteredPairs(){
   let list =
     pairs.filter(
       pair =>
+        !hiddenMarketPairs.has(pair.index) &&
         (
           activeClass ===
           "all" ||
@@ -2692,6 +2764,11 @@ function teamPairVisual(pair){
 }
 
 function renderMarket(){
+  if(!hiddenMarketReady){
+    $("pairMarket").innerHTML = `<div class="panel"><div class="err">Marknaden kan inte laddas just nu. Försök igen senare.</div></div>`;
+    return;
+  }
+
   
 const slotsLeft =
   Math.max(
@@ -2726,7 +2803,7 @@ $("marketBudgetLeft").textContent =
     list.length;
 
   $("homePairCount").textContent =
-    pairs.length;
+    pairs.filter(pair => !hiddenMarketPairs.has(pair.index)).length;
 
   if(
     !pairs.length
@@ -2876,6 +2953,23 @@ $("marketBudgetLeft").textContent =
 }
 
 async function selectPair(index){
+
+  // Check again on selection in case another admin hid this card after the page loaded.
+  const {data:removed,error:marketError} = await sb
+    .from(HIDDEN_MARKET_TABLE)
+    .select("pair_index")
+    .eq("pair_index",index)
+    .maybeSingle();
+  if(marketError){
+    alert("Marknaden kunde inte kontrolleras. Försök igen.");
+    return;
+  }
+  if(removed){
+    hiddenMarketPairs.add(index);
+    renderMarket();
+    alert("Det här paret finns inte längre på marknaden.");
+    return;
+  }
 
   if(isTeamLocked()){
 
@@ -6930,6 +7024,7 @@ function showPage(
 
     renderAdminCompetitionSelects();
     renderAdminStreams();
+    renderAdminMarketPairs();
   }
 }
 
@@ -6986,6 +7081,17 @@ function bind(){
 
   $("drawerBackdrop").onclick =
     closeDrawer;
+
+  $("adminMarketSearch").oninput = renderAdminMarketPairs;
+  $("adminMarketList").onclick = event => {
+    const button = event.target.closest("button[data-market-action]");
+    if(button) changeMarketPair(button);
+  };
+  $("refreshAdminMarket").onclick = async () => {
+    await loadHiddenMarketPairs();
+    renderMarket();
+    renderAdminMarketPairs();
+  };
 
   $("pairSearch").oninput =
     renderMarket;
@@ -7217,6 +7323,8 @@ async function start(){
   } catch(error) {
     console.warn("Bilderna kunde inte laddas:", error);
   }
+
+  await loadHiddenMarketPairs();
 
   renderMarket();
   renderTeam();

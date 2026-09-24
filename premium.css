@@ -209,3 +209,22 @@ html,body{background:radial-gradient(circle at 82% 2%,rgba(126,42,255,.11),trans
     height:128px;
   }
 }
+
+/* Admin market removal controls */
+#adminMarketPanel .sectionTitle{align-items:center}
+#adminMarketSearch{width:100%;max-width:440px}
+.adminMarketRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-top:1px solid rgba(255,255,255,.09);
+}
+.adminMarketRow>div{min-width:0;overflow-wrap:anywhere}
+.adminMarketRow .meta{font-size:12px}
+.adminMarketRow .btn{flex:none}
+@media(max-width:620px){
+  .adminMarketRow{align-items:flex-start;flex-direction:column}
+  .adminMarketRow .btn{width:100%}
+}
