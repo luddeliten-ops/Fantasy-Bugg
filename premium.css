@@ -127,3 +127,85 @@ html,body{background:radial-gradient(circle at 82% 2%,rgba(126,42,255,.11),trans
 .fbPairPhoto::after{z-index:2}
 .fbPairPhoto .fbLivePrice{z-index:3}
 @media(max-width:620px){.fbPairPhoto{aspect-ratio:3/4}}
+
+/* Full-size card for every pair, with an honest photo placeholder. */
+.fbMissingPhoto,.fbPairPhoto{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:12px 12px 17%;
+}
+.fbMissingPhoto{
+  aspect-ratio:4/3;
+  background-image:radial-gradient(circle at 50% 28%,rgba(141,70,255,.30),transparent 46%),
+    linear-gradient(145deg,#131d36,#090f20 65%,#160d29);
+  text-align:center;
+}
+.fbPairPhoto::before{content:none}
+.fbMissingSymbol{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:clamp(44px,6vw,78px);
+  height:clamp(44px,6vw,78px);
+  border:1px solid rgba(255,123,207,.52);
+  border-radius:18px;
+  background:linear-gradient(145deg,rgba(255,47,145,.21),rgba(104,66,255,.23));
+  color:#ffb6df;
+  font-size:clamp(25px,3vw,38px);
+  box-shadow:0 0 24px rgba(255,47,145,.15);
+}
+.fbMissingTitle{position:relative;color:#fff;font-size:clamp(16px,2vw,24px);font-weight:900;line-height:1.1}
+.fbMissingHint{position:relative;color:#b9bed5;font-size:clamp(11px,1.2vw,14px)}
+.fbPairPhoto img{z-index:1}
+.fbPairPhoto .fbMissingSymbol,.fbPairPhoto .fbMissingTitle,.fbPairPhoto .fbMissingHint{z-index:0}
+@media(max-width:620px){
+  .fbMissingPhoto{aspect-ratio:3/4;gap:5px;padding:8px 6px 18%}
+  .fbMissingSymbol{width:40px;height:40px;border-radius:12px;font-size:24px}
+  .fbMissingTitle{font-size:14px}
+  .fbMissingHint{font-size:10px}
+}
+
+/* Selected pairs keep their photo or placeholder on the dance floor. */
+#team #teamList .teamCard.hasPairVisual:before{display:none!important}
+#team #teamList .teamCard.hasPairVisual .fbTeamVisual{
+  position:absolute;
+  z-index:3;
+  top:12px;
+  left:12px;
+  right:12px;
+  height:148px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid rgba(255,111,193,.35);
+  border-radius:12px;
+  background:radial-gradient(circle at 50% 20%,rgba(151,58,255,.28),transparent 62%),#10182b;
+}
+#team #teamList .teamCard .fbTeamVisual img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#0b1120;
+}
+#team #teamList .teamCard .fbTeamVisual img[hidden]{display:none!important}
+#team #teamList .teamCard .fbTeamMissing{
+  color:#e8d7f0;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.3px;
+  text-align:center;
+  padding:8px;
+}
+@media(max-width:620px){
+  #team #teamList .teamCard.hasPairVisual .fbTeamVisual{
+    top:12px;
+    left:8px;
+    right:8px;
+    height:128px;
+  }
+}

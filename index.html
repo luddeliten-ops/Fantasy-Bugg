@@ -7,7 +7,7 @@
 <title>Fantasy Bugg</title>
 <meta name="description" content="Fantasy Bugg – bygg ditt lag av svenska tävlingsdanspar, följ tävlingar, samla poäng och tävla mot vänner.">
 
-<link rel="stylesheet" href="premium.css?v=5">
+<link rel="stylesheet" href="premium.css?v=6">
 <style>
 :root{
   --navy:#071b3b;
@@ -2340,7 +2340,9 @@ function renderTeam(){
               getPair(index);
 
             return `
-              <div class="teamCard">
+              <div class="teamCard hasPairVisual">
+
+                ${teamPairVisual(pair)}
 
                 <div class="teamTop">
 
@@ -2413,6 +2415,10 @@ function renderTeam(){
           }
         )
         .join("");
+
+    document.querySelectorAll(".fbTeamVisual img").forEach(image => {
+      image.onerror = () => { image.hidden = true; };
+    });
 
     document
   .querySelectorAll(
@@ -2660,39 +2666,29 @@ const FANTASY_CARD_ART_POSITIONS = {
   252:["100%","100%"]
 };
 
+function missingPairVisual(pair){
+  return `<span class="fbMissingSymbol" aria-hidden="true">♫</span>
+    <span class="fbMissingTitle">Bild saknas</span>
+    <span class="fbMissingHint">Bugg ${esc(pair.cls)}</span>`;
+}
+
 function fantasyCardArt(pair){
   const photo = approvedPairImages.get(pair.index);
-  if(photo){
-    return `
-      <div class="fbFantasyCardArt fbPairPhoto" role="img"
-           aria-label="${esc(pair.name)}, Bugg ${esc(pair.cls)}">
-        <img src="${esc(photo)}" alt="" loading="lazy" decoding="async">
-        <span class="fbLivePrice">${money(pair.price)}</span>
-      </div>
-    `;
-  }
+  return `<div class="fbFantasyCardArt ${photo ? "fbPairPhoto" : "fbMissingPhoto"}"
+               role="img" aria-label="${esc(pair.name)}, Bugg ${esc(pair.cls)}${photo ? "" : ", bild saknas"}">
+    ${missingPairVisual(pair)}
+    ${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" decoding="async">` : ""}
+    <span class="fbLivePrice">${money(pair.price)}</span>
+  </div>`;
+}
 
-  const position =
-    FANTASY_CARD_ART_POSITIONS[
-      pair.index
-    ];
-
-  if(!position){
-    return "";
-  }
-
-  return `
-    <div
-      class="fbFantasyCardArt"
-      role="img"
-      aria-label="${esc(pair.name)}, Bugg ${esc(pair.cls)}, ${money(pair.price)}"
-      style="--card-x:${position[0]};--card-y:${position[1]}"
-    >
-      <span class="fbLivePrice">
-        ${money(pair.price)}
-      </span>
-    </div>
-  `;
+function teamPairVisual(pair){
+  const photo = approvedPairImages.get(pair.index);
+  return `<div class="fbTeamVisual ${photo ? "hasPhoto" : "missingPhoto"}"
+               role="img" aria-label="${esc(pair.name)}${photo ? "" : ", bild saknas"}">
+    ${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" decoding="async">` : ""}
+    <span class="fbTeamMissing">Bild saknas</span>
+  </div>`;
 }
 
 function renderMarket(){
@@ -2781,7 +2777,7 @@ $("marketBudgetLeft").textContent =
             available;
 
           return `
-            <article class="pair ${(approvedPairImages.has(pair.index) || FANTASY_CARD_ART_POSITIONS[pair.index]) ? "hasFantasyCardArt" : ""}">
+            <article class="pair hasFantasyCardArt">
 
               ${fantasyCardArt(pair)}
 
