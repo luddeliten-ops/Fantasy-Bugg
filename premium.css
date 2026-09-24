@@ -228,3 +228,29 @@ html,body{background:radial-gradient(circle at 82% 2%,rgba(126,42,255,.11),trans
   .adminMarketRow{align-items:flex-start;flex-direction:column}
   .adminMarketRow .btn{width:100%}
 }
+
+/* Neon select action on dance-pair cards only. */
+#pairs .pairFoot [data-select],
+#market .pairFoot [data-select]{
+  color:#fff!important;
+  background:linear-gradient(145deg,#151020,#070910)!important;
+  border:1px solid #ff54b3!important;
+  box-shadow:inset 0 0 0 1px rgba(255,130,207,.22),0 0 10px rgba(255,47,145,.55),0 0 23px rgba(255,47,145,.24)!important;
+  text-shadow:0 0 8px rgba(255,114,196,.65);
+  transition:box-shadow .18s ease,background .18s ease,transform .18s ease;
+}
+#pairs .pairFoot [data-select]:hover:not(:disabled),
+#market .pairFoot [data-select]:hover:not(:disabled){
+  background:linear-gradient(145deg,#3d1235,#130d21)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,170,224,.45),0 0 15px rgba(255,47,145,.85),0 0 30px rgba(255,47,145,.42)!important;
+}
+#pairs .pairFoot [data-select]:focus-visible,
+#market .pairFoot [data-select]:focus-visible{
+  outline:2px solid #fff;
+  outline-offset:3px;
+}
+#pairs .pairFoot [data-select]:disabled,
+#market .pairFoot [data-select]:disabled{
+  opacity:.55;
+  box-shadow:0 0 5px rgba(255,47,145,.28)!important;
+}
