@@ -560,6 +560,30 @@ main{
   overflow:hidden
 }
 
+.avatarEditor{
+  margin-top:18px;
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(145deg,#fff,#f7e9f2);
+  text-align:center
+}
+.avatarCropCanvas{
+  display:block;
+  width:min(280px,100%);
+  height:auto;
+  margin:0 auto 16px;
+  border:4px solid #ee71bb;
+  border-radius:50%;
+  background:#e5e9f2;
+  box-shadow:0 0 0 5px #fff,0 8px 30px rgba(203,49,139,.22);
+  touch-action:none;
+  cursor:grab
+}
+.avatarCropCanvas:active{cursor:grabbing}
+.avatarZoom{display:block;width:min(280px,100%);margin:12px auto 18px;accent-color:#d93492}
+.avatarEditorActions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+
 .adminGrid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -1417,6 +1441,17 @@ main{
 
     <div class="meta" style="margin-top:8px">
       JPG, PNG eller WebP. Max 5 MB.
+    </div>
+
+    <div id="avatarEditor" class="avatarEditor" hidden>
+      <p class="meta">Flytta bilden i cirkeln och zooma tills den ser bra ut.</p>
+      <canvas id="avatarCropCanvas" class="avatarCropCanvas" width="320" height="320" role="img" aria-label="Förhandsvisning av profilbild"></canvas>
+      <label for="avatarZoom">Zooma bilden</label>
+      <input id="avatarZoom" class="avatarZoom" type="range" min="1" max="3" step="0.01" value="1">
+      <div class="avatarEditorActions">
+        <button id="saveAvatarCrop" class="btn blue" type="button">Spara profilbild</button>
+        <button id="cancelAvatarCrop" class="btn soft" type="button">Avbryt</button>
+      </div>
     </div>
 
     <div class="status" id="avatarStatus"></div>
@@ -5143,6 +5178,86 @@ function renderProfile(){
 }
 
 
+let avatarCropImage = null;
+let avatarCropUrl = null;
+let avatarCropOffsetX = 0;
+let avatarCropOffsetY = 0;
+let avatarCropPointer = null;
+
+function closeAvatarEditor(){
+  $("avatarEditor").hidden = true;
+  $("avatarFile").value = "";
+  avatarCropImage = null;
+  avatarCropPointer = null;
+  if(avatarCropUrl){
+    URL.revokeObjectURL(avatarCropUrl);
+    avatarCropUrl = null;
+  }
+}
+
+function drawAvatarCrop(){
+  if(!avatarCropImage) return;
+  const canvas = $("avatarCropCanvas");
+  const context = canvas.getContext("2d");
+  const size = canvas.width;
+  const image = avatarCropImage;
+  const scale = Math.max(size / image.naturalWidth, size / image.naturalHeight)
+    * Number($("avatarZoom").value);
+  const width = image.naturalWidth * scale;
+  const height = image.naturalHeight * scale;
+  avatarCropOffsetX = Math.max((size - width) / 2, Math.min((width - size) / 2, avatarCropOffsetX));
+  avatarCropOffsetY = Math.max((size - height) / 2, Math.min((height - size) / 2, avatarCropOffsetY));
+  context.clearRect(0, 0, size, size);
+  context.drawImage(image, (size - width) / 2 + avatarCropOffsetX,
+    (size - height) / 2 + avatarCropOffsetY, width, height);
+}
+
+async function openAvatarEditor(file){
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  if(!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024){
+    $("avatarStatus").innerHTML = '<span class="err">Välj en JPG-, PNG- eller WebP-bild på högst 5 MB.</span>';
+    $("avatarFile").value = "";
+    return;
+  }
+  closeAvatarEditor();
+  const url = URL.createObjectURL(file);
+  const image = new Image();
+  try{
+    image.src = url;
+    await image.decode();
+    if(!image.naturalWidth || !image.naturalHeight) throw new Error("Invalid image");
+  }catch(error){
+    URL.revokeObjectURL(url);
+    $("avatarStatus").innerHTML = '<span class="err">Bilden kunde inte öppnas. Välj en annan bild.</span>';
+    return;
+  }
+  avatarCropUrl = url;
+  avatarCropImage = image;
+  avatarCropOffsetX = 0;
+  avatarCropOffsetY = 0;
+  $("avatarZoom").value = "1";
+  $("avatarStatus").textContent = "";
+  $("avatarEditor").hidden = false;
+  drawAvatarCrop();
+}
+
+async function saveAvatarCrop(){
+  if(!avatarCropImage) return;
+  const button = $("saveAvatarCrop");
+  button.disabled = true;
+  try{
+    const canvas = $("avatarCropCanvas");
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.9));
+    if(!blob) throw new Error("Bilden kunde inte beskäras.");
+    const saved = await saveAvatarFile(blob);
+    if(saved) closeAvatarEditor();
+  }catch(error){
+    $("avatarStatus").innerHTML = '<span class="err">' + esc(error.message || "Kunde inte spara bilden.") + '</span>';
+  }finally{
+    button.disabled = false;
+  }
+}
+
 async function saveAvatarFile(file){
 
   if(!currentUser){
@@ -5163,13 +5278,13 @@ async function saveAvatarFile(file){
   if(!allowedTypes.includes(file.type)){
     $("avatarStatus").innerHTML =
       '<span class="err">Välj en JPG-, PNG- eller WebP-bild.</span>';
-    return;
+    return false;
   }
 
   if(file.size > 5 * 1024 * 1024){
     $("avatarStatus").innerHTML =
       '<span class="err">Bilden får vara högst 5 MB.</span>';
-    return;
+    return false;
   }
 
   $("avatarStatus").innerHTML =
@@ -5201,7 +5316,7 @@ async function saveAvatarFile(file){
   if(upload.error){
     $("avatarStatus").innerHTML =
       '<span class="err">' + esc(upload.error.message) + '</span>';
-    return;
+    return false;
   }
 
   const publicResult =
@@ -5215,7 +5330,7 @@ async function saveAvatarFile(file){
   if(!avatarUrl){
     $("avatarStatus").innerHTML =
       '<span class="err">Kunde inte skapa bildadressen.</span>';
-    return;
+    return false;
   }
 
   const { error } =
@@ -5235,7 +5350,7 @@ async function saveAvatarFile(file){
   if(error){
     $("avatarStatus").innerHTML =
       '<span class="err">' + esc(error.message) + '</span>';
-    return;
+    return false;
   }
 
   $("avatarStatus").innerHTML =
@@ -5243,6 +5358,7 @@ async function saveAvatarFile(file){
 
   $("avatarFile").value = "";
   await loadProfile();
+  return true;
 }
 
   function setAuthMode(
@@ -7220,9 +7336,30 @@ function bind(){
       const file =
         event.target.files?.[0];
       if(file){
-        saveAvatarFile(file);
+        openAvatarEditor(file);
       }
     };
+
+  $("avatarZoom").oninput = drawAvatarCrop;
+  $("cancelAvatarCrop").onclick = closeAvatarEditor;
+  $("saveAvatarCrop").onclick = saveAvatarCrop;
+  $("avatarCropCanvas").onpointerdown = event => {
+    if(!avatarCropImage) return;
+    avatarCropPointer = { id:event.pointerId, x:event.clientX, y:event.clientY };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  $("avatarCropCanvas").onpointermove = event => {
+    if(!avatarCropPointer || avatarCropPointer.id !== event.pointerId) return;
+    const ratio = $("avatarCropCanvas").width / $("avatarCropCanvas").getBoundingClientRect().width;
+    avatarCropOffsetX += (event.clientX - avatarCropPointer.x) * ratio;
+    avatarCropOffsetY += (event.clientY - avatarCropPointer.y) * ratio;
+    avatarCropPointer.x = event.clientX;
+    avatarCropPointer.y = event.clientY;
+    drawAvatarCrop();
+  };
+  $("avatarCropCanvas").onpointerup = $("avatarCropCanvas").onpointercancel = () => {
+    avatarCropPointer = null;
+  };
 
   $("refreshLeagues").onclick =
     () =>
