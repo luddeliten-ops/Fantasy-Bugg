@@ -7,6 +7,24 @@
     });
   }
 
+  function identityHtml(name,url){
+    if(typeof memberIdentityHtml==='function') return memberIdentityHtml(name,url);
+    const initials=String(name||'FB').trim().split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase()||'FB';
+    let safe='';
+    try{const parsed=new URL(url);if(parsed.protocol==='https:')safe=parsed.href;}catch(e){}
+    return '<span class="memberIdentity"><span class="memberAvatar" aria-hidden="true">'+escapeHtml(initials)+
+      (safe?'<img src="'+escapeHtml(safe)+'" alt="" loading="lazy" onerror="this.remove()">':'')+
+      '</span><b>'+escapeHtml(name)+'</b></span>';
+  }
+
+  async function avatarMap(rows){
+    const ids=[...new Set(rows.map(row=>row.user_id??row.id??row.member_user_id??row.profile_user_id).filter(Boolean))];
+    if(!ids.length) return new Map();
+    const response=await sb.from('profiles').select('user_id,avatar_url').in('user_id',ids);
+    if(response.error){console.warn('Profilbilder kunde inte hämtas:',response.error.message);return new Map();}
+    return new Map((response.data||[]).map(row=>[String(row.user_id),row.avatar_url]));
+  }
+
   function formatPoints(value){
     return Number(value || 0).toFixed(1).replace('.0','') + ' p';
   }
@@ -34,7 +52,9 @@
 
     const title=document.getElementById('publicTeamTitle');
     const body=document.getElementById('publicTeamBody');
+    const owner=document.getElementById('publicTeamOwner');
     if(!body) return;
+    if(owner) owner.innerHTML='';
 
     if(title) title.textContent='Fantasylag';
     body.innerHTML='<div class="empty">Hämtar lag…</div>';
@@ -51,6 +71,7 @@
     const captain=team?.captain_pair_index == null ? null : Number(team.captain_pair_index);
 
     if(title) title.textContent=team?.fantasy_name || 'Fantasylag';
+    if(owner && team) owner.innerHTML=identityHtml(team.fantasy_name||'Fantasyspelare',team.avatar_url);
 
     const cards=indices.map(function(index){
       const pair=typeof getPair === 'function' ? getPair(index) : null;
@@ -124,13 +145,14 @@
     }
 
     const rows=response.data || [];
+    const avatars=await avatarMap(rows);
     box.innerHTML=rows.map(function(row,index){
       const userId=row.user_id ?? row.id ?? row.member_user_id ?? row.profile_user_id ?? '';
       const name=row.fantasy_name ?? row.name ?? 'Fantasyspelare';
       const points=formatPoints(row.total_points ?? row.points ?? 0);
       return '<div class="leagueRow">'+
         '<div class="rank">'+(index+1)+'</div>'+
-        '<div><b>'+escapeHtml(name)+'</b></div>'+
+        '<div>'+identityHtml(name,avatars.get(String(userId)))+'</div>'+
         '<div class="publicTeamActions" style="display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap">'+
           '<b>'+escapeHtml(points)+'</b>'+
           (userId ? '<button class="btn soft" data-league-public-team="'+escapeHtml(userId)+'">Visa lag</button>' : '')+
