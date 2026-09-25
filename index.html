@@ -496,6 +496,14 @@ main{
   font-weight:950
 }
 
+.memberIdentity{display:flex;align-items:center;gap:10px;min-width:0}
+.memberIdentity b{overflow-wrap:anywhere}
+.memberAvatar{position:relative;display:inline-grid;place-items:center;flex:none;width:40px;height:40px;overflow:hidden;border-radius:50%;background:#202039;color:#ff91cd;font-weight:900;font-size:13px;border:2px solid #f785c6}
+.memberAvatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.teamOwner{display:flex;align-items:center;gap:11px;margin-bottom:13px;padding:11px 13px;border-radius:15px;background:rgba(3,19,46,.6);color:#fff}
+.teamOwner .memberAvatar{width:46px;height:46px}
+.publicTeamOwner{padding:4px 0 15px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+
 .leagueGrid{
   display:grid;
   grid-template-columns:1.15fr .85fr;
@@ -959,6 +967,7 @@ main{
 
     <div class="pitch">
 
+      <div class="teamOwner" id="teamOwner"></div>
       <div id="teamList">
         <div class="empty" style="color:white">
           Välj dina fem första danspar.
@@ -1792,6 +1801,7 @@ main{
       </button>
     </div>
 
+    <div id="publicTeamOwner" class="memberIdentity publicTeamOwner"></div>
     <div id="publicTeamBody"></div>
 
   </div>
@@ -4513,6 +4523,41 @@ function rowValue(
   return null;
 }
 
+function memberAvatarHtml(name, url){
+  const initials = String(name || "FB").trim().split(/\s+/).slice(0,2)
+    .map(part => part[0] || "").join("").toUpperCase() || "FB";
+  let safeUrl = "";
+  try{
+    const parsed = new URL(url);
+    if(parsed.protocol === "https:") safeUrl = parsed.href;
+  }catch(error){}
+  return `<span class="memberAvatar" aria-hidden="true">${esc(initials)}${safeUrl
+    ? `<img src="${esc(safeUrl)}" alt="" loading="lazy" onerror="this.remove()">`
+    : ""}</span>`;
+}
+
+function memberIdentityHtml(name, url){
+  return `<span class="memberIdentity">${memberAvatarHtml(name,url)}<b>${esc(name)}</b></span>`;
+}
+
+async function avatarUrlsForRows(rows){
+  const ids = [...new Set(rows.map(row => rowValue(row,"user_id","id")).filter(Boolean))];
+  if(!ids.length) return new Map();
+  const {data,error} = await sb.from("profiles")
+    .select("user_id,avatar_url").in("user_id",ids);
+  if(error){
+    console.warn("Profilbilder kunde inte hämtas:",error.message);
+    return new Map();
+  }
+  return new Map((data || []).map(row => [String(row.user_id),row.avatar_url]));
+}
+
+function bindPublicTeamButtons(container){
+  container.querySelectorAll("[data-public-team]").forEach(button => {
+    button.onclick = () => openPublicTeam(button.dataset.publicTeam);
+  });
+}
+
 async function loadGlobalLeaderboard(){
 
   const {
@@ -4549,6 +4594,8 @@ async function loadGlobalLeaderboard(){
 
     return;
   }
+
+  const avatarUrls = await avatarUrlsForRows(rows);
 
   $("globalLeaderboard").innerHTML =
     rows
@@ -4602,9 +4649,7 @@ async function loadGlobalLeaderboard(){
               </div>
 
               <div>
-                <b>
-                  ${esc(name)}
-                </b>
+                ${memberIdentityHtml(name, avatarUrls.get(String(userId)))}
               </div>
 
               <button
@@ -4633,21 +4678,7 @@ async function loadGlobalLeaderboard(){
       )
       .join("");
 
-  document
-    .querySelectorAll(
-      "[data-public-team]"
-    )
-    .forEach(
-      button => {
-
-        button.onclick =
-          () =>
-            openPublicTeam(
-              button.dataset
-                .publicTeam
-            );
-      }
-    );
+  bindPublicTeamButtons($("globalLeaderboard"));
 
   renderStats();
 }
@@ -4674,6 +4705,8 @@ async function openPublicTeam(
 
   $("publicTeamTitle").textContent =
     "Fantasylag";
+  $("publicTeamOwner").innerHTML = "";
+  $("publicTeamBody").innerHTML = '<div class="empty">Laddar lag…</div>';
 
   if(error){
 
@@ -4697,6 +4730,10 @@ async function openPublicTeam(
     $("publicTeamTitle").textContent =
       team?.fantasy_name ||
       "Fantasylag";
+
+    $("publicTeamOwner").innerHTML = memberIdentityHtml(
+      team?.fantasy_name || "Fantasyspelare", team?.avatar_url
+    );
 
     $("publicTeamBody").innerHTML =
       indices
@@ -5010,6 +5047,8 @@ async function openLeague(
     return;
   }
 
+  const avatarUrls = await avatarUrlsForRows(data || []);
+
   $("leagueStanding").innerHTML =
     (data || [])
       .map(
@@ -5021,22 +5060,11 @@ async function openLeague(
             </div>
 
             <div>
-              <b>
-                ${
-                  esc(
-                    rowValue(
-                      row,
-                      "fantasy_name",
-                      "name"
-                    ) ||
-                    "Fantasyspelare"
-                  )
-                }
-              </b>
+              ${memberIdentityHtml(rowValue(row,"fantasy_name","name") || "Fantasyspelare",
+                avatarUrls.get(String(row.user_id)))}
             </div>
 
-            <div>
-              <b>
+            <button class="btn soft" type="button" data-public-team="${esc(row.user_id || "")}">
                 ${
                   Number(
                     rowValue(
@@ -5053,13 +5081,14 @@ async function openLeague(
                     )
                 }
                 p
-              </b>
-            </div>
+            </button>
 
           </div>
         `
       )
       .join("");
+  bindPublicTeamButtons($("leagueStanding"));
+
 }
 
 
@@ -5174,6 +5203,8 @@ function renderProfile(){
         .toUpperCase();
   }
 
+  $("teamOwner").innerHTML = memberAvatarHtml(name, avatar) +
+    `<div><small>MITT LAG</small><div><b>${esc(name)}</b></div></div>`;
   renderStats();
 }
 
@@ -5358,6 +5389,7 @@ async function saveAvatarFile(file){
 
   $("avatarFile").value = "";
   await loadProfile();
+  await loadGlobalLeaderboard();
   return true;
 }
 
