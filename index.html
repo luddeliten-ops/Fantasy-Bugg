@@ -2182,6 +2182,14 @@ function transferRulesActive(){
 }
 
 
+function formatFantasyDeadline(value){
+  return new Intl.DateTimeFormat("sv-SE", {
+    dateStyle:"medium",
+    timeStyle:"short",
+    timeZone:"Europe/Stockholm"
+  }).format(new Date(value));
+}
+
 function deadlineMessage(){
 
   const competition =
@@ -2191,16 +2199,7 @@ function deadlineMessage(){
     return "";
   }
 
-  const time =
-    new Date(
-      competition.deadline
-    ).toLocaleString(
-      "sv-SE",
-      {
-        dateStyle:"short",
-        timeStyle:"short"
-      }
-    );
+  const time = formatFantasyDeadline(competition.deadline);
 
   return (
     `Deadline för ${competition.name} ` +
@@ -2209,103 +2208,6 @@ function deadlineMessage(){
   );
 }
 
-
-async function transfersThisHalfYear(){
-
-  if(!currentUser){
-    return 0;
-  }
-
-  const {
-    count,
-    error
-  } =
-    await sb
-      .from(
-        "fantasy_transfer_log"
-      )
-      .select(
-        "id",
-        {
-          count:"exact",
-          head:true
-        }
-      )
-      .eq(
-        "user_id",
-        currentUser.id
-      )
-      .eq(
-        "term_key",
-        currentHalfYearKey()
-      );
-
-  if(error){
-    console.warn(
-      "Kunde inte läsa byten:",
-      error.message
-    );
-
-    return 0;
-  }
-
-  return count || 0;
-}
-
-
-async function registerTransfer(
-  fromIndex,
-  toIndex,
-  penalty
-){
-
-  if(
-    !currentUser ||
-    !transferRulesActive()
-  ){
-    return true;
-  }
-
-  const {
-    error
-  } =
-    await sb
-      .from(
-        "fantasy_transfer_log"
-      )
-      .insert({
-        user_id:
-          currentUser.id,
-
-        term_key:
-          currentHalfYearKey(),
-
-        from_pair_index:
-          Number(fromIndex),
-
-        to_pair_index:
-          Number(toIndex),
-
-        penalty_points:
-          Number(penalty || 0)
-      });
-
-  if(error){
-
-    console.error(
-      "Transfer kunde inte registreras:",
-      error
-    );
-
-    alert(
-      "Bytet kunde inte registreras. Försök igen."
-    );
-
-    return false;
-  }
-
-  return true;
-}
 
 function currentHalfYearKey(){
 
@@ -2425,6 +2327,7 @@ function renderTeam(){
                   <button
                     class="btn soft"
                     data-captain="${index}"
+                    ${isTeamLocked() ? "disabled" : ""}
                   >
                     ${
                       captainIndex ===
@@ -2437,6 +2340,7 @@ function renderTeam(){
                   <button
                     class="btn red"
                     data-remove="${index}"
+                    ${isTeamLocked() ? "disabled" : ""}
                   >
                     ${
                       isTeamComplete()
@@ -2487,14 +2391,17 @@ function renderTeam(){
 
           button.onclick =
             async () => {
-
-              captainIndex =
-                Number(
-                  button.dataset.captain
-                );
-
-              await saveTeam();
-
+              if(isTeamLocked()){
+                alert(deadlineMessage());
+                renderTeam();
+                return;
+              }
+              const previousCaptain = captainIndex;
+              captainIndex = Number(button.dataset.captain);
+              if(!await saveTeam()){
+                captainIndex = previousCaptain;
+                alert("Kaptenbytet kunde inte sparas. Försök igen.");
+              }
               renderTeam();
             };
         }
@@ -2509,6 +2416,11 @@ function renderTeam(){
 
           button.onclick =
             async () => {
+              if(isTeamLocked()){
+                alert(deadlineMessage());
+                renderTeam();
+                return;
+              }
 
               const index =
                 Number(
@@ -2531,6 +2443,9 @@ function renderTeam(){
 
               const pair =
                 getPair(index);
+              const previousPairs = [...selectedPairs];
+              const previousCaptain = captainIndex;
+              const previousBank = bank;
 
               selectedPairs =
                 selectedPairs.filter(
@@ -2551,7 +2466,13 @@ function renderTeam(){
                   null;
               }
 
-              await saveTeam();
+              if(!await saveTeam()){
+                selectedPairs = previousPairs;
+                captainIndex = previousCaptain;
+                bank = previousBank;
+                alert("Laget kunde inte sparas. Kontrollera om deadline har passerat.");
+                await loadCompetitions();
+              }
 
               renderTeam();
               renderMarket();
@@ -2561,7 +2482,9 @@ function renderTeam(){
   }
 
   $("teamStatus").innerHTML =
-    isTeamComplete()
+    isTeamLocked()
+      ? `<span class="warn">${esc(deadlineMessage())}</span>`
+      : isTeamComplete()
       ? `
         <span class="ok">
           ✓ Laget är komplett.
@@ -2596,8 +2519,14 @@ function renderTeam(){
       `
       : `
         <div class="meta">
-          Ett gratis byte per kalenderhalvår.
-          Extra byten kostar −100 p.
+          ${transferRulesActive()
+            ? "Varje parbyte kostar −100 poäng. Kaptenbyte är gratis när laget är öppet."
+            : "Bygg och ändra laget gratis före första deadline. Därefter kostar varje parbyte −100 poäng."}
+          ${competitionsWithDeadline().find(item => new Date(item.deadline).getTime() > Date.now())
+            ? ` Nästa deadline: ${esc(formatFantasyDeadline(
+                competitionsWithDeadline().find(item => new Date(item.deadline).getTime() > Date.now()).deadline
+              ))}.`
+            : ""}
         </div>
       `;
 }
@@ -2978,8 +2907,15 @@ $("marketBudgetLeft").textContent =
 }
 
 async function selectPair(index){
+  if(isTeamLocked()){
+    alert(deadlineMessage());
+    pendingTransferOut = null;
+    renderTeam();
+    renderMarket();
+    return;
+  }
 
-  // Check again on selection in case another admin hid this card after the page loaded.
+  // Confirm that the chosen pair is still available on the market.
   const {data:removed,error:marketError} = await sb
     .from(HIDDEN_MARKET_TABLE)
     .select("pair_index")
@@ -2996,172 +2932,69 @@ async function selectPair(index){
     return;
   }
 
-  if(isTeamLocked()){
+  const pair = getPair(index);
+  if(!pair || isSelected(index)) return;
 
-  alert(
-    deadlineMessage()
-  );
+  const before = {
+    selectedPairs:[...selectedPairs],
+    captainIndex,
+    bank,
+    pendingTransferOut
+  };
+  let transferSavedRemotely = false;
 
-  pendingTransferOut =
-    null;
-
-  renderTeam();
-  renderMarket();
-
-  return;
-}
-  const pair =
-    getPair(index);
-
-  if(
-    !pair ||
-    isSelected(index)
-  ){
-    return;
-  }
-
-  if(
-    pendingTransferOut !==
-    null
-  ){
-
-    const outgoing =
-      getPair(
-        pendingTransferOut
-      );
-
-    const available =
-      bank +
-      outgoing.price;
-
-    let transferPenalty = 0;
-
-if(transferRulesActive()){
-
-  if(!currentUser){
-
-    alert(
-      "Du måste vara inloggad för att göra byten efter första deadline."
-    );
-
-    return;
-  }
-
-  const previousTransfers =
-    await transfersThisHalfYear();
-
-  /*
-    Byte nummer 1 = gratis.
-    Byte nummer 2 och framåt = −100 poäng.
-  */
-
-  transferPenalty =
-    previousTransfers >= 1
-      ? EXTRA_TRANSFER_PENALTY
-      : 0;
-
-  if(transferPenalty > 0){
-
-    const confirmed =
-      confirm(
-        `Du har redan använt ditt fria byte ` +
-        `för ${currentHalfYearKey()}.\n\n` +
-        `Detta byte kostar −${transferPenalty} poäng.\n\n` +
-        `Vill du fortsätta?`
-      );
-
-    if(!confirmed){
-      return;
-    }
-  }
-}
-
-    if(
-      pair.price >
-      available
-    ){
-
-      alert(
-        "Inte tillräcklig budget."
-      );
-
+  if(pendingTransferOut !== null){
+    const outgoing = getPair(pendingTransferOut);
+    if(!outgoing) return;
+    const available = bank + outgoing.price;
+    if(pair.price > available){
+      alert("Inte tillräcklig budget.");
       return;
     }
 
-    selectedPairs =
-      selectedPairs.map(
-        value =>
-          value ===
-          pendingTransferOut
-            ? index
-            : value
-      );
-
-    if(
-      captainIndex ===
-      pendingTransferOut
-    ){
-
-      captainIndex =
-        index;
+    if(transferRulesActive()){
+      if(!currentUser){
+        alert("Du måste vara inloggad för att göra byten efter första deadline.");
+        return;
+      }
+      if(!confirm(`Det här parbytet kostar −${EXTRA_TRANSFER_PENALTY} poäng. Vill du fortsätta?`)){
+        return;
+      }
+      const {error} = await sb.rpc("swap_fantasy_pair",{
+        p_from:pendingTransferOut,
+        p_to:index
+      });
+      if(error){
+        alert(error.message || "Bytet kunde inte sparas. Försök igen.");
+        await loadCompetitions();
+        renderTeam();
+        return;
+      }
+      transferSavedRemotely = true;
     }
 
-    bank =
-  available -
-  pair.price;
-
-
-/*
-  Registrera endast riktiga transfers.
-  Före första deadline registreras ingenting.
-*/
-if(transferRulesActive()){
-
-  const registered =
-    await registerTransfer(
-      pendingTransferOut,
-      index,
-      transferPenalty
-    );
-
-  if(!registered){
-    return;
-  }
-}
-
-
-pendingTransferOut =
-  null;
-    
+    selectedPairs = selectedPairs.map(value => value === pendingTransferOut ? index : value);
+    if(captainIndex === pendingTransferOut) captainIndex = index;
+    bank = available - pair.price;
+    pendingTransferOut = null;
   }else{
-
-    if(
-      selectedPairs.length >=
-      TEAM_SIZE ||
-      pair.price >
-      bank
-    ){
-      return;
-    }
-
-    selectedPairs.push(
-      index
-    );
-
-    bank -=
-      pair.price;
-
-    if(
-      captainIndex ===
-      null
-    ){
-      captainIndex =
-        index;
-    }
+    if(selectedPairs.length >= TEAM_SIZE || pair.price > bank) return;
+    selectedPairs.push(index);
+    bank -= pair.price;
+    if(captainIndex === null) captainIndex = index;
   }
 
-  await saveTeam();
+  if(!await saveTeam({remote:!transferSavedRemotely})){
+    selectedPairs = before.selectedPairs;
+    captainIndex = before.captainIndex;
+    bank = before.bank;
+    pendingTransferOut = before.pendingTransferOut;
+    alert("Laget kunde inte sparas. Kontrollera om deadline har passerat.");
+    await loadCompetitions();
+  }
 
+  await loadFantasyTotal();
+  await loadGlobalLeaderboard();
   renderTeam();
   renderMarket();
 }
@@ -3483,54 +3316,25 @@ function openPairModal(index){
   );
 }
 
-async function saveTeam(){
+async function saveTeam({remote = true} = {}){
+  if(remote && currentUser){
+    const {error} = await sb
+      .from("fantasy_teams")
+      .upsert({
+        user_id:currentUser.id,
+        pair_indices:selectedPairs,
+        captain_index:captainIndex,
+        updated_at:new Date().toISOString()
+      },{onConflict:"user_id"});
 
-  localStorage.setItem(
-    "fb_team",
-    JSON.stringify({
-      selectedPairs,
-      captainIndex,
-      bank
-    })
-  );
-
-  if(
-    !currentUser
-  ){
-    return;
+    if(error){
+      console.warn("Laget kunde inte sparas:",error.message);
+      return false;
+    }
   }
 
-  const {
-    error
-  } =
-    await sb
-      .from(
-        "fantasy_teams"
-      )
-      .upsert(
-        {
-          user_id:
-            currentUser.id,
-          pair_indices:
-            selectedPairs,
-          captain_index:
-            captainIndex,
-          updated_at:
-            new Date()
-              .toISOString()
-        },
-        {
-          onConflict:
-            "user_id"
-        }
-      );
-
-  if(error){
-    console.warn(
-      error.message
-    );
-  }
-
+  localStorage.setItem("fb_team",JSON.stringify({selectedPairs,captainIndex,bank}));
+  return true;
 }
 
 async function loadTeam(){
@@ -3930,10 +3734,11 @@ async function loadCompetitions(){
         }
       );
 
-  competitions =
-    error
-      ? []
-      : data || [];
+  if(error){
+    console.warn("Tävlingarna kunde inte uppdateras:",error.message);
+    return;
+  }
+  competitions = data || [];
 
   renderCompetitions();
   renderAdminCompetitionSelects();
@@ -4002,6 +3807,7 @@ function renderCompetitions(){
                     ""
                   )
                 }
+                ${competition.deadline ? ` · Deadline ${esc(formatFantasyDeadline(competition.deadline))}` : ""}
                 · ×
                 ${
                   (
@@ -7150,18 +6956,13 @@ function showPage(
     behavior:"smooth"
   });
 
-  if(
-    name ===
-    "team"
-  ){
+  if(name === "team" || name === "pairs"){
     renderTeam();
-  }
-
-  if(
-    name ===
-    "pairs"
-  ){
     renderMarket();
+    loadCompetitions().then(() => {
+      renderTeam();
+      renderMarket();
+    });
   }
 
   if(
@@ -7531,6 +7332,17 @@ async function start(){
       console.warn("En startladdning misslyckades:", result.reason);
     }
   });
+
+  let previousLockState = isTeamLocked();
+  setInterval(() => {
+    const lockedNow = isTeamLocked();
+    if(lockedNow !== previousLockState){
+      previousLockState = lockedNow;
+      pendingTransferOut = null;
+      renderTeam();
+      renderMarket();
+    }
+  }, 15000);
 
   const {
     data
