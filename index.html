@@ -3962,8 +3962,18 @@ function renderCompetitions(){
     return;
   }
 
+  const today = new Date().toLocaleDateString("sv-SE", {timeZone:"Europe/Stockholm"});
+  const listedCompetitions = [...competitions].sort((a,b) => {
+    const aUpcoming = (a.date || "") >= today;
+    const bUpcoming = (b.date || "") >= today;
+    if(aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1;
+    return aUpcoming
+      ? (a.date || "").localeCompare(b.date || "")
+      : (b.date || "").localeCompare(a.date || "");
+  });
+
   $("competitionList").innerHTML =
-    competitions
+    listedCompetitions
       .map(
         competition => `
           <div class="competition">
@@ -4004,6 +4014,12 @@ function renderCompetitions(){
               </div>
             </div>
 
+            ${
+              /^https:\/\/(?:www\.)?(?:vote4dance\.com|dans\.se)\//.test(competition.vote4dance_url || "")
+                ? `<a class="btn soft" href="${esc(competition.vote4dance_url)}" target="_blank" rel="noopener noreferrer">Tävlingsinfo ↗</a>`
+                : ""
+            }
+
             <button
               class="btn soft"
               data-results="${
@@ -4035,8 +4051,12 @@ function renderCompetitions(){
       }
     );
 
-  const latest =
-    competitions[0];
+  const latest = competitions.find(competition => (competition.date || "") <= today);
+
+  if(!latest){
+    $("homeLatestCompetition").innerHTML = `<div class="empty">Ingen avslutad tävling ännu.</div>`;
+    return;
+  }
 
   $("homeLatestCompetition").innerHTML = `
     <div class="competition">
