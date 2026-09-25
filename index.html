@@ -5050,7 +5050,7 @@ async function loadProfile(){
       )
       .select("*")
       .eq(
-        "id",
+        "user_id",
         currentUser.id
       )
       .maybeSingle();
@@ -5193,7 +5193,7 @@ async function saveAvatarFile(file){
         file,
         {
           cacheControl:"3600",
-          upsert:true,
+          upsert:false,
           contentType:file.type
         }
       );
@@ -5223,11 +5223,12 @@ async function saveAvatarFile(file){
       .from("profiles")
       .upsert(
         {
-          id:currentUser.id,
+          user_id:currentUser.id,
+          fantasy_name:profile?.fantasy_name || displayName(),
           avatar_url:avatarUrl
         },
         {
-          onConflict:"id"
+          onConflict:"user_id"
         }
       );
 
@@ -5367,7 +5368,7 @@ async function handleAuthSubmit(
         )
         .upsert(
           {
-            id:
+            user_id:
               response
                 .data
                 .user
@@ -5376,7 +5377,7 @@ async function handleAuthSubmit(
               fantasyName
           },
           {
-            onConflict:"id"
+            onConflict:"user_id"
           }
         );
     }
