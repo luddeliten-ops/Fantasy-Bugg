@@ -5,7 +5,7 @@
   let cachedRows=[];
 
   async function getProfiles(){
-    const response=await sb.from('profiles').select('user_id,fantasy_name');
+    const response=await sb.from('profiles').select('user_id,fantasy_name,avatar_url');
     if(response.error) throw response.error;
     return Array.isArray(response.data)?response.data:[];
   }
@@ -40,6 +40,16 @@
     if(typeof openPublicTeam==='function') openPublicTeam(userId);
   }
 
+  function identityHtml(name,url){
+    if(typeof memberIdentityHtml==='function') return memberIdentityHtml(name,url);
+    const initials=String(name||'FB').trim().split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase()||'FB';
+    let safe='';
+    try{const parsed=new URL(url);if(parsed.protocol==='https:')safe=parsed.href;}catch(e){}
+    return '<span class="memberIdentity"><span class="memberAvatar" aria-hidden="true">'+esc3(initials)+
+      (safe?'<img src="'+esc3(safe)+'" alt="" loading="lazy" onerror="this.remove()">':'')+
+      '</span><b>'+esc3(name)+'</b></span>';
+  }
+
   function renderRegisteredLeaderboard(){
     const box=document.getElementById('globalLeaderboard');
     if(!box) return;
@@ -49,7 +59,7 @@
     const visibleRows=leaderboardExpanded?cachedRows:cachedRows.slice(0,5);
     const rowsHtml=visibleRows.map((row,index)=>{
       const points=Number(row.total_points||0).toFixed(1).replace('.0','');
-      return `<div class="leagueRow"><div class="rank">${index+1}</div><div><b>${esc3(row.fantasy_name)}</b></div><button class="btn soft" data-public-team="${esc3(row.user_id||'')}">${points} p</button></div>`;
+      return `<div class="leagueRow"><div class="rank">${index+1}</div><div>${identityHtml(row.fantasy_name,row.avatar_url)}</div><button class="btn soft" data-public-team="${esc3(row.user_id||'')}">${points} p</button></div>`;
     }).join('');
     const toggleHtml=cachedRows.length>5?`<button class="btn soft" id="toggleGlobalLeaderboard" style="width:100%;margin-top:12px">${leaderboardExpanded?'Visa topp 5':'Visa hela topplistan'}</button>`:'';
     box.innerHTML=rowsHtml+toggleHtml;
@@ -66,7 +76,7 @@
       const [profiles,leaderboardResponse]=await Promise.all([getProfiles(),sb.rpc('get_global_leaderboard')]);
       const scoreRows=leaderboardResponse.error?[]:(leaderboardResponse.data||[]);const scores=new Map();
       scoreRows.forEach(row=>{const id=String(row?.user_id??row?.id??'');if(id)scores.set(id,Number(row?.total_points??row?.points??0));});
-      cachedRows=profiles.map(profile=>({user_id:profile.user_id,fantasy_name:profile.fantasy_name||'Fantasyspelare',total_points:scores.get(String(profile.user_id))||0})).sort((a,b)=>{const d=b.total_points-a.total_points;return d||String(a.fantasy_name).localeCompare(String(b.fantasy_name),'sv');});
+      cachedRows=profiles.map(profile=>({user_id:profile.user_id,fantasy_name:profile.fantasy_name||'Fantasyspelare',avatar_url:profile.avatar_url,total_points:scores.get(String(profile.user_id))||0})).sort((a,b)=>{const d=b.total_points-a.total_points;return d||String(a.fantasy_name).localeCompare(String(b.fantasy_name),'sv');});
       leaderboardExpanded=false;renderRegisteredLeaderboard();
     }catch(error){console.error('Kunde inte visa alla registrerade managers:',error);if(typeof window.__originalLoadGlobalLeaderboard==='function') return window.__originalLoadGlobalLeaderboard();}
   }
