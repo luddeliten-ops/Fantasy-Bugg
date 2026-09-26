@@ -1904,6 +1904,7 @@ const ADMIN_UID =
 const START_BUDGET = 100;
 const TEAM_SIZE = 5;
 const EXTRA_TRANSFER_PENALTY = 100;
+let teamEditWindowExpiresAt = null;
 const DNS_PENALTY = 50;
 
 const LEVEL_MULTIPLIERS = {
@@ -2200,9 +2201,13 @@ function lockedCompetition(){
 }
 
 
-function isTeamLocked(){
+function hasActiveTeamEditWindow(){
+  return !!currentUser && !!teamEditWindowExpiresAt &&
+    Date.now() < new Date(teamEditWindowExpiresAt).getTime();
+}
 
-  return !!lockedCompetition();
+function isTeamLocked(){
+  return !!lockedCompetition() && !hasActiveTeamEditWindow();
 }
 
 
@@ -2213,7 +2218,7 @@ function transferRulesActive(){
     startlaget får ändras hur mycket som helst.
   */
 
-  if(!hasFirstDeadlinePassed()){
+  if(!hasFirstDeadlinePassed() || hasActiveTeamEditWindow()){
     return false;
   }
 
@@ -2527,7 +2532,9 @@ function renderTeam(){
   }
 
   $("teamStatus").innerHTML =
-    isTeamLocked()
+    hasActiveTeamEditWindow()
+      ? `<span class="ok">Laget är öppet för fria ändringar till ${esc(formatFantasyDeadline(teamEditWindowExpiresAt))}. Därefter låses det igen.</span>`
+      : isTeamLocked()
       ? `<span class="warn">${esc(deadlineMessage())}</span>`
       : isTeamComplete()
       ? `
@@ -2566,7 +2573,9 @@ function renderTeam(){
         <div class="meta">
           ${transferRulesActive()
             ? "Varje parbyte kostar −100 poäng. Kaptenbyte är gratis när laget är öppet."
-            : "Bygg och ändra laget gratis före första deadline. Därefter kostar varje parbyte −100 poäng."}
+            : hasActiveTeamEditWindow()
+              ? "Du kan ändra laget och byta par gratis under ditt tillfälliga öppna fönster."
+              : "Bygg och ändra laget gratis före första deadline. Därefter kostar varje parbyte −100 poäng."}
           ${competitionsWithDeadline().find(item => new Date(item.deadline).getTime() > Date.now())
             ? ` Nästa deadline: ${esc(formatFantasyDeadline(
                 competitionsWithDeadline().find(item => new Date(item.deadline).getTime() > Date.now()).deadline
@@ -5565,6 +5574,18 @@ async function logout(){
     .remove("show");
 }
 
+async function loadTeamEditWindow(){
+  teamEditWindowExpiresAt = null;
+  if(!currentUser) return;
+  const {data,error} = await sb.from('fantasy_team_edit_windows')
+    .select('expires_at').eq('user_id',currentUser.id).maybeSingle();
+  if(error){
+    console.warn('Kunde inte hämta lagets tillfälliga öppning:',error.message);
+    return;
+  }
+  teamEditWindowExpiresAt = data?.expires_at || null;
+}
+
 async function handleSession(
   session
 ){
@@ -5580,6 +5601,7 @@ async function handleSession(
       : "none";
 
   await loadNews();
+  await loadTeamEditWindow();
 
   await Promise.all([
     loadProfile(),
