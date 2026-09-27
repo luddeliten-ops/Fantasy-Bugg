@@ -78,7 +78,7 @@
     if (!host) return;
     preview = calculatePreview();
     host.innerHTML = savedClasses.length ? savedClasses.map(c => `
-      <div class="scoreRow">
+      <div class="scoreRow v4dSourceRow">
         <div><b>${esc(c.class_label)}</b><div class="meta">${c.rows.length} par · Vote4Dance ${esc(c.source_competition_id)}</div></div>
         <a href="${esc(c.source_url)}" target="_blank" rel="noopener noreferrer">Visa källa</a>
       </div>`).join("") : `<div class="empty">Inga Vote4Dance-klasser sparade för denna tävling.</div>`;
@@ -92,7 +92,7 @@
       ${ranked.slice(0, 150).map(row => `<div class="scoreRow">
         <div><b>${esc(row.name1)} &amp; ${esc(row.name2)}</b><div class="meta">${esc(row.label)} · klassplacering ${row.placement}</div></div>
         <div>Plac ${row.overall}</div>
-        <div>${row.pair ? esc(row.pair.name) : `<span class="err">Ej matchad</span>`}</div>
+        <div>${row.pair ? `<span class="ok">Matchad</span>` : `<span class="err">Ej matchad</span>`}</div>
       </div>`).join("")}` : `<div class="empty">Lägg till en länk för att se paren.</div>`;
     $v("v4dPublish").disabled = !ranked.length || !!unmatched.length || !!duplicatePairs.size;
   }
