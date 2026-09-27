@@ -80,7 +80,8 @@
     host.innerHTML = savedClasses.length ? savedClasses.map(c => `
       <div class="scoreRow v4dSourceRow">
         <div><b>${esc(c.class_label)}</b><div class="meta">${c.rows.length} par · Vote4Dance ${esc(c.source_competition_id)}</div></div>
-        <a href="${esc(c.source_url)}" target="_blank" rel="noopener noreferrer">Visa källa</a>
+        <div><a href="${esc(c.source_url)}" target="_blank" rel="noopener noreferrer">Visa källa</a>
+        ${c.published_at ? "" : `<button class="btn soft" type="button" data-v4d-remove="${esc(c.class_id)}">Ta bort</button>`}</div>
       </div>`).join("") : `<div class="empty">Inga Vote4Dance-klasser sparade för denna tävling.</div>`;
 
     const { ranked, duplicatePairs } = preview;
@@ -94,7 +95,11 @@
         <div>Plac ${row.overall}</div>
         <div>${row.pair ? `<span class="ok">Matchad</span>` : `<span class="err">Ej matchad</span>`}</div>
       </div>`).join("")}` : `<div class="empty">Lägg till en länk för att se paren.</div>`;
-    $v("v4dPublish").disabled = !ranked.length || !!unmatched.length || !!duplicatePairs.size;
+    const mixedSources = new Set(savedClasses.map(c => c.source_competition_id)).size > 1;
+    if (mixedSources) $v("v4dPreview").insertAdjacentHTML("afterbegin",
+      `<div class="err">Klasserna kommer från olika Vote4Dance-tävlingar. Publicera inte dessa tillsammans.</div>`);
+    $v("v4dPublish").disabled = !ranked.length || !!unmatched.length ||
+      !!duplicatePairs.size || mixedSources;
   }
 
   async function loadClasses() {
@@ -146,10 +151,23 @@
     }
   }
 
+  async function removeClass(classId) {
+    const competition = selectedCompetition();
+    const source = savedClasses.find(c => c.class_id === classId);
+    if (!competition || !source || source.published_at ||
+        !confirm(`Ta bort den sparade klassen ${source.class_label}?`)) return;
+    const { error } = await sb.from("vote4dance_result_classes").delete()
+      .eq("competition_id", competition.id).eq("class_id", classId);
+    if (error) return status(error.message, true);
+    await loadClasses();
+    status(`${source.class_label} togs bort från den opublicerade importen.`);
+  }
+
   async function publish() {
     const competition = selectedCompetition();
     if (!competition || !preview?.ranked.length) return;
-    if (preview.ranked.some(row => !row.pair) || preview.duplicatePairs.size) {
+    if (preview.ranked.some(row => !row.pair) || preview.duplicatePairs.size ||
+        new Set(savedClasses.map(c => c.source_competition_id)).size > 1) {
       return status("Lös par som inte matchats eller dubbla parkort före publicering.", true);
     }
     if (!confirm(`Publicera ${preview.ranked.length} par från ${savedClasses.length} klasser för ${competition.name}? Kontrollera att alla aktuella klasser är sparade.`)) return;
@@ -183,6 +201,10 @@
     if (!$v("v4dAdd")) return;
     $v("v4dAdd").addEventListener("click", addClass);
     $v("v4dPublish").addEventListener("click", publish);
+    $v("v4dClasses").addEventListener("click", event => {
+      const button = event.target.closest("[data-v4d-remove]");
+      if (button) removeClass(button.dataset.v4dRemove);
+    });
     $v("resultCompetitionSelect").addEventListener("change", loadClasses);
     render();
   }
