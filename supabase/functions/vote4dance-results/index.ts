@@ -7,9 +7,10 @@ const cors = {
 
 const corsFor = (request: Request) => ({
   ...cors,
+  "Access-Control-Allow-Headers": request.headers.get("Access-Control-Request-Headers") || cors["Access-Control-Allow-Headers"],
   "Access-Control-Allow-Origin": ["https://fantasybugg.se", "https://www.fantasybugg.se"]
     .includes(request.headers.get("Origin") || "") ? request.headers.get("Origin")! : "https://fantasybugg.se",
-  Vary: "Origin",
+  Vary: "Origin, Access-Control-Request-Headers",
 });
 
 const json = (request: Request, value: unknown, status = 200) => new Response(JSON.stringify(value), {
