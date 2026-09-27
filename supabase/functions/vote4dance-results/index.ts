@@ -1,5 +1,4 @@
 import { createClient } from "npm:@supabase/supabase-js@2.57.0";
-import { io } from "npm:socket.io-client@4.8.4";
 
 const cors = {
   "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
@@ -46,27 +45,79 @@ async function getPublishedClass(classId: string, url: string) {
   const session = tokenResponse.headers.get("set-cookie")?.match(/connect\.sid=([^;]+)/)?.[1];
   if (!session) throw new Error("Vote4Dance gav ingen publik session.");
 
-  const socket = io("https://api.vote4dance.com/", {
-    query: { "connect.sid": decodeURIComponent(session) },
-    transports: ["websocket", "polling"],
-    tryAllTransports: true,
-    reconnection: false,
-    timeout: 12000,
-  });
+  // Vote4Dance uses Socket.IO over Engine.IO v4. Use the native WebSocket so
+  // the Edge runtime does not depend on Node's unsupported ClientRequest hooks.
+  const socket = new WebSocket(
+    `wss://api.vote4dance.com/socket.io/?EIO=4&transport=websocket&connect.sid=${encodeURIComponent(decodeURIComponent(session))}`,
+  );
+  let nextId = 0;
+  const pending = new Map<number, {
+    resolve: (value: unknown) => void;
+    reject: (reason: Error) => void;
+    timer: number;
+  }>();
+  let connected = false;
+  let settleConnection: ((error?: Error) => void) | null = null;
+  const fail = (error: Error) => {
+    settleConnection?.(error);
+    settleConnection = null;
+    for (const [id, request] of pending) {
+      clearTimeout(request.timer);
+      request.reject(error);
+      pending.delete(id);
+    }
+  };
+  socket.onmessage = event => {
+    const frame = String(event.data);
+    if (frame.startsWith("0")) socket.send("40");
+    else if (frame === "2") socket.send("3");
+    else if (frame.startsWith("40")) {
+      connected = true;
+      settleConnection?.();
+      settleConnection = null;
+    } else if (frame.startsWith("43")) {
+      const match = frame.match(/^43(\d+)(\[.*\])$/s);
+      if (!match) return;
+      const id = Number(match[1]);
+      const request = pending.get(id);
+      if (!request) return;
+      pending.delete(id);
+      clearTimeout(request.timer);
+      try {
+        const [error, response] = JSON.parse(match[2]);
+        if (error || !response) request.reject(new Error(error?.message || "Vote4Dance svarade inte."));
+        else request.resolve(response.data);
+      } catch (error) {
+        request.reject(error instanceof Error ? error : new Error("Ogiltigt Vote4Dance-svar."));
+      }
+    } else if (frame.startsWith("44")) fail(new Error("Vote4Dance nekade anslutningen."));
+  };
+  socket.onerror = () => fail(new Error("WebSocket till Vote4Dance misslyckades."));
+  socket.onclose = () => {
+    if (connected || settleConnection) fail(new Error("Vote4Dance stängde anslutningen."));
+  };
 
   try {
     await new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error("Vote4Dance svarade inte i tid.")), 15000);
-      socket.once("connect", () => { clearTimeout(timer); resolve(); });
-      socket.once("connect_error", (error: Error) => { clearTimeout(timer); reject(error); });
+      const timer = setTimeout(() => {
+        settleConnection = null;
+        reject(new Error("Vote4Dance svarade inte i tid."));
+      }, 15000);
+      settleConnection = error => {
+        clearTimeout(timer);
+        if (error) reject(error);
+        else resolve();
+      };
     });
 
     const read = <T>(path: string) => new Promise<T>((resolve, reject) => {
-      socket.timeout(16000).emit("stream", { url: path },
-        (timeout: Error | null, error: { message?: string } | null, response: { data: T }) => {
-          if (timeout || error || !response) reject(new Error(error?.message || "Vote4Dance svarade inte."));
-          else resolve(response.data);
-        });
+      const id = nextId++;
+      const timer = setTimeout(() => {
+        pending.delete(id);
+        reject(new Error("Vote4Dance svarade inte i tid."));
+      }, 16000);
+      pending.set(id, { resolve: value => resolve(value as T), reject, timer });
+      socket.send(`42${id}${JSON.stringify(["stream", { url: path }])}`);
     });
 
     const rounds = (await read<Round[]>(`/class-rounds/${classId}`))
@@ -111,7 +162,7 @@ async function getPublishedClass(classId: string, url: string) {
     return { class_id: classId, competition_id: competitionId,
       class_label: rounds[0].class_label, url, rows };
   } finally {
-    socket.disconnect();
+    socket.close();
   }
 }
 
