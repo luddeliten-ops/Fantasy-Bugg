@@ -124,7 +124,13 @@
     status("Hämtar den publicerade klassen …");
     try {
       const { data, error } = await sb.functions.invoke("vote4dance-results", { body: { url } });
-      if (error || data?.error) throw new Error(data?.error || error?.message || "Hämtningen misslyckades.");
+      if (error || data?.error) {
+        let detail = data?.error;
+        if (!detail && error?.context?.json) {
+          try { detail = (await error.context.json())?.error; } catch (_) {}
+        }
+        throw new Error(detail || error?.message || "Hämtningen misslyckades.");
+      }
       const cls = stageFromLabel(data.class_label);
       if (!cls) throw new Error("Den här klassen ingår inte i Fantasy Buggs Junior, Vuxen eller Senior.");
       if (savedClasses.some(c => c.source_competition_id !== data.competition_id)) {
