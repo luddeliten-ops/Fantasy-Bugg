@@ -24,6 +24,7 @@ type Round = {
   class_label: string;
   round_label: string;
   round_type: string;
+  round_parent_id: string;
   round_status: string;
   round_published: number;
 };
@@ -121,7 +122,7 @@ async function getPublishedClass(classId: string, url: string) {
     });
 
     const rounds = (await read<Round[]>(`/class-rounds/${classId}`))
-      .filter(round => round.round_type === "normal");
+      .filter(round => round.round_type === "normal" && String(round.round_parent_id) === "0");
     if (!rounds.length || rounds.some(round => String(round.class_id) !== classId)) {
       throw new Error("Länken innehåller ingen giltig klass.");
     }
@@ -132,8 +133,8 @@ async function getPublishedClass(classId: string, url: string) {
         (pageCompetitionId !== competitionId && pageCompetitionId !== eventId)) {
       throw new Error("Länkens tävling stämmer inte med resultatet.");
     }
-    const final = rounds.at(-1)!;
-    if (!/final/i.test(final.round_label) ||
+    const final = rounds.find(round => /^final$/i.test(round.round_label.trim()));
+    if (!final ||
         rounds.some(round => round.round_status !== "confirmed" || Number(round.round_published) !== 1)) {
       throw new Error("Klassen är inte färdig och publicerad ännu.");
     }
