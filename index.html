@@ -1635,6 +1635,16 @@ main{
     </div>
 
     <div class="adminBox">
+      <h3>Vote4Dance-länkar</h3>
+      <p class="meta">Separat reservimport. Välj tävlingen ovan, lägg till en länk per avslutad klass och granska paren innan du publicerar poäng.</p>
+      <input class="search" id="v4dUrl" type="url" inputmode="url"
+        placeholder="https://vote4dance.com/public/event/.../results/..."
+        aria-label="Länk till publicerad Vote4Dance-klass">
+      <button class="btn blue" id="v4dAdd" style="width:100%;margin-top:9px">Hämta och spara klass</button>
+      <div class="status" id="v4dStatus" role="status"></div>
+    </div>
+
+    <div class="adminBox">
 
       <h3>Livestream</h3>
 
@@ -1706,6 +1716,14 @@ main{
       </div>
     </div>
 
+  </div>
+
+  <div class="panel" style="margin-top:16px">
+    <h2>Vote4Dance: sparade klasser</h2>
+    <div id="v4dClasses"></div>
+    <h3>Samlad förhandsvisning</h3>
+    <div id="v4dPreview"></div>
+    <button class="btn gold" id="v4dPublish" disabled style="margin-top:12px">Publicera samlade resultat och poäng</button>
   </div>
 
   <div class="panel newsAdmin" id="adminNewsPanel" style="margin-top:16px">
@@ -7584,6 +7602,7 @@ start().catch(
 </script>
 
 <script src="stats.js?v=12"></script>
+<script src="vote4dance-import.js?v=1"></script>
 </body>
 </html>
   
