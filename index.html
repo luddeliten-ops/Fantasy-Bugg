@@ -488,6 +488,12 @@ main{
 .v4dSourceRow{grid-template-columns:1fr auto}
 #v4dPreview .scoreRow{grid-template-columns:minmax(0,1fr) auto auto}
 #v4dPreview .scoreRow > div:first-child{min-width:0;overflow-wrap:anywhere}
+.v4dPairRow > div:nth-child(3){display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap;text-align:right}
+.v4dMatchEditor{grid-column:1/-1;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;text-align:left}
+.v4dMatchEditor label{display:grid;gap:7px}
+.v4dMatchEditor select{width:100%;height:auto;min-height:150px}
+.v4dMatchActions{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:600px){#v4dPreview .scoreRow{grid-template-columns:1fr auto}.v4dPairRow > div:nth-child(3){grid-column:1/-1;justify-content:flex-start;text-align:left}}
 
 .badge,.rank{
   width:43px;
@@ -7606,7 +7612,7 @@ start().catch(
 </script>
 
 <script src="stats.js?v=12"></script>
-<script src="vote4dance-import.js?v=4"></script>
+<script src="vote4dance-import.js?v=5"></script>
 </body>
 </html>
   
