@@ -42,6 +42,7 @@
     if(typeof loadPairClassOverrides==='function')await loadPairClassOverrides();
     try{renderMarket()}catch(e){}
     try{renderTeam()}catch(e){}
+    document.dispatchEvent(new Event('fantasy:pairs-loaded'));
   }
 
   function evaluate(){
@@ -129,7 +130,11 @@
     }
     const price=Math.max(knownPrice(req.dancer_a),knownPrice(req.dancer_b));
     if(!price){alert('Ingen av dansarna finns längre på marknaden. Kan inte godkänna automatiskt.');return}
-    const pairIndex=nextPairIndex();
+    // Preserve stable IDs even when a duplicate card has been rejected.
+    const {data:assigned,error:indexError}=await sb.from(TABLE).select('pair_index')
+      .not('pair_index','is',null).order('pair_index',{ascending:false}).limit(1);
+    if(indexError){alert('Kunde inte kontrollera lediga parkorts-ID.');return}
+    const pairIndex=Math.max(nextPairIndex(),Number(assigned?.[0]?.pair_index ?? -1)+1);
     const {data,error}=await sb.from(TABLE).update({status:'approved',price,pair_index:pairIndex,reviewed_at:new Date().toISOString(),reviewed_by:currentUser.id}).eq('id',id).eq('status','pending').select().maybeSingle();
     if(error||!data){alert('Godkännandet misslyckades: '+(error?.message||'okänt fel'));return}
     appendApproved(data);try{renderMarket()}catch(e){};loadPendingAdmin();
