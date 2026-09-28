@@ -37,7 +37,8 @@
       showHiddenTeamMessage();
       return;
     }
-    if(typeof openPublicTeam==='function') openPublicTeam(userId);
+    if(typeof window.openPublicTeamArena==='function') window.openPublicTeamArena(userId);
+    else if(typeof openPublicTeam==='function') openPublicTeam(userId);
   }
 
   function identityHtml(name,url){
