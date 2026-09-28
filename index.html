@@ -1164,6 +1164,12 @@ main{
         är relativt liten för att skapa ett jämnare fantasyspel.
       </p>
 
+      <p class="meta">
+        Vuxen A och B räknas som ett gemensamt Vuxenstartfält.
+        Senior A och B räknas som ett gemensamt Seniorstartfält.
+        A-resultaten placeras före B-resultaten i respektive totalplacering.
+      </p>
+
     </div>
 
 
@@ -1233,13 +1239,18 @@ main{
         </tr>
 
         <tr>
-          <td>Första fria bytet</td>
+          <td>Parbyte före första deadline</td>
           <td>0 p</td>
         </tr>
 
         <tr>
-          <td>Extra byte</td>
+          <td>Parbyte efter första deadline</td>
           <td>−100 p</td>
+        </tr>
+
+        <tr>
+          <td>Kaptenbyte</td>
+          <td>0 p</td>
         </tr>
 
       </table>
@@ -2614,6 +2625,27 @@ function renderTeam(){
 }
 
 const HIDDEN_MARKET_TABLE = "fantasy_market_hidden_pairs";
+const MARKET_CLASSES_TABLE = "fantasy_market_pair_classes";
+let marketClassesReady = false;
+
+async function loadPairClassOverrides(){
+  const {data,error} = await sb.from(MARKET_CLASSES_TABLE)
+    .select("pair_index,pair_name,pair_class");
+  if(error){
+    console.error("Kunde inte läsa parkortens klasser:", error);
+    marketClassesReady = false;
+    return false;
+  }
+  for(const override of data || []){
+    const pair = getPair(Number(override.pair_index));
+    if(pair?.name === override.pair_name &&
+       ["Junior","Vuxen","Senior"].includes(override.pair_class)){
+      pair.cls = override.pair_class;
+    }
+  }
+  marketClassesReady = true;
+  return true;
+}
 
 async function loadHiddenMarketPairs(){
   const {data,error} = await sb.from(HIDDEN_MARKET_TABLE).select("pair_index");
@@ -2800,7 +2832,7 @@ function teamPairVisual(pair){
 }
 
 function renderMarket(){
-  if(!hiddenMarketReady){
+  if(!hiddenMarketReady || !marketClassesReady){
     $("pairMarket").innerHTML = `<div class="panel"><div class="err">Marknaden kan inte laddas just nu. Försök igen senare.</div></div>`;
     return;
   }
@@ -2989,6 +3021,10 @@ $("marketBudgetLeft").textContent =
 }
 
 async function selectPair(index){
+  if(!marketClassesReady){
+    alert("Parkortens klasser kunde inte laddas. Ladda om sidan och försök igen.");
+    return;
+  }
   if(isTeamLocked()){
     alert(deadlineMessage());
     pendingTransferOut = null;
@@ -7533,7 +7569,7 @@ async function start(){
     console.warn("Bilderna kunde inte laddas:", error);
   }
 
-  await loadHiddenMarketPairs();
+  await Promise.all([loadHiddenMarketPairs(),loadPairClassOverrides()]);
 
   renderMarket();
   renderTeam();
@@ -7612,7 +7648,7 @@ start().catch(
 </script>
 
 <script src="stats.js?v=12"></script>
-<script src="vote4dance-import.js?v=6"></script>
+<script src="vote4dance-import.js?v=7"></script>
 </body>
 </html>
   
