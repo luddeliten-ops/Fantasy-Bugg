@@ -26,7 +26,7 @@
   <path d="M17 295H253" stroke="#ff69bb" stroke-opacity=".75"/>
   <text x="17" y="322" fill="#ff9ad0" font-family="Arial,sans-serif" font-size="12" font-weight="800" letter-spacing="2">BUGG · SENIOR</text>
   <text x="17" y="350" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">PETER GUSTAFSSON</text>
-  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">& LOUISE LINDÉN</text>
+  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">&amp; LOUISE LINDÉN</text>
   <rect x="17" y="393" width="236" height="30" rx="9" fill="#ed3699"/>
   <text x="135" y="415" text-anchor="middle" fill="#140817" font-family="Arial,sans-serif" font-size="19" font-weight="900">200 POÄNG</text>
 </g>
@@ -43,7 +43,7 @@
   <path d="M17 295H253" stroke="#ff69bb" stroke-opacity=".75"/>
   <text x="17" y="322" fill="#ff9ad0" font-family="Arial,sans-serif" font-size="12" font-weight="800" letter-spacing="2">BUGG · SENIOR</text>
   <text x="17" y="350" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">ULF EVERVING</text>
-  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">& SUSANNE LAURSEN</text>
+  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">&amp; SUSANNE LAURSEN</text>
   <rect x="17" y="393" width="236" height="30" rx="9" fill="#ed3699"/>
   <text x="135" y="415" text-anchor="middle" fill="#140817" font-family="Arial,sans-serif" font-size="19" font-weight="900">199 POÄNG</text>
 </g>
@@ -60,7 +60,7 @@
   <path d="M17 295H253" stroke="#ff69bb" stroke-opacity=".75"/>
   <text x="17" y="322" fill="#ff9ad0" font-family="Arial,sans-serif" font-size="12" font-weight="800" letter-spacing="2">BUGG · VUXEN</text>
   <text x="17" y="350" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">ANDREAS JOHANSSON</text>
-  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">& HANNAH NILSSON</text>
+  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">&amp; HANNAH NILSSON</text>
   <rect x="17" y="393" width="236" height="30" rx="9" fill="#ed3699"/>
   <text x="135" y="415" text-anchor="middle" fill="#140817" font-family="Arial,sans-serif" font-size="19" font-weight="900">191 POÄNG</text>
 </g>
