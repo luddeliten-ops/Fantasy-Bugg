@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Topp tre parkort efter tävlingshelg 1: Peter Gustafsson och Louise Lindén 200 poäng, Ulf Everving och Susanne Laursen 199, Andreas Johansson och Hannah Nilsson 191">
+<defs>
+ <radialGradient id="bg"><stop stop-color="#4a073a"/><stop offset=".54" stop-color="#190823"/><stop offset="1" stop-color="#05040c"/></radialGradient>
+ <linearGradient id="edge" x2="1" y2="1"><stop stop-color="#ffbadf"/><stop offset=".48" stop-color="#ed3294"/><stop offset="1" stop-color="#85228d"/></linearGradient>
+ <linearGradient id="art" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#261028"/><stop offset=".55" stop-color="#130a1d"/><stop offset="1" stop-color="#391031"/></linearGradient>
+ <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="24"/></filter>
+ <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#000" flood-opacity=".75"/></filter>
+ <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M36 0H0V36" fill="none" stroke="#fc40ad" stroke-opacity=".08"/></pattern>
+</defs>
+<rect width="1200" height="675" fill="url(#bg)"/><rect width="1200" height="675" fill="url(#grid)"/>
+<ellipse cx="600" cy="665" rx="620" ry="175" fill="#ee1b98" opacity=".32" filter="url(#glow)"/>
+<path d="M0 350C250 290 300 470 600 390S950 270 1200 365" fill="none" stroke="#f238a0" stroke-width="7" opacity=".37" filter="url(#glow)"/>
+<text x="600" y="58" text-anchor="middle" fill="#ffa9d5" font-family="Arial,sans-serif" font-size="19" font-weight="800" letter-spacing="6">FANTASY BUGG</text>
+<text x="600" y="108" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="42" font-weight="900" letter-spacing="2">TÄVLINGSHELG 1 ÄR KLAR</text>
+<path d="M375 128H825" stroke="url(#edge)" stroke-width="3"/>
+<g transform="translate(130 165) rotate(-4 135 220)" filter="url(#shadow)">
+  <rect x="-7" y="-7" width="284" height="451" rx="21" fill="url(#edge)"/>
+  <rect width="270" height="437" rx="16" fill="#110a18" stroke="#ffacd9" stroke-width="1.5"/>
+  <rect x="9" y="9" width="252" height="274" rx="10" fill="url(#art)"/>
+  <circle cx="135" cy="110" r="35" fill="#fa5cad" opacity=".26"/>
+  <path d="M54 236c10-62 46-96 81-96s71 34 81 96" fill="#f865b7" opacity=".13" stroke="#fb8fca" stroke-width="2"/>
+  <path d="M70 245c8-43 33-72 65-72s57 29 65 72" fill="none" stroke="#ff6db6" stroke-opacity=".3" stroke-width="3"/>
+  <text x="135" y="262" text-anchor="middle" fill="#ffe0f0" font-family="Arial,sans-serif" font-size="14" font-weight="800" letter-spacing="2">BILD SAKNAS</text>
+  <rect x="15" y="15" width="66" height="42" rx="10" fill="#090711" stroke="#ff69ba" stroke-width="2"/>
+  <text x="48" y="44" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="24" font-weight="900">#01</text>
+  <path d="M17 295H253" stroke="#ff69bb" stroke-opacity=".75"/>
+  <text x="17" y="322" fill="#ff9ad0" font-family="Arial,sans-serif" font-size="12" font-weight="800" letter-spacing="2">BUGG · SENIOR</text>
+  <text x="17" y="350" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">PETER GUSTAFSSON</text>
+  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">& LOUISE LINDÉN</text>
+  <rect x="17" y="393" width="236" height="30" rx="9" fill="#ed3699"/>
+  <text x="135" y="415" text-anchor="middle" fill="#140817" font-family="Arial,sans-serif" font-size="19" font-weight="900">200 POÄNG</text>
+</g>
+<g transform="translate(465 165) rotate(0 135 220)" filter="url(#shadow)">
+  <rect x="-7" y="-7" width="284" height="451" rx="21" fill="url(#edge)"/>
+  <rect width="270" height="437" rx="16" fill="#110a18" stroke="#ffacd9" stroke-width="1.5"/>
+  <rect x="9" y="9" width="252" height="274" rx="10" fill="url(#art)"/>
+  <circle cx="135" cy="110" r="35" fill="#fa5cad" opacity=".26"/>
+  <path d="M54 236c10-62 46-96 81-96s71 34 81 96" fill="#f865b7" opacity=".13" stroke="#fb8fca" stroke-width="2"/>
+  <path d="M70 245c8-43 33-72 65-72s57 29 65 72" fill="none" stroke="#ff6db6" stroke-opacity=".3" stroke-width="3"/>
+  <text x="135" y="262" text-anchor="middle" fill="#ffe0f0" font-family="Arial,sans-serif" font-size="14" font-weight="800" letter-spacing="2">BILD SAKNAS</text>
+  <rect x="15" y="15" width="66" height="42" rx="10" fill="#090711" stroke="#ff69ba" stroke-width="2"/>
+  <text x="48" y="44" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="24" font-weight="900">#02</text>
+  <path d="M17 295H253" stroke="#ff69bb" stroke-opacity=".75"/>
+  <text x="17" y="322" fill="#ff9ad0" font-family="Arial,sans-serif" font-size="12" font-weight="800" letter-spacing="2">BUGG · SENIOR</text>
+  <text x="17" y="350" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">ULF EVERVING</text>
+  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">& SUSANNE LAURSEN</text>
+  <rect x="17" y="393" width="236" height="30" rx="9" fill="#ed3699"/>
+  <text x="135" y="415" text-anchor="middle" fill="#140817" font-family="Arial,sans-serif" font-size="19" font-weight="900">199 POÄNG</text>
+</g>
+<g transform="translate(800 165) rotate(4 135 220)" filter="url(#shadow)">
+  <rect x="-7" y="-7" width="284" height="451" rx="21" fill="url(#edge)"/>
+  <rect width="270" height="437" rx="16" fill="#110a18" stroke="#ffacd9" stroke-width="1.5"/>
+  <rect x="9" y="9" width="252" height="274" rx="10" fill="url(#art)"/>
+  <circle cx="135" cy="110" r="35" fill="#fa5cad" opacity=".26"/>
+  <path d="M54 236c10-62 46-96 81-96s71 34 81 96" fill="#f865b7" opacity=".13" stroke="#fb8fca" stroke-width="2"/>
+  <path d="M70 245c8-43 33-72 65-72s57 29 65 72" fill="none" stroke="#ff6db6" stroke-opacity=".3" stroke-width="3"/>
+  <text x="135" y="262" text-anchor="middle" fill="#ffe0f0" font-family="Arial,sans-serif" font-size="14" font-weight="800" letter-spacing="2">BILD SAKNAS</text>
+  <rect x="15" y="15" width="66" height="42" rx="10" fill="#090711" stroke="#ff69ba" stroke-width="2"/>
+  <text x="48" y="44" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="24" font-weight="900">#03</text>
+  <path d="M17 295H253" stroke="#ff69bb" stroke-opacity=".75"/>
+  <text x="17" y="322" fill="#ff9ad0" font-family="Arial,sans-serif" font-size="12" font-weight="800" letter-spacing="2">BUGG · VUXEN</text>
+  <text x="17" y="350" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">ANDREAS JOHANSSON</text>
+  <text x="17" y="376" fill="#fff" font-family="Arial,sans-serif" font-size="17" font-weight="900">& HANNAH NILSSON</text>
+  <rect x="17" y="393" width="236" height="30" rx="9" fill="#ed3699"/>
+  <text x="135" y="415" text-anchor="middle" fill="#140817" font-family="Arial,sans-serif" font-size="19" font-weight="900">191 POÄNG</text>
+</g>
+<text x="600" y="648" text-anchor="middle" fill="#d9b8cf" font-family="Arial,sans-serif" font-size="14" letter-spacing="1">TOPP TRE PARKORT · GP + DM · 26 SEPTEMBER 2026</text>
+</svg>
