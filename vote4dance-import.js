@@ -106,7 +106,8 @@
     $v("v4dPreview").innerHTML = ranked.length ? `
       <div class="notice">${savedClasses.length} klasser · ${ranked.length} unika par ·
         ${unmatched.length} utan matchning${duplicatePairs.size ? ` · ${duplicatePairs.size} dubbla parkort` : ""}.
-        Lägg till alla aktuella klasser innan du publicerar poäng.</div>
+        ${unmatched.length ? "Par utan parkort räknas med i placeringarna men får inga egna fantasypoäng. Matcha namnbyten innan du publicerar." : ""}
+        Kontrollera att alla aktuella klasser är sparade innan du publicerar.</div>
       ${displayed.map(row => `<div class="scoreRow v4dPairRow">
         <div><b>${esc(row.name1)} &amp; ${esc(row.name2)}</b><div class="meta">${esc(row.label)} · klassplacering ${row.placement}</div></div>
         <div>Plac ${row.overall}</div>
@@ -123,7 +124,7 @@
     const mixedSources = new Set(savedClasses.map(c => c.source_competition_id)).size > 1;
     if (mixedSources) $v("v4dPreview").insertAdjacentHTML("afterbegin",
       `<div class="err">Klasserna kommer från olika Vote4Dance-tävlingar. Publicera inte dessa tillsammans.</div>`);
-    $v("v4dPublish").disabled = !ranked.length || !!unmatched.length ||
+    $v("v4dPublish").disabled = !ranked.some(row => row.pair) ||
       !!duplicatePairs.size || mixedSources;
   }
 
@@ -265,12 +266,14 @@
   async function publish() {
     const competition = selectedCompetition();
     if (!competition || !preview?.ranked.length) return;
-    if (preview.ranked.some(row => !row.pair) || preview.duplicatePairs.size ||
+    if (!preview.ranked.some(row => row.pair) || preview.duplicatePairs.size ||
         new Set(savedClasses.map(c => c.source_competition_id)).size > 1) {
-      return status("Lös par som inte matchats eller dubbla parkort före publicering.", true);
+      return status("Minst ett parkort måste vara matchat och inga dubbla parkort får finnas.", true);
     }
-    if (!confirm(`Publicera ${preview.ranked.length} par från ${savedClasses.length} klasser för ${competition.name}? Kontrollera att alla aktuella klasser är sparade.`)) return;
-    const rows = preview.ranked.map(row => ({
+    const matched = preview.ranked.filter(row => row.pair);
+    const missing = preview.ranked.length - matched.length;
+    if (!confirm(`Publicera poäng för ${matched.length} matchade parkort från ${savedClasses.length} klasser för ${competition.name}? ${missing} tävlande par utan parkort räknas med i placeringarna men får inga egna fantasypoäng. Kontrollera namnbyten och att alla aktuella klasser är sparade.`)) return;
+    const rows = matched.map(row => ({
       pair_index: row.pair.index,
       pair_name: row.pair.name,
       placement: row.overall,
@@ -288,7 +291,7 @@
       competition.results_imported_at = new Date().toISOString();
       await Promise.allSettled([loadPairHistory(), loadFantasyTotal(), loadGlobalLeaderboard()]);
       await loadClasses();
-      status(`Publicerat ${rows.length} par från ${savedClasses.length} klasser för ${competition.name}.`);
+      status(`Publicerat poäng för ${rows.length} parkort från ${savedClasses.length} klasser för ${competition.name}. ${missing} tävlande par saknade parkort.`);
     } catch (error) {
       status(error?.message || "Publiceringen misslyckades.", true);
     } finally {
