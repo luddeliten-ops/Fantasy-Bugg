@@ -4,6 +4,7 @@
   let savedClasses = [];
   let preview = null;
   let editingKey = null;
+  let editingClass = null;
 
   function status(message, error = false) {
     $v("v4dStatus").innerHTML = `<span class="${error ? "err" : "ok"}">${esc(message)}</span>`;
@@ -21,7 +22,7 @@
 
   function matchingPair(row, age) {
     if (row.manual_pair_name) {
-      return pairs.find(p => p.cls === age && p.index === row.manual_pair_index &&
+      return pairs.find(p => p.cls === (row.manual_pair_class || age) && p.index === row.manual_pair_index &&
         p.name === row.manual_pair_name) || null;
     }
     const people = [normalizeName(row.name1), normalizeName(row.name2)];
@@ -110,13 +111,17 @@
         Kontrollera att alla aktuella klasser är sparade innan du publicerar.</div>
       ${displayed.map(row => `<div class="scoreRow v4dPairRow">
         <div><b>${esc(row.name1)} &amp; ${esc(row.name2)}</b><div class="meta">${esc(row.label)} · klassplacering ${row.placement}</div></div>
-        <div>Plac ${row.overall}</div>
-        <div>${row.pair ? `<span class="ok">${esc(row.pair.name)}</span>` : `<span class="err">Ej matchad</span>`}
+        <div>Plac ${row.overall} av ${preview.entrants[row.age]} i ${esc(row.age)}</div>
+        <div>${row.pair ? `<span class="ok">${esc(row.pair.name)}${row.pair.cls !== row.age ? ` · parkort ${esc(row.pair.cls)}` : ""}</span>` : `<span class="err">Ej matchad</span>`}
           <button class="btn soft" type="button" data-v4d-match="${esc(row.key)}">${row.pair ? "Ändra" : "Välj par"}</button></div>
         ${editingKey === row.key ? `<div class="v4dMatchEditor">
-          <label>Hitta parkort i ${esc(row.age)}<input class="search" type="search" data-v4d-search placeholder="Sök namn på paret" autocomplete="off"></label>
-          <select class="search" data-v4d-choice size="7" aria-label="Välj parkort"><option value="">Välj ett par</option>${pairOptions(row.age)}</select>
-          <div class="v4dMatchActions"><button class="btn blue" type="button" data-v4d-save="${esc(row.key)}">Spara matchning</button>
+          <div class="meta">Tävlingsklass: ${esc(row.age)}. Välj parkortets nuvarande klass. När du sparar flyttas parkortet till ${esc(row.age)} i hela Fantasy Bugg, med samma pris och parkorts-ID.</div>
+          <label>Parkortets åldersklass<select class="search" data-v4d-class aria-label="Parkortets åldersklass">
+            ${["Junior", "Vuxen", "Senior"].map(age => `<option value="${age}"${age === editingClass ? " selected" : ""}>${age}</option>`).join("")}
+          </select></label>
+          <label>Sök parkort<input class="search" type="search" data-v4d-search placeholder="Sök namn på paret" autocomplete="off"></label>
+          <select class="search" data-v4d-choice size="7" aria-label="Välj parkort"><option value="">Välj ett par</option>${pairOptions(editingClass || row.age)}</select>
+          <div class="v4dMatchActions"><button class="btn blue" type="button" data-v4d-save="${esc(row.key)}">Spara matchning och klass</button>
           ${row.manual_pair_name ? `<button class="btn soft" type="button" data-v4d-reset="${esc(row.key)}">Återställ automatisk matchning</button>` : ""}
           <button class="btn soft" type="button" data-v4d-cancel>Avbryt</button></div>
         </div>` : ""}
@@ -130,6 +135,7 @@
 
   async function loadClasses() {
     editingKey = null;
+    editingClass = null;
     savedClasses = [];
     render();
     const competition = selectedCompetition();
@@ -173,7 +179,7 @@
           const old = savedClasses.find(c => c.class_id === data.class_id)?.rows
             ?.find(previous => String(previous.team_id) === String(row.team_id));
           return old?.manual_pair_name ? { ...row, manual_pair_index: old.manual_pair_index,
-            manual_pair_name: old.manual_pair_name } : row;
+            manual_pair_name: old.manual_pair_name, manual_pair_class: old.manual_pair_class || cls.age } : row;
         }),
         imported_at: new Date().toISOString(),
         published_at: savedClasses.find(c => c.class_id === data.class_id)?.published_at || null,
@@ -189,14 +195,15 @@
     }
   }
 
-  async function saveMatching(key, pairIndex) {
+  async function saveMatching(key, pairIndex, pairClass) {
     const competition = selectedCompetition();
     const row = preview?.ranked.find(item => item.key === key);
-    const chosen = pairs.find(p => p.index === pairIndex && p.cls === row?.age);
-    if (!competition || !row || !chosen) return status("Välj ett parkort i rätt åldersklass.", true);
+    const chosen = pairs.find(p => p.index === pairIndex && p.cls === pairClass);
+    if (!competition || !row || !chosen) return status("Välj ett parkort i den valda åldersklassen.", true);
     if (preview.ranked.some(other => other.key !== key && other.pair?.index === chosen.index)) {
       return status("Parkortet är redan kopplat till ett annat resultat i tävlingen.", true);
     }
+    if (chosen.cls !== row.age && !confirm(`Flytta parkortet ${chosen.name} från ${chosen.cls} till ${row.age} i hela Fantasy Bugg? Parkorts-ID och pris behålls.`)) return;
     const affected = savedClasses.filter(source => {
       const cls = stageFromLabel(source.class_label);
       return cls && source.rows.some(item => pairKey(item, cls.age) === key);
@@ -204,19 +211,27 @@
     if (!affected.length) return status("Resultatraden kunde inte hittas.", true);
     $v("v4dPreview").querySelectorAll("[data-v4d-save]").forEach(button => { button.disabled = true; });
     try {
-      for (const source of affected) {
+      const updates = affected.map(source => {
         const cls = stageFromLabel(source.class_label);
         const rows = source.rows.map(item => pairKey(item, cls.age) === key
-          ? { ...item, manual_pair_index: chosen.index, manual_pair_name: chosen.name } : item);
-        const { data, error } = await sb.from("vote4dance_result_classes")
-          .update({ rows }).eq("competition_id", competition.id).eq("class_id", source.class_id)
-          .select("class_id").single();
-        if (error) throw error;
-        if (!data) throw new Error("Matchningen kunde inte sparas.");
-        source.rows = rows;
-      }
+          ? { ...item, manual_pair_index: chosen.index, manual_pair_name: chosen.name,
+            manual_pair_class: row.age } : item);
+        return { class_id: source.class_id, rows };
+      });
+      const { error } = await sb.rpc("match_vote4dance_pair_and_class", {
+        p_competition_id: competition.id,
+        p_updates: updates,
+        p_pair_index: chosen.index,
+        p_pair_name: chosen.name,
+        p_pair_class: row.age,
+      });
+      if (error) throw error;
+      chosen.cls = row.age;
+      renderMarket();
+      renderTeam();
+      renderAdminMarketPairs();
       await loadClasses();
-      status(`${row.name1} & ${row.name2} kopplades till ${chosen.name}.`);
+      status(`${row.name1} & ${row.name2} kopplades till ${chosen.name}. Parkortet ligger nu i ${row.age}.`);
     } catch (error) {
       await loadClasses();
       status(error?.message || "Matchningen kunde inte sparas.", true);
@@ -235,7 +250,7 @@
         const cls = stageFromLabel(source.class_label);
         const rows = source.rows.map(item => {
           if (pairKey(item, cls.age) !== key) return item;
-          const { manual_pair_index, manual_pair_name, ...plain } = item;
+          const { manual_pair_index, manual_pair_name, manual_pair_class, ...plain } = item;
           return plain;
         });
         const { error } = await sb.from("vote4dance_result_classes")
@@ -311,21 +326,29 @@
       const match = event.target.closest("[data-v4d-match]");
       if (match) {
         editingKey = match.dataset.v4dMatch;
+        const row = preview?.ranked.find(item => item.key === editingKey);
+        editingClass = row?.pair?.cls || row?.age || "Vuxen";
         render();
         $v("v4dPreview").querySelector("[data-v4d-search]")?.focus();
       }
       const save = event.target.closest("[data-v4d-save]");
       if (save) saveMatching(save.dataset.v4dSave,
-        Number($v("v4dPreview").querySelector("[data-v4d-choice]")?.value));
+        Number($v("v4dPreview").querySelector("[data-v4d-choice]")?.value), editingClass);
       const reset = event.target.closest("[data-v4d-reset]");
       if (reset) resetMatching(reset.dataset.v4dReset);
       if (event.target.closest("[data-v4d-cancel]")) { editingKey = null; render(); }
     });
     $v("v4dPreview").addEventListener("input", event => {
       if (!event.target.matches("[data-v4d-search]")) return;
-      const row = preview?.ranked.find(item => item.key === editingKey);
       const choice = $v("v4dPreview").querySelector("[data-v4d-choice]");
-      if (row && choice) choice.innerHTML = `<option value="">Välj ett par</option>${pairOptions(row.age, event.target.value)}`;
+      if (choice) choice.innerHTML = `<option value="">Välj ett par</option>${pairOptions(editingClass, event.target.value)}`;
+    });
+    $v("v4dPreview").addEventListener("change", event => {
+      if (!event.target.matches("[data-v4d-class]")) return;
+      editingClass = event.target.value;
+      const choice = $v("v4dPreview").querySelector("[data-v4d-choice]");
+      const query = $v("v4dPreview").querySelector("[data-v4d-search]")?.value || "";
+      if (choice) choice.innerHTML = `<option value="">Välj ett par</option>${pairOptions(editingClass, query)}`;
     });
     $v("resultCompetitionSelect").addEventListener("change", loadClasses);
     render();
