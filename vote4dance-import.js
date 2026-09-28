@@ -15,7 +15,10 @@
   }
 
   function stageFromLabel(label) {
-    const match = String(label || "").match(/^Bugg\s+(Junior|Vuxen|Senior)\s+([NABCD])(?:\b|\()/i);
+    const name = String(label || "").trim();
+    const district = name.match(/^Bugg\s+(JDM|SDM|DM)(?:\b|\()/i);
+    if (district) return { age: { JDM: "Junior", SDM: "Senior", DM: "Vuxen" }[district[1].toUpperCase()], stage: "A" };
+    const match = name.match(/^Bugg\s+(Junior|Vuxen|Senior)\s+([NABCD])(?:\b|\()/i);
     if (!match) return null;
     return { age: match[1][0].toUpperCase() + match[1].slice(1).toLowerCase(), stage: match[2].toUpperCase() };
   }
@@ -165,7 +168,7 @@
         throw new Error(detail || error?.message || "Hämtningen misslyckades.");
       }
       const cls = stageFromLabel(data.class_label);
-      if (!cls) throw new Error("Den här klassen ingår inte i Fantasy Buggs Junior, Vuxen eller Senior.");
+      if (!cls) throw new Error("Klassen stöds inte. Använd Bugg Junior/Vuxen/Senior eller Bugg JDM/DM/SDM.");
       if (savedClasses.some(c => c.source_competition_id !== data.competition_id)) {
         throw new Error("Länken tillhör en annan Vote4Dance-tävling än de redan sparade klasserna.");
       }
@@ -351,6 +354,7 @@
       if (choice) choice.innerHTML = `<option value="">Välj ett par</option>${pairOptions(editingClass, query)}`;
     });
     $v("resultCompetitionSelect").addEventListener("change", loadClasses);
+    document.addEventListener("fantasy:pairs-loaded", render);
     render();
   }
   init();
