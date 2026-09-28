@@ -37,7 +37,11 @@
     const {data,error}=await sb.from(TABLE).select('id,dancer_a,dancer_b,age_class,price,pair_index,status').eq('status','approved').order('pair_index',{ascending:true});
     if(error){console.warn('Kunde inte läsa godkända parkonstellationer:',error.message);return}
     (data||[]).forEach(appendApproved);
+    // Approved cards are appended after the base market loads. Apply their
+    // saved class moves once their stable indices exist in the pairs array.
+    if(typeof loadPairClassOverrides==='function')await loadPairClassOverrides();
     try{renderMarket()}catch(e){}
+    try{renderTeam()}catch(e){}
   }
 
   function evaluate(){
