@@ -1140,6 +1140,7 @@ main{
       <p>
         Poängen räknas procentuellt utifrån hur stor del
         av startfältet paret placerar sig före.
+        Exemplen nedan är före tävlingens nivåmultiplikator.
       </p>
 
       <table class="pointsTable">
@@ -1268,7 +1269,7 @@ main{
       <h2>Värdebonus</h2>
 
       <p>
-        Billigare par kan få en mindre värdebonus vid bra resultat.
+        Billigare par kan få en mindre värdebonus vid placering 1–20.
       </p>
 
       <table class="pointsTable">
@@ -1282,7 +1283,8 @@ main{
       </table>
 
       <p class="meta">
-        Värdebonusen är begränsad till maximalt 15 extra poäng.
+        Procenten räknas på poängen efter tävlingens nivåmultiplikator.
+        Värdebonusen är begränsad till maximalt 15 extra poäng i slutresultatet.
       </p>
 
     </div>
@@ -3695,9 +3697,15 @@ function calculateFantasyPoints(
     );
 
 
-  let raw =
+  const raw =
     placementPoints *
     classSizeFactor;
+
+  const leveledPoints =
+    raw *
+    (
+      LEVEL_MULTIPLIERS[level] || 1
+    );
 
 
   /*
@@ -3706,7 +3714,7 @@ function calculateFantasyPoints(
     Billigare par får fortfarande
     lite extra värde.
 
-    Max 15 extra poäng.
+    Max 15 extra poäng efter tävlingsnivån.
   */
 
   const valueBonus =
@@ -3714,7 +3722,7 @@ function calculateFantasyPoints(
       ? Math.min(
           15,
           Math.round(
-            raw *
+            leveledPoints *
             (
               VALUE_BONUS[
                 price
@@ -3726,21 +3734,8 @@ function calculateFantasyPoints(
       : 0;
 
 
-  raw += valueBonus;
-
-
-  /*
-    TÄVLINGSNIVÅ
-  */
-
   return Math.round(
-    raw *
-    (
-      LEVEL_MULTIPLIERS[
-        level
-      ] ||
-      1
-    )
+    leveledPoints + valueBonus
   );
 }
 
