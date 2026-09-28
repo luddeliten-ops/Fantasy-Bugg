@@ -47,6 +47,60 @@
     });
   }
 
+  async function renderPublicTeamRecent(body, indices){
+    const section=document.createElement('section');
+    section.className='publicTeamRecent';
+    section.style.cssText='margin-top:18px';
+    section.innerHTML='<h3 style="margin:0 0 12px">Parens 3 senaste tävlingar</h3><div class="empty">Hämtar tävlingsresultat…</div>';
+    body.appendChild(section);
+    if(!indices.length) return;
+
+    const results=await sb.from('competition_results')
+      .select('pair_index,competition_id,placement,fantasy_points,created_at')
+      .eq('matched',true).in('pair_index',indices).limit(1000);
+    if(results.error){
+      section.innerHTML='<h3>Parens 3 senaste tävlingar</h3><div class="err">Kunde inte hämta tävlingsresultat.</div>';
+      return;
+    }
+
+    const rows=results.data||[];
+    const ids=[...new Set(rows.map(row=>row.competition_id).filter(Boolean))];
+    const competitions=ids.length
+      ? await sb.from('competitions').select('id,name,date').in('id',ids)
+      : {data:[],error:null};
+    if(competitions.error){
+      section.innerHTML='<h3>Parens 3 senaste tävlingar</h3><div class="err">Kunde inte hämta tävlingarnas datum.</div>';
+      return;
+    }
+    // Only published competition results are available here. Sort by the
+    // actual competition date, since classes can be imported later.
+    const byId=new Map((competitions.data||[]).map(row=>[String(row.id),row]));
+    const grouped=new Map();
+    rows.forEach(row=>{
+      const index=Number(row.pair_index);
+      if(!grouped.has(index)) grouped.set(index,[]);
+      grouped.get(index).push(row);
+    });
+    const history=indices.map(index=>{
+      const pair=typeof getPair==='function'?getPair(index):null;
+      if(!pair) return '';
+      const latest=(grouped.get(index)||[]).sort((a,b)=>{
+        const dateA=byId.get(String(a.competition_id))?.date||'';
+        const dateB=byId.get(String(b.competition_id))?.date||'';
+        return dateB.localeCompare(dateA) || String(b.created_at||'').localeCompare(String(a.created_at||''));
+      }).slice(0,3);
+      const list=latest.length?latest.map(row=>{
+        const competition=byId.get(String(row.competition_id));
+        const date=competition?.date?new Date(competition.date+'T12:00:00').toLocaleDateString('sv-SE'):'';
+        return '<div class="scoreRow"><div><b>'+escapeHtml(competition?.name||row.competition_id)+'</b>'+
+          (date?'<br><small class="meta">'+escapeHtml(date)+'</small>':'')+
+          '</div><div>Plats '+escapeHtml(row.placement??'–')+'</div><b>'+formatPoints(row.fantasy_points)+'</b></div>';
+      }).join(''):'<div class="meta">Inga publicerade tävlingsresultat ännu.</div>';
+      return '<div style="margin:0 0 16px"><h4 style="margin:0 0 8px">'+escapeHtml(pair.name)+'</h4>'+list+'</div>';
+    }).join('');
+    if(body.contains(section)) section.innerHTML='<h3 style="margin:0 0 12px">Parens 3 senaste tävlingar</h3>'+history;
+  }
+
   async function openPublicTeamArena(userId){
     if(!userId || typeof sb === 'undefined') return;
 
@@ -89,7 +143,10 @@
     body.innerHTML=cards
       ? '<div id="team" class="publicTeamArenaScope"><div class="pitch"><div id="teamList">'+cards+'</div></div></div>'
       : '<div class="empty">Inget lag.</div>';
+    if(cards) await renderPublicTeamRecent(body,indices);
   }
+
+  window.openPublicTeamArena=openPublicTeamArena;
 
   document.addEventListener('click', async function(event){
     const target=event.target instanceof Element ? event.target : event.target?.parentElement;
