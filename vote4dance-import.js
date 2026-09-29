@@ -28,6 +28,14 @@
       return pairs.find(p => p.cls === (row.manual_pair_class || age) && p.index === row.manual_pair_index &&
         p.name === row.manual_pair_name) || null;
     }
+    // Namnbyte: Linn Carlsson tävlar på samma parkort som Linn Gustafsson.
+    // Matcha båda personerna och klassen så att inget annat Modin-par påverkas.
+    const entrants = [normalizeName(row.name1), normalizeName(row.name2)].sort();
+    if (age === "Senior" &&
+        entrants.join("|") === ["thomas modin", "linn carlsson"].sort().join("|")) {
+      return pairs.find(p => p.index === 165 && p.cls === "Senior" &&
+        normalizeName(p.name) === "thomas modin linn gustafsson") || null;
+    }
     const people = [normalizeName(row.name1), normalizeName(row.name2)];
     const exact = pairs.filter(p => p.cls === age &&
       (normalizeName(p.name) === people.join(" ") ||
