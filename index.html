@@ -4384,6 +4384,48 @@ async function openCompetitionResults(
         .join("");
   }
 
+  if(currentUser && !error){
+    const {data:myScore,error:scoreError}=await sb
+      .from("fantasy_competition_scores")
+      .select("pair_indices,captain_pair_index,team_points")
+      .eq("competition_id",id)
+      .eq("user_id",currentUser.id)
+      .maybeSingle();
+
+    if(scoreError){
+      $("resultModalBody").insertAdjacentHTML("afterbegin",
+        '<div class="err">Ditt lags poäng kunde inte hämtas.</div>');
+    }else if(myScore){
+      const resultByIndex=new Map((data||[])
+        .filter(row=>row.matched && row.pair_index!=null)
+        .map(row=>[Number(row.pair_index),row]));
+      const isDm=String(competition?.level||"").trim().toUpperCase()==="DM";
+      const pointsText=value=>Number(value||0).toFixed(1).replace(/\.0$/,"")+" p";
+      const pairRows=(myScore.pair_indices||[]).map(value=>{
+        const index=Number(value);
+        const result=resultByIndex.get(index);
+        const pair=getPair(index);
+        const name=pair?.name||result?.pair_name||"Parkort "+index;
+        const points=result
+          ? Number(result.fantasy_points||0)*(index===Number(myScore.captain_pair_index)?1.5:1)
+          : isDm?0:-50;
+        const placement=result?(result.placement?result.placement+":a":"Deltog"):"Deltog ej";
+        return '<div class="scoreRow"><div><b>'+esc(name)+'</b></div>'+
+          '<div>'+esc(placement)+'</div><div><b>'+pointsText(points)+'</b></div></div>';
+      }).join("");
+      const heading='<div class="panel" style="margin-bottom:18px">'+
+        '<h3 style="margin:0 0 8px">Ditt lag i tävlingen</h3>'+
+        '<p class="meta" style="margin:0 0 12px">Poäng utifrån laget som var registrerat för tävlingen. Deltog ej: '+(isDm?'0':'−50')+' p per par.</p>'+
+        pairRows+
+        '<div class="scoreRow"><div><b>Lagets tävlingspoäng</b></div><div></div><div><b>'+pointsText(myScore.team_points)+'</b></div></div>'+
+        '</div><h3>Publicerade parresultat</h3>';
+      $("resultModalBody").insertAdjacentHTML("afterbegin",heading);
+    }else{
+      $("resultModalBody").insertAdjacentHTML("afterbegin",
+        '<div class="empty">Inget lag registrerat för den här tävlingen.</div>');
+    }
+  }
+
   openModal(
     "resultModal"
   );
